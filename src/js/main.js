@@ -1,7 +1,12 @@
 var React=require('react');
-var AppActions=require('./actions/AppActions');
 var App=require('./components/App');
-AppActions.sayHello('Ali');
+//it is used for server data actions
+var AppTreeWebAPI=require('./utils/AppTreeWebAPI');
+
+//simulate loading a deck
+var deck_id=1, selector={type:'slide', id:11};
+AppTreeWebAPI.loadDeckTree(deck_id, selector);
+
 React.renderComponent(
   <App />,
   document.getElementById('main')

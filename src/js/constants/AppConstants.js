@@ -12,5 +12,5 @@
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
-  APP_SAY_HELLO: null,
+  APP_LOAD_DECK_TREE: null,
 });

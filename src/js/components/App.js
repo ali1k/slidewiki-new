@@ -1,6 +1,6 @@
 var React=require('react');
 //stores
-var TreeStore=require('../stores/TreeStore');
+var AppTreeStore=require('../stores/AppTreeStore');
 //bootstrap components
 var Grid = require('react-bootstrap/Grid');
 var Row = require('react-bootstrap/Row');
@@ -15,7 +15,9 @@ var ContributorPanel=require('./ContributorPanel');
  */
 function getAppState() {
   return {
-    name: TreeStore.getName()
+    nodes: AppTreeStore.getNodes(),
+    deck_id: AppTreeStore.getDeckID(),
+    selector: AppTreeStore.getSelector()
   };
 }
 
@@ -24,10 +26,10 @@ var App= React.createClass({
     return getAppState();
   },
   componentDidMount: function() {
-    TreeStore.addChangeListener(this._onChange);
+    AppTreeStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
-    TreeStore.removeChangeListener(this._onChange);
+    AppTreeStore.removeChangeListener(this._onChange);
   },
   render: function() {
     return (
