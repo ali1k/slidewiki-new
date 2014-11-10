@@ -15,9 +15,11 @@ var ContributorPanel=require('./ContributorPanel');
  */
 function getAppState() {
   return {
-    nodes: AppTreeStore.getNodes(),
-    deck_id: AppTreeStore.getDeckID(),
-    selector: AppTreeStore.getSelector()
+    tree:{
+      nodes: AppTreeStore.getNodes(),
+      selector: AppTreeStore.getSelector()
+    },
+    deck_id: AppTreeStore.getDeckID()
   };
 }
 
@@ -35,7 +37,7 @@ var App= React.createClass({
     return (
       <Grid fluid={true}>
         <Row>
-          <Col md={3}> <TreePanel /> </Col>
+          <Col md={3}> <TreePanel tree={this.state.tree} /> </Col>
           <Col md={6}> <ContentPanel /> </Col>
           <Col md={3}> <ContributorPanel /> </Col>
         </Row>

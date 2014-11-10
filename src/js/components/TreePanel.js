@@ -6,7 +6,7 @@ var TreePanel= React.createClass({
     return (
       <div className="sw-tree-panel">
         <h2> TreePanel </h2>
-        <TreeView />
+        <TreeView nodes={this.props.tree.nodes} selector={this.props.tree.selector}/>
       </div>
     )
   }
