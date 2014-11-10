@@ -1,12 +1,21 @@
 var React=require('react');
-var Hello=require('./Hello');
-var AppStore=require('../stores/AppStore');
+//stores
+var TreeStore=require('../stores/TreeStore');
+//bootstrap components
+var Grid = require('react-bootstrap/Grid');
+var Row = require('react-bootstrap/Row');
+var Col = require('react-bootstrap/Col');
+//SlideWiki components
+var TreePanel=require('./TreePanel');
+var ContentPanel=require('./ContentPanel');
+var ContributorPanel=require('./ContributorPanel');
+
 /**
  * Retrieve the current App data from the AppStore
  */
 function getAppState() {
   return {
-    name: AppStore.getName()
+    name: TreeStore.getName()
   };
 }
 
@@ -15,14 +24,21 @@ var App= React.createClass({
     return getAppState();
   },
   componentDidMount: function() {
-    AppStore.addChangeListener(this._onChange);
+    TreeStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
-    AppStore.removeChangeListener(this._onChange);
+    TreeStore.removeChangeListener(this._onChange);
   },
   render: function() {
     return (
-      <Hello name={this.state.name} />
+      <Grid fluid={true}>
+        <Row>
+          <Col md={3}> <TreePanel /> </Col>
+          <Col md={6}> <ContentPanel /> </Col>
+          <Col md={3}> <ContributorPanel /> </Col>
+        </Row>
+      </Grid>
+
     );
   },
     /**
