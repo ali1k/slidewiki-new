@@ -5,9 +5,9 @@ var AppTreeActions = require('../actions/AppTreeActions');
 
 module.exports = {
 
-  loadDeckTree: function(deck_id, selector) {
+  getDeckTree: function(deck_id, selector) {
     var nodes={
-      title: 'root', id:1, type:"deck", children:
+      title: 'root', id:1, type:'deck', children:
        [
        {title: 'child 1', id: 11, type: 'slide'},
        {title: 'child 2', id: 12, type: 'slide'},
@@ -18,7 +18,7 @@ module.exports = {
        ]
      }
     // receive data from web service
-    AppTreeActions.loadDeckTree(nodes, deck_id, selector);
+    AppTreeActions.loadDeckTree(nodes, selector);
   }
 
 };

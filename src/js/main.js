@@ -5,7 +5,8 @@ var AppTreeWebAPI=require('./utils/AppTreeWebAPI');
 
 //simulate loading a deck
 var deck_id=1, selector={type:'slide', id:12};
-AppTreeWebAPI.loadDeckTree(deck_id, selector);
+//will initiate the action
+AppTreeWebAPI.getDeckTree(deck_id, selector);
 
 React.renderComponent(
   <App />,

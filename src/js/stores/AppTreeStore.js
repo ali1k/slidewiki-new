@@ -5,10 +5,8 @@ var AppConstants = require('../constants/AppConstants');
 var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
-
+//tree nodes
 var _nodes={};
-//current root deck
-var _deck_id;
 //current node which is selected
 var _selector={};
 
@@ -16,9 +14,8 @@ var _selector={};
   private functions
  */
 
-var _initTree= function(nodes, deck_id, selector){
+var _initTree= function(nodes, selector){
   _nodes=nodes;
-  _deck_id=deck_id;
   _selector=selector;
 }
 
@@ -31,7 +28,8 @@ var AppTreeStore = assign({}, EventEmitter.prototype, {
     return _nodes;
   },
   getDeckID: function (){
-    return _deck_id;
+    //root id indicates the current deck
+    return _nodes.id;
   },
   getSelector: function (){
     return _selector;
@@ -62,7 +60,7 @@ AppDispatcher.register(function(payload) {
   switch(action.actionType) {
     case AppConstants.APP_LOAD_DECK_TREE:
       //do something
-      _initTree(action.nodes, action.deck_id, action.selector);
+      _initTree(action.nodes, action.selector);
       break;
 
     default:

@@ -18,8 +18,7 @@ function getAppState() {
     tree:{
       nodes: AppTreeStore.getNodes(),
       selector: AppTreeStore.getSelector()
-    },
-    deck_id: AppTreeStore.getDeckID()
+    }
   };
 }
 
