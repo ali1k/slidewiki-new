@@ -18,6 +18,9 @@ var _initTree= function(nodes, selector){
   _nodes=nodes;
   _selector=selector;
 }
+var _updateSelector= function(selector){
+  _selector=selector;
+}
 
 var AppTreeStore = assign({}, EventEmitter.prototype, {
 
@@ -59,8 +62,12 @@ AppDispatcher.register(function(payload) {
 
   switch(action.actionType) {
     case AppConstants.APP_LOAD_DECK_TREE:
-      //do something
+      //init state
       _initTree(action.nodes, action.selector);
+      break;
+    case AppConstants.APP_SELECT_TREE_NODE:
+      //change the selector
+      _updateSelector(action.selector);
       break;
 
     default:

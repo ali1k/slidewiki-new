@@ -1,10 +1,9 @@
 
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
-var AppTreeWebAPI=require('../utils/AppTreeWebAPI');
+//var AppTreeWebAPI=require('../utils/AppTreeWebAPI');
 
-var AppTreeActions = {
-
+module.exports = {
   /**
    * @param  {object} nodes
    * @param  {object} selector : defines the node which must be selected e.g. {type:"slide", id: 12}
@@ -15,7 +14,13 @@ var AppTreeActions = {
       nodes: nodes,
       selector: selector
     });
+  },
+  // when user selects a tree node
+  selectTreeNode: function(selector){
+    AppDispatcher.handleViewAction({
+      actionType: AppConstants.APP_SELECT_TREE_NODE,
+      selector: selector
+    });
   }
-};
 
-module.exports = AppTreeActions;
+};

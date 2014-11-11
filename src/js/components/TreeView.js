@@ -1,6 +1,10 @@
 var React=require('react');
+//actions
+var AppTreeActions = require('../actions/AppTreeActions');
+
 var TreeView= React.createClass({
   render: function(){
+    //it has a fixed value
     var selector=this.props.selector;
     var childNodes;
     var selectedClass='';
@@ -16,12 +20,15 @@ var TreeView= React.createClass({
     }
     return (
       <div className="sw-tree-view">
-        <h3> {this.props.nodes.title} </h3>
+        <h4 onClick={this._onClick}> {this.props.nodes.title} </h4>
         <ul>
           {childNodes}
         </ul>
       </div>
     )
+  },
+  _onClick: function() {
+    AppTreeActions.selectTreeNode({type: this.props.nodes.type, id: this.props.nodes.id});
   }
 })
 module.exports= TreeView;

@@ -1,7 +1,4 @@
-
-
 var AppTreeActions = require('../actions/AppTreeActions');
-
 
 module.exports = {
 
@@ -17,7 +14,7 @@ module.exports = {
        {title: 'child 4', id: 14, type: 'slide'},
        ]
      }
-    // receive data from web service
+    // received data from web service, call action
     AppTreeActions.loadDeckTree(nodes, selector);
   }
 
