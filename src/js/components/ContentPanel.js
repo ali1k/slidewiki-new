@@ -1,6 +1,9 @@
 var React=require('react');
 //stores
 var ContentStore=require('../stores/ContentStore');
+//SlideWiki components
+var DeckPanel=require('./DeckPanel');
+var SlidePanel=require('./SlidePanel');
 
 function getContentPanelState() {
   return {
@@ -21,10 +24,19 @@ var ContentPanel= React.createClass({
     ContentStore.removeChangeListener(this._onChange);
   },
   render: function(){
+    var content='';
+    switch(this.state.content.type){
+      case 'deck':
+        content=<DeckPanel />;
+      break;
+      case 'slide':
+        content=<SlidePanel />;
+      break;
+    }
     return (
       <div className="sw-content-panel">
         <h2> ContentPanel </h2>
-        <h3> Content Type: <b> {this.state.content.type} </b> </h3>
+        {content}
       </div>
     )
   },
