@@ -10,7 +10,7 @@ module.exports = {
          {title: 'child 2', id: 12, type: 'slide'},
          {title: 'child 3', id: 13, type: 'deck', children:[
           {title: 'child 31', id: 131, type: 'slide'},
-          {title: 'child 32', id: 132, type: 'slide', children:[
+          {title: 'child 32', id: 132, type: 'deck', children:[
             {title: 'child 321', id: 1321, type: 'slide'},
             {title: 'child 322', id: 1322, type: 'slide'},
           ]},

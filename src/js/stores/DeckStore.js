@@ -12,8 +12,8 @@ var _deck={};
 /**
   private functions
  */
-var _initDeck= function(){
-
+var _initDeck= function(content){
+  _deck.content=content;
 }
 
 
@@ -42,13 +42,13 @@ var DeckStore = assign({}, EventEmitter.prototype, {
 });
 
 // Register to handle all updates
-AppDispatcher.register(function(payload) {
+DeckStore.dispatchToken= AppDispatcher.register(function(payload) {
   var action = payload.action;
 
   switch(action.actionType) {
-    case ActionTypes.LOAD_DECK_CONTENT:
-
-      break;
+    case ActionTypes.LOAD_DECK:
+      _initDeck(action.content)
+    break;
 
     default:
       return true;

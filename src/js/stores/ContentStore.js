@@ -6,38 +6,29 @@ var ActionTypes = Constants.ActionTypes;
 var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
-//tree nodes
-var _nodes={};
-//current node which is selected
-var _selector={};
-
+//deck id
+var _content_type;
+var _content_id;
 /**
   private functions
  */
-
-var _initTree= function(nodes, selector){
-  _nodes=nodes;
-  _selector=selector;
-}
-var _updateSelector= function(selector){
-  _selector=selector;
+var _initContent= function(ontent_type, content_id){
+  _content_type=ontent_type;
+  _content_id=content_id;
 }
 
-var TreeStore = assign({}, EventEmitter.prototype, {
+var ContentStore = assign({}, EventEmitter.prototype, {
 
   /**
   public functions
    */
-  getNodes: function (){
-    return _nodes;
-  },
-  getDeckID: function (){
-    //root id indicates the current deck
-    return _nodes.id;
-  },
-  getSelector: function (){
-    return _selector;
-  },
+   getContentType: function (){
+     return _content_type;
+   },
+   getContentID: function (){
+     //root id indicates the current deck
+     return _content_id;
+   },
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -58,17 +49,14 @@ var TreeStore = assign({}, EventEmitter.prototype, {
 });
 
 // Register to handle all updates
-TreeStore.dispatchToken= AppDispatcher.register(function(payload) {
+ContentStore.dispatchToken= AppDispatcher.register(function(payload) {
   var action = payload.action;
+
   switch(action.actionType) {
-    case ActionTypes.LOAD_DECK_TREE:
-      //init state
-      _initTree(action.nodes, action.selector);
-      break;
-    case ActionTypes.SELECT_TREE_NODE:
-      //change the selector
-      _updateSelector(action.selector);
-      break;
+    //this acts as a proxy to delegate content to its corresponding handler
+    case ActionTypes.PREPARE_CONTENT_TYPE:
+      _initContent(action.contentType, action.contentID)
+    break;
 
     default:
       return true;
@@ -78,9 +66,9 @@ TreeStore.dispatchToken= AppDispatcher.register(function(payload) {
   // needs to trigger a UI change after every view action, so we can make the
   // code less repetitive by putting it here.  We need the default case,
   // however, to make sure this only gets called after one of the cases above.
-  TreeStore.emitChange();
+  ContentStore.emitChange();
 
   return true; // No errors.  Needed by promise in Dispatcher.
 });
 
-module.exports = TreeStore;
+module.exports = ContentStore;

@@ -5,8 +5,9 @@ module.exports = {
   ActionTypes: keyMirror({
     LOAD_DECK_TREE: null,
     SELECT_TREE_NODE: null,
-    LOAD_DECK_CONTENT: null,
-    LOAD_SLIDE_CONTENT: null,
+    PREPARE_CONTENT_TYPE: null,
+    LOAD_DECK: null,
+    LOAD_SLIDE: null,
   }),
 
   PayloadSources: keyMirror({

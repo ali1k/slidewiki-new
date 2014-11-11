@@ -5,12 +5,10 @@ var ActionTypes = Constants.ActionTypes;
 
 
 module.exports = {
-  loadDeck: function(content) {
-
+  loadSlide: function(content) {
     AppDispatcher.handleServerAction({
-      actionType: ActionTypes.LOAD_DECK,
+      actionType: ActionTypes.LOAD_SLIDE,
       content: content
     });
   }
-
 };
