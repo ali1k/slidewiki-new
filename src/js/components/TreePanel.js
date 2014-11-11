@@ -1,15 +1,15 @@
 var React=require('react');
 var TreeView=require('./TreeView');
 //stores
-var AppTreeStore=require('../stores/AppTreeStore');
+var TreeStore=require('../stores/TreeStore');
 /**
  * Retrieve the current Tree data from the AppStore
  */
 function getTreePanelState() {
   return {
     tree:{
-      nodes: AppTreeStore.getNodes(),
-      selector: AppTreeStore.getSelector()
+      nodes: TreeStore.getNodes(),
+      selector: TreeStore.getSelector()
     }
   };
 }
@@ -18,10 +18,10 @@ var TreePanel= React.createClass({
     return getTreePanelState();
   },
   componentDidMount: function() {
-    AppTreeStore.addChangeListener(this._onChange);
+    TreeStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
-    AppTreeStore.removeChangeListener(this._onChange);
+    TreeStore.removeChangeListener(this._onChange);
   },
   render: function(){
     return (
@@ -32,7 +32,7 @@ var TreePanel= React.createClass({
     )
   },
     /**
-   * Event handler for 'change' events coming from the AppTreeStore
+   * Event handler for 'change' events coming from the TreeStore
    */
   _onChange: function() {
     this.setState(getTreePanelState());

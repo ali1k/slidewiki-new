@@ -1,7 +1,8 @@
 
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-var AppConstants = require('../constants/AppConstants');
+var Constants = require('../constants/Constants');
+var ActionTypes = Constants.ActionTypes;
 var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
@@ -22,7 +23,7 @@ var _updateSelector= function(selector){
   _selector=selector;
 }
 
-var AppTreeStore = assign({}, EventEmitter.prototype, {
+var TreeStore = assign({}, EventEmitter.prototype, {
 
   /**
   public functions
@@ -59,13 +60,12 @@ var AppTreeStore = assign({}, EventEmitter.prototype, {
 // Register to handle all updates
 AppDispatcher.register(function(payload) {
   var action = payload.action;
-
   switch(action.actionType) {
-    case AppConstants.APP_LOAD_DECK_TREE:
+    case ActionTypes.LOAD_DECK_TREE:
       //init state
       _initTree(action.nodes, action.selector);
       break;
-    case AppConstants.APP_SELECT_TREE_NODE:
+    case ActionTypes.SELECT_TREE_NODE:
       //change the selector
       _updateSelector(action.selector);
       break;
@@ -78,9 +78,9 @@ AppDispatcher.register(function(payload) {
   // needs to trigger a UI change after every view action, so we can make the
   // code less repetitive by putting it here.  We need the default case,
   // however, to make sure this only gets called after one of the cases above.
-  AppTreeStore.emitChange();
+  TreeStore.emitChange();
 
   return true; // No errors.  Needed by promise in Dispatcher.
 });
 
-module.exports = AppTreeStore;
+module.exports = TreeStore;

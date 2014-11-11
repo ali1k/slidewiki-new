@@ -1,4 +1,4 @@
-var AppTreeActions = require('../actions/AppTreeActions');
+//var AppTreeActions = require('../actions/AppTreeActions');
 
 module.exports = {
 // delivers content: be it of type 'slide', 'deck', 'question', etc.

@@ -1,25 +1,31 @@
 var Dispatcher = require('flux').Dispatcher;
 var assign = require('object-assign');
+var Constants = require('../constants/Constants');
+var PayloadSources = Constants.PayloadSources;
 
 var AppDispatcher = assign(new Dispatcher(), {
-
   /**
-   * A bridge function between the views and the dispatcher, marking the action
-   * as a view action.
+   * @param {object} action The details of the action, including the action's
+   * type and additional data coming from the server.
    */
-  handleViewAction: function(action) {
-    this.dispatch({
-      source: 'VIEW_ACTION',
+  handleServerAction: function(action) {
+    var payload = {
+      source: PayloadSources.SERVER_ACTION,
       action: action
-    });
+    };
+    this.dispatch(payload);
   },
 
-  // server actions
-  handleServerAction: function(action) {
-    this.dispatch({
-      source: 'SERVER_ACTION',
+  /**
+   * @param {object} action The details of the action, including the action's
+   * type and additional data coming from the view.
+   */
+  handleViewAction: function(action) {
+    var payload = {
+      source: PayloadSources.VIEW_ACTION,
       action: action
-    });
+    };
+    this.dispatch(payload);
   }
 
 });

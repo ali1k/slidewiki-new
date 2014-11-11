@@ -1,4 +1,4 @@
-var AppTreeActions = require('../actions/AppTreeActions');
+var TreeActions = require('../actions/TreeActions');
 
 module.exports = {
 
@@ -20,7 +20,7 @@ module.exports = {
        ]
      }
     // received data from web service, call action
-    AppTreeActions.loadDeckTree(nodes, selector);
+    TreeActions.loadDeckTree(nodes, selector);
   }
 
 };

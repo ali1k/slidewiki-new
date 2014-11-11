@@ -1,6 +1,6 @@
 var React=require('react');
 //actions
-var AppTreeActions = require('../actions/AppTreeActions');
+var TreeActions = require('../actions/TreeActions');
 
 var TreeView= React.createClass({
   render: function(){
@@ -29,7 +29,7 @@ var TreeView= React.createClass({
     )
   },
   _onClick: function() {
-    AppTreeActions.selectTreeNode({type: this.props.nodes.type, id: this.props.nodes.id});
+    TreeActions.selectTreeNode({type: this.props.nodes.type, id: this.props.nodes.id});
   }
 })
 module.exports= TreeView;
