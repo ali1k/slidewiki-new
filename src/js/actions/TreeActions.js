@@ -4,6 +4,8 @@ var Constants = require('../constants/Constants');
 var ActionTypes = Constants.ActionTypes;
 //dependent actions
 var ContentActions = require('../actions/ContentActions');
+//dependent Web APIs
+var ContributorsWebAPI = require('../utils/ContributorsWebAPI');
 
 module.exports = {
   /**
@@ -18,6 +20,8 @@ module.exports = {
     });
     //should also load the corresponding content type
     ContentActions.prepareContentType(selector);
+    //should load the contributors too
+    ContributorsWebAPI.loadContributors(selector);
   },
   // when user selects a tree node
   selectTreeNode: function(selector){
@@ -26,6 +30,7 @@ module.exports = {
       selector: selector
     });
     ContentActions.prepareContentType(selector);
+    ContributorsWebAPI.loadContributors(selector);
   }
 
 };

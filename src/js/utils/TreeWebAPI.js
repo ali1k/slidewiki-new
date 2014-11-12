@@ -2,7 +2,7 @@ var TreeActions = require('../actions/TreeActions');
 
 module.exports = {
 
-  getDeckTree: function(deck_id, selector) {
+  loadDeckTree: function(deck_id, selector) {
     var nodes={
       title: 'root', id:1, type:'deck', children:
        [

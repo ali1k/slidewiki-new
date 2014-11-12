@@ -20,9 +20,7 @@ var DeckPanel= React.createClass({
     return getDeckPanelState();
   },
   componentWillMount: function() {
-    //should load content before the component is mounted
-    // runs an action to initialize content
-    DeckActions.loadDeck(this.props.id);
+
   },
   componentDidMount: function() {
     DeckStore.addChangeListener(this._onChange);

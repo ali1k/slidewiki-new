@@ -8,6 +8,7 @@ module.exports = {
     PREPARE_CONTENT_TYPE: null,
     LOAD_DECK: null,
     LOAD_SLIDE: null,
+    LOAD_CONTRIBUTORS: null
   }),
 
   PayloadSources: keyMirror({

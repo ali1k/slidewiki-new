@@ -7,7 +7,7 @@ var Col = require('react-bootstrap/Col');
 //SlideWiki components
 var TreePanel=require('./TreePanel');
 var ContentPanel=require('./ContentPanel');
-var ContributorPanel=require('./ContributorPanel');
+var ContributorsPanel=require('./ContributorsPanel');
 
 var App= React.createClass({
   render: function() {
@@ -16,7 +16,7 @@ var App= React.createClass({
         <Row>
           <Col md={3}> <TreePanel /> </Col>
           <Col md={6}> <ContentPanel /> </Col>
-          <Col md={3}> <ContributorPanel /> </Col>
+          <Col md={3}> <ContributorsPanel /> </Col>
         </Row>
       </Grid>
 

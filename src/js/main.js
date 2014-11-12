@@ -6,7 +6,7 @@ var TreeWebAPI=require('./utils/TreeWebAPI');
 //simulate loading a deck
 var deck_id=1, selector={type:'slide', id:12};
 //will initiate the action
-TreeWebAPI.getDeckTree(deck_id, selector);
+TreeWebAPI.loadDeckTree(deck_id, selector);
 
 React.renderComponent(
   <App />,
