@@ -4,7 +4,7 @@ var DeckStore=require('../stores/DeckStore');
 //actions
 var DeckActions = require('../actions/DeckActions');
 //SlideWiki components
-var Deck=require('./Deck');
+var DeckView=require('./DeckView');
 
 function getDeckPanelState() {
   return {
@@ -34,7 +34,7 @@ var DeckPanel= React.createClass({
     return (
       <div className="sw-deck-panel">
         <h3> DeckPanel {this.props.id} </h3>
-        <Deck id={this.props.id} content={this.state.content} />
+        <DeckView id={this.props.id} content={this.state.content} />
       </div>
     )
   },

@@ -4,7 +4,7 @@ var SlideStore=require('../stores/SlideStore');
 //actions
 var SlideActions = require('../actions/SlideActions');
 //SlideWiki components
-var Slide=require('./Slide');
+var SlideView=require('./SlideView');
 
 function getSlidePanelState() {
   return {
@@ -32,7 +32,7 @@ var SlidePanel= React.createClass({
     return (
       <div className="sw-slide-panel">
         <h3> SlidePanel {this.props.id} </h3>
-        <Slide id={this.props.id} content={this.state.content} />
+        <SlideView id={this.props.id} content={this.state.content} />
       </div>
     )
   },

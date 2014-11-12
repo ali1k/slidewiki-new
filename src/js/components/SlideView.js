@@ -1,19 +1,19 @@
 var React=require('react');
 
 
-function getDeckState() {
+function getSlideViewState() {
   return {
 
   };
 }
-var Deck= React.createClass({
+var SlideView= React.createClass({
   //list of properties for validation
   propTypes: {
     id: React.PropTypes.number.isRequired,
     content: React.PropTypes.object
   },
   getInitialState: function() {
-    return getDeckState();
+    return getSlideViewState();
   },
   componentWillMount: function() {
 
@@ -26,14 +26,14 @@ var Deck= React.createClass({
   },
   render: function(){
     return (
-      <div className="sw-deck">
-        <h3> Deck {this.props.id} </h3>
+      <div className="sw-slide">
+        <h3> Slide {this.props.id} </h3>
         <h4> {this.props.content.body} </h4>
       </div>
     )
   },
   _onChange: function() {
-    this.setState(getDeckState());
+    this.setState(getSlideViewState());
   }
 })
-module.exports= Deck;
+module.exports= SlideView;
