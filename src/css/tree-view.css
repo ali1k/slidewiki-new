@@ -4,6 +4,9 @@
 .sw-tree-view-selected {
   color:red;
 }
+.sw-tree-view-over {
+  color:blue;
+}
 .sw-tree-view-node {
   cursor: pointer;
 }

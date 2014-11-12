@@ -27,7 +27,7 @@ var TreeView= React.createClass({
     }
     return (
       <div className="sw-tree-view">
-        <h4 onClick={this._onClick} className={nodeClasses}> {this.props.nodes.title} </h4>
+        <h4 ref="treeNode" onClick={this._onClick} className={nodeClasses} onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}> {this.props.nodes.title} </h4>
         <ul>
           {childNodes}
         </ul>
@@ -36,6 +36,17 @@ var TreeView= React.createClass({
   },
   _onClick: function() {
     TreeActions.selectTreeNode({type: this.props.nodes.type, id: this.props.nodes.id});
+  },
+  //ToDo: add states for onMouseOver and onMouseOut events if needed
+  _onMouseOver: function() {
+    var current = this.refs.treeNode.getDOMNode();
+    current.className += " sw-tree-view-over"
+  },
+  _onMouseOut: function() {
+    var current = this.refs.treeNode.getDOMNode();
+    var re = / sw-tree-view-over/gi;
+    var newClasses=current.className.replace(re, "");
+    current.className=newClasses
   }
 })
 module.exports= TreeView;
