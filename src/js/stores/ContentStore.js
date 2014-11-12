@@ -12,11 +12,12 @@ var _content_id;
 /**
   private functions
  */
-var _initContent= function(ontent_type, content_id){
-  _content_type=ontent_type;
+
+
+var _initContent= function(content_type, content_id){
+  _content_type=content_type;
   _content_id=content_id;
 }
-
 var ContentStore = assign({}, EventEmitter.prototype, {
 
   /**

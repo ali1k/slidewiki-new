@@ -5,11 +5,11 @@ var ActionTypes = Constants.ActionTypes;
 
 
 module.exports = {
-  loadDeck: function(content) {
-
+  loadDeck: function(id) {
     AppDispatcher.handleServerAction({
       actionType: ActionTypes.LOAD_DECK,
-      content: content
+      deckID: id,
+      content: {body:'content from deck '+id}
     });
   }
 

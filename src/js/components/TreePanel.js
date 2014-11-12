@@ -1,4 +1,5 @@
 var React=require('react');
+//SlideWiki components
 var TreeView=require('./TreeView');
 //stores
 var TreeStore=require('../stores/TreeStore');

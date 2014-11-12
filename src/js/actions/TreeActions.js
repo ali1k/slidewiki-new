@@ -2,6 +2,7 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Constants = require('../constants/Constants');
 var ActionTypes = Constants.ActionTypes;
+//dependent actions
 var ContentActions = require('../actions/ContentActions');
 
 module.exports = {
@@ -24,7 +25,6 @@ module.exports = {
       actionType: ActionTypes.SELECT_TREE_NODE,
       selector: selector
     });
-    //should also load the corresponding content type
     ContentActions.prepareContentType(selector);
   }
 

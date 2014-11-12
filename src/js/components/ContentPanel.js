@@ -27,10 +27,10 @@ var ContentPanel= React.createClass({
     var content='';
     switch(this.state.content.type){
       case 'deck':
-        content=<DeckPanel />;
+        content=<DeckPanel id={this.state.content.id}/>;
       break;
       case 'slide':
-        content=<SlidePanel />;
+        content=<SlidePanel id={this.state.content.id}/>;
       break;
     }
     return (

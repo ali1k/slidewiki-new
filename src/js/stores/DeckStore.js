@@ -4,15 +4,18 @@ var EventEmitter = require('events').EventEmitter;
 var Constants = require('../constants/Constants');
 var ActionTypes = Constants.ActionTypes;
 var assign = require('object-assign');
+//dependent stores
+var ContentStore = require('./ContentStore');
 
 var CHANGE_EVENT = 'change';
 //deck id
-var _deck={};
+var _deck={id: null, content:{}};
 
 /**
   private functions
  */
-var _initDeck= function(content){
+var _initDeck= function(id, content){
+  _deck.id=id;
   _deck.content=content;
 }
 
@@ -22,6 +25,9 @@ var DeckStore = assign({}, EventEmitter.prototype, {
   /**
   public functions
    */
+  getContent: function(){
+    return   _deck.content;
+  },
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -43,11 +49,15 @@ var DeckStore = assign({}, EventEmitter.prototype, {
 
 // Register to handle all updates
 DeckStore.dispatchToken= AppDispatcher.register(function(payload) {
+  //should wait until content type has finished working
+  AppDispatcher.waitFor([
+    ContentStore.dispatchToken
+  ]);
   var action = payload.action;
 
   switch(action.actionType) {
     case ActionTypes.LOAD_DECK:
-      _initDeck(action.content)
+      _initDeck(action.deckID, action.content)
     break;
 
     default:

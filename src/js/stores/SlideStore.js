@@ -4,15 +4,18 @@ var EventEmitter = require('events').EventEmitter;
 var Constants = require('../constants/Constants');
 var ActionTypes = Constants.ActionTypes;
 var assign = require('object-assign');
+//dependent stores
+var ContentStore = require('./ContentStore');
 
 var CHANGE_EVENT = 'change';
 //slide properties
-var _slide={};
+var _slide={id:null, content:{}};
 
 /**
   private functions
  */
-var _initSlide= function(content){
+var _initSlide= function(id,content){
+  _slide.id=id;
   _slide.content=content;
 }
 
@@ -22,6 +25,9 @@ var SlideStore = assign({}, EventEmitter.prototype, {
   /**
   public functions
    */
+  getContent: function(){
+     return   _slide.content;
+   },
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -43,11 +49,16 @@ var SlideStore = assign({}, EventEmitter.prototype, {
 
 // Register to handle all updates
 SlideStore.dispatchToken= AppDispatcher.register(function(payload) {
+  //should wait until content type has finished working
+  AppDispatcher.waitFor([
+    ContentStore.dispatchToken
+  ]);
+
   var action = payload.action;
 
   switch(action.actionType) {
     case ActionTypes.LOAD_SLIDE:
-      _initSlide(action.content)
+      _initSlide(action.slideID,action.content)
     break;
 
     default:
