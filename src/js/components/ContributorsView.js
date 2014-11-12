@@ -24,10 +24,14 @@ var ContributorsView= React.createClass({
 
   },
   render: function(){
+    var list;
+    list = this.props.contributors.map(function(node, index) {
+        return <li key={index}>{node.name}</li>
+    });
     return (
       <div className="sw-contributors">
         <h3> Contributors </h3>
-        <h4> {this.props.contributors[1].name}</h4>
+        <h4> {list} </h4>
       </div>
     )
   },

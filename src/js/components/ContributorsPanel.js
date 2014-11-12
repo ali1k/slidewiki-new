@@ -34,6 +34,9 @@ var ContributorsPanel= React.createClass({
         <ContributorsView contributors={this.state.contributors}/>
       </div>
     )
+  },
+  _onChange: function() {
+    this.setState(getContributorsPanelState());
   }
 })
 module.exports= ContributorsPanel;
