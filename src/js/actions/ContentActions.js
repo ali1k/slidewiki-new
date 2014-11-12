@@ -6,12 +6,13 @@ var ActionTypes = Constants.ActionTypes;
 //var ContentWebAPI=require('../utils/ContentWebAPI');
 
 module.exports = {
-  prepareContentType(selector){
+  prepareContentType: function(selector) {
     AppDispatcher.handleViewAction({
       actionType: ActionTypes.PREPARE_CONTENT_TYPE,
       contentType: selector.type,
-      contentID: selector.id,
+      contentID: selector.id
     });
     //ContentWebAPI.getContent(selector.type, selector.id);
   }
+
 };

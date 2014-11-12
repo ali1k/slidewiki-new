@@ -1,17 +1,23 @@
 var React=require('react');
+var cx = require('react/lib/cx');
 //actions
 var TreeActions = require('../actions/TreeActions');
 
 var TreeView= React.createClass({
+  //list of properties for validation
+  propTypes: {
+    selector: React.PropTypes.object,
+    nodes: React.PropTypes.object,
+  },
   render: function(){
     //it has a fixed value
     var selector=this.props.selector;
     //handling css classes
     var isSelected= (this.props.nodes.type==this.props.selector.type && this.props.nodes.id==this.props.selector.id);
-    var nodeClasses="sw-tree-view-node";
-    if(isSelected){
-      nodeClasses += " sw-tree-view-selected";
-    }
+    var nodeClasses = cx({
+    'sw-tree-view-node': true,
+    'sw-tree-view-selected': isSelected
+    });
     //handling child nodes
     var childNodes;
     if (this.props.nodes.children != null) {
