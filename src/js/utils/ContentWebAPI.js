@@ -4,19 +4,20 @@ var SlideActions = require('../actions/SlideActions');
 
 module.exports = {
 // delivers content: be it of type 'slide', 'deck', 'question', etc.
-  getContent: function(type, id) {
-    var text='Here is content for item type '+type+' and ID '+id;
-    var content={
+  loadContent: function(type, id) {
+    var text='Here comes content for item type '+type+' and ID '+id;
+    var res={
       id:id,
-      type: type,
-      text: text
+      content:{
+        body: text
+      }
      }
      switch(type){
        case "deck":
-         DeckActions.loadDeck(content);
+         DeckActions.loadDeck(res);
        break;
        case "slide":
-         SlideActions.loadSlide(content);
+         SlideActions.loadSlide(res);
        break;
      }
 

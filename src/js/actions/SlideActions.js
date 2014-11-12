@@ -5,11 +5,11 @@ var ActionTypes = Constants.ActionTypes;
 
 
 module.exports = {
-  loadSlide: function(id) {
+  loadSlide: function(res) {
     AppDispatcher.handleServerAction({
       actionType: ActionTypes.LOAD_SLIDE,
-      slideID: id,
-      content: {body: 'content for slide '+id}
+      slideID: res.id,
+      content: res.content
     });
   }
 };
