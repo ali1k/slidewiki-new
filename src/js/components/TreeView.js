@@ -17,21 +17,25 @@ var TreeView= React.createClass({
     //cx is used to handle adding classes by condition
     var nodeClasses = cx({
     'sw-tree-view-node': true,
-    'sw-tree-view-selected': isSelected
+    'sw-tree-view-selected': isSelected,
+    'sw-tree-view-deck': this.props.nodes.type=='deck',
+    'sw-tree-view-slide': this.props.nodes.type=='slide'
     });
+
     //handling child nodes
-    var childNodes;
+    var childNodes, childNumber=0;
     if (this.props.nodes.children != null) {
+      childNumber=this.props.nodes.children.length;
       childNodes = this.props.nodes.children.map(function(node, index) {
-        return <li key={index}><TreeView nodes={node} selector={selector}/></li>
+        return <li key={index} className={index==(childNumber-1)?'last-child':''}><TreeView nodes={node} selector={selector}/></li>
       });
     }
     return (
       <div className="sw-tree-view">
-        <h4 ref="treeNode" onClick={this._onClick} className={nodeClasses} onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}> {this.props.nodes.title} </h4>
-        <ul>
-          {childNodes}
-        </ul>
+        <span ref="treeNode" onClick={this._onClick} className={nodeClasses} onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}>
+          {this.props.nodes.title}
+         </span>
+         {childNumber? <ul>{childNodes}</ul>:''}
       </div>
     )
   },
