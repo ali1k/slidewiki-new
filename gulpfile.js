@@ -25,10 +25,13 @@ gulp.task('browserify', function(){
 gulp.task('copy', function(){
   gulp.src('src/index.html')
   .pipe(gulp.dest('dist'));
-
+  //css files
   gulp.src('src/css/**/*.css')
   .pipe(concat('bundle.css'))
   .pipe(gulp.dest('dist/css'));
+  //images
+  gulp.src('src/img/**/*.*')
+  .pipe(gulp.dest('dist/img'));
 })
 
 gulp.task('compress', function() {

@@ -8,11 +8,14 @@ var Col = require('react-bootstrap/Col');
 var TreePanel=require('./TreePanel');
 var ContentPanel=require('./ContentPanel');
 var ContributorsPanel=require('./ContributorsPanel');
-
+var DeckHeader=require('./DeckHeader');
 var App= React.createClass({
   render: function() {
     return (
       <Grid fluid={true}>
+        <Row>
+          <Col md={12}> <DeckHeader /> </Col>
+        </Row>
         <Row>
           <Col md={3}> <TreePanel /> </Col>
           <Col md={6}> <ContentPanel /> </Col>

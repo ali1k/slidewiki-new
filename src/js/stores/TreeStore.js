@@ -31,12 +31,15 @@ var TreeStore = assign({}, EventEmitter.prototype, {
   getNodes: function (){
     return _nodes;
   },
-  getDeckID: function (){
+  getRootDeckID: function (){
     //root id indicates the current deck
     return _nodes.id;
   },
   getSelector: function (){
     return _selector;
+  },
+  getRootDeckTitle: function (){
+    return _nodes.title;
   },
   emitChange: function() {
     this.emit(CHANGE_EVENT);
