@@ -15,7 +15,6 @@ var TreeView = React.createClass({
     var rootID=this.props.rootID;
     //handling css classes
     var isSelected= (this.props.nodes.type==this.props.selector.type && this.props.nodes.id==this.props.selector.id);
-
     //cx is used to handle adding classes by condition
     var nodeClasses = cx({
       'sw-tree-view-node': true,
