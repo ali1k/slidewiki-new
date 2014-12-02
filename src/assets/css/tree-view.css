@@ -1,0 +1,43 @@
+.sw-tree-view{
+  background-color: #E9F5E4;
+}
+.sw-tree-view A:link {text-decoration: none}
+.sw-tree-view A:visited {text-decoration: none}
+.sw-tree-view A:active {text-decoration: none}
+.sw-tree-view A:hover {text-decoration: none}
+
+.sw-tree-view-selected {
+  color:red;
+}
+.sw-tree-view-over {
+  background-color: rgb(245, 229, 132);
+  cursor: pointer;
+}
+.sw-tree-view-node {
+
+}
+.sw-tree-view ul{
+  list-style-type:none;
+  border-left: 1px grey dotted;
+  margin: 0;
+  padding: 0;
+}
+.sw-tree-view  ul {
+     margin-left: 10px;
+}
+
+.sw-tree-view  li {
+    margin: 0;
+    padding: 0 12px;
+    line-height: 20px;
+}
+.sw-tree-view li.last-child {
+  border-bottom: 1px grey dotted;
+}
+.sw-tree-view-deck{
+  border-bottom: 1px grey dotted;
+  font-weight: bold;
+}
+.sw-tree-view-slide{
+
+}

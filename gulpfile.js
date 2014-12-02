@@ -1,61 +1,68 @@
-var gulp= require('gulp');
-var gutil= require('gulp-util');
-var browserify= require('gulp-browserify');
-var concat= require('gulp-concat');
-var uglify = require('gulp-uglify');
-var clean = require('gulp-clean');
-var rename = require('gulp-rename');
-var filesize = require('gulp-filesize');
-var inject = require("gulp-inject");
+// Gulpfile.js
+var gulp = require('gulp'),
+  nodemon = require('gulp-nodemon'),
+  jshint = require('gulp-jshint'),
+  webpack = require('gulp-webpack'),
+  webpackDevServer = require("webpack-dev-server"),
+  concat = require('gulp-concat');
 
-gulp.task('browserify', function(){
 
-  gulp.src('src/js/main.js')
-  .pipe(browserify({transform: ['reactify', 'envify']}))
-  .pipe(concat('bundle.js'))
-  .pipe(gulp.dest('dist/js'));
-/*
-  //inject to index.html
-  gulp.src('src/index.html')
-  .pipe(inject(gulp.src(appStream), {relative: false, ignorePath:'dist'}))
-  .pipe(gulp.dest('dist'));
-*/
+gulp.task('webpack', function() {
+  return gulp.src('./src/client.js')
+    .pipe(webpack({
+      resolve: {
+        extensions: ['', '.js', '.jsx']
+      },
+      output: {
+        filename: 'bundle.js'
+      },
+      module: {
+        loaders: [{
+          test: /\.css$/,
+          loader: 'style!css'
+        }, {
+          test: /\.jsx$/,
+          loader: 'jsx-loader'
+        }]
+      },
+      plugins: [
+        // new webpack.optimize.UglifyJsPlugin()
+      ]
+    }))
+    .pipe(gulp.dest('build/js'));
+});
+
+gulp.task('lint', function() {
+  gulp.src('src/**/*.js')
+    .pipe(jshint())
 })
 
-gulp.task('copy', function(){
-  gulp.src('src/index.html')
-  .pipe(gulp.dest('dist'));
+gulp.task('nodemon-lint', function() {
+  nodemon({
+      script: 'src/server.js',
+      ext: 'js jsx',
+      ignore: ['build/']
+    })
+    .on('change', ['lint'])
+    .on('restart', function() {
+      console.log('server restarted!')
+    })
+})
+
+gulp.task('assets', function() {
   //css files
-  gulp.src('src/css/**/*.css')
-  .pipe(concat('bundle.css'))
-  .pipe(gulp.dest('dist/css'));
+  gulp.src('src/assets/css/**/*.css')
+    .pipe(concat('bundle.css'))
+    .pipe(gulp.dest('build/css'));
   //images
-  gulp.src('src/img/**/*.*')
-  .pipe(gulp.dest('dist/img'));
+  gulp.src('src/assets/img/**/*.*')
+    .pipe(gulp.dest('build/img'));
 })
 
-gulp.task('compress', function() {
-  gulp.src('src/js/main.js')
-  .pipe(browserify({transform: ['reactify', 'envify']}))
-  .pipe(concat('bundle.js'))
-  .pipe(gulp.dest('dist/js'))
-  .pipe(filesize())
-  .pipe(uglify())
-  .pipe(rename('bundle.min.js'))
-  .pipe(filesize())
-  .pipe(gulp.dest('dist/js'))
-  .on('error', gutil.log)
+gulp.task("webpack-watch", ["assets", "lint", "webpack"], function() {
+  gulp.watch(["src/**/*"], ["assets", "lint", "webpack"]);
 });
 
-gulp.task('clean', function () {
-  return gulp.src('dist/js/*.js', {read: true})
-    .pipe(clean())
-    .pipe(gulp.dest('dist/js'));
+gulp.task('default', ["assets", "lint", "webpack"], function() {
+
 });
-
-
-gulp.task('default',['browserify', 'copy']);
-gulp.task('build',['compress']);
-gulp.task('watch', function(){
-  gulp.watch('src/**/*.*', ['default']);
-})
