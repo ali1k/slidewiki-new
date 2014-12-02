@@ -1,0 +1,18 @@
+{
+  "name": "slidewiki-new",
+  "version": "0.1.0",
+  "authors": [
+    "Ali Khalili <hyperir@gmail.com>"
+  ],
+  "description": "presentations that speak",
+  "main": "server.js",
+  "keywords": [
+    "slidewiki"
+  ],
+  "license": "MIT",
+  "homepage": "http://slidewiki.org",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.1"
+  }
+}

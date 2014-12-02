@@ -1,0 +1,43 @@
+{
+  "name": "slidewiki",
+  "version": "0.1.0",
+  "description": "Presentations that speak",
+  "homepage": "http://slidewiki.org",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ali1k/slidewiki-new.git"
+  },
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "gulp nodemon-lint & gulp webpack-watch",
+    "build": "gulp",
+    "start": "node src/server.js"
+  },
+  "author": "Ali Khalili <hyperir@gmail.com> (http://ali1k.com/)",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^0.9.0",
+    "body-parser": "^1.6.4",
+    "debug": "^2.0.0",
+    "express": "^4.3.2",
+    "express-state": "^1.2.0",
+    "flux-router-component": "^0.4.x",
+    "fluxible-app": "^0.1.0",
+    "fluxible-plugin-fetchr": "^0.1.0",
+    "fluxible-plugin-routr": "^0.2.0",
+    "node-jsx": "^0.12.0",
+    "react": "^0.12.0",
+    "serve-favicon": "^2.1.6"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "gulp-concat": "^2.4.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-nodemon": "^1.0.4",
+    "gulp-webpack": "^1.1.0",
+    "jsx-loader": "^0.12.0",
+    "nodemon": "^1.2.1",
+    "webpack": "^1.4.12",
+    "webpack-dev-server": "^1.6.5"
+  }
+}
