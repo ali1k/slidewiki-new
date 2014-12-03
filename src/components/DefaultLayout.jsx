@@ -21,7 +21,7 @@ var DefaultLayout = React.createClass({
                 <meta charSet="utf-8" />
                 <title>{this.props.title}</title>
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
-                <link href="/public/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+                <link href="/public/bower_components/semantic-ui/dist/semantic.min.css" rel="stylesheet" type="text/css" />
                 <link href="/public/css/bundle.css" rel="stylesheet" type="text/css" />
             </head>
             <body>

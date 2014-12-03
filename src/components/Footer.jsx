@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react');
 
-var About = React.createClass({
+var Footer = React.createClass({
     getInitialState: function () {
         return {};
     },
@@ -10,8 +10,8 @@ var About = React.createClass({
           <div className="ui page grid">
             <div className="row">
               <div className="column">
-                <h2 className="ui header">About</h2>
-                <p>Here comes the description of the SlideWiki.</p>
+                <div className="ui divider"></div>
+                <span>&copy; SlideWiki 2014</span>
               </div>
             </div>
           </div>
@@ -19,4 +19,4 @@ var About = React.createClass({
     }
 });
 
-module.exports = About;
+module.exports = Footer;

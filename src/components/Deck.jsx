@@ -11,17 +11,27 @@ var Deck = React.createClass({
     },
     render: function() {
         return (
-          <div className="container">
+          <div className="ui grid page">
             <div className="row">
-              <div className="col-md-12"> <DeckHeader /> </div>
+              <div className="column">
+                <h2 className="ui header"><DeckHeader /></h2>
+              </div>
             </div>
+
+            <div className="ui hidden divider"></div>
+
             <div className="row">
-              <div className="col-md-3"> <TreePanel context={this.props.context} /> </div>
-              <div className="col-md-6"> <ContentPanel context={this.props.context}/> </div>
-              <div className="col-md-3"> <ContributorsPanel context={this.props.context} /> </div>
+              <div className="four wide column">
+                <TreePanel context={this.props.context} />
+              </div>
+              <div className="nine wide column">
+                <ContentPanel context={this.props.context}/>
+              </div>
+              <div className="three wide column">
+                <ContributorsPanel context={this.props.context} />
+              </div>
             </div>
           </div>
-
         );
     }
 });

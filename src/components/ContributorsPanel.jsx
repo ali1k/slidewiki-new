@@ -27,8 +27,8 @@ var ContributorsPanel = React.createClass({
     render: function() {
         return (
           <div className="sw-contributors-panel">
-          <h2> ContributorsPanel </h2>
-          <ContributorsView contributors={this.state.contributors}/>
+            <h2 className="ui header">ContributorsPanel</h2>
+            <ContributorsView contributors={this.state.contributors}/>
           </div>
         );
     }

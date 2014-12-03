@@ -1,0 +1,17 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin-bottom: 60px;
+}
+
+.hidden{
+  opacity: 0;
+}
+
+#main_navbar{
+  margin-bottom: 0px
+}

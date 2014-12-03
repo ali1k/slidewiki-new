@@ -37,9 +37,9 @@ var ContentPanel = React.createClass({
             break;
         }
         return (
-          <div >
-          <h2> ContentPanel </h2>
-          {content}
+          <div className='sw-content-panel'>
+            <h2 className="ui header">ContentPanel</h2>
+            {content}
           </div>
         );
     }

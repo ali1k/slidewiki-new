@@ -1,3 +1,3 @@
-- inline css features in Bootstrap
-    e.g. toggling nav menues when the size of windows changed
+- only include the css for the used semantic-ui components
+- address responsivess of semanitc-ui
 e- minify/uglify an din general improve the build perfomance

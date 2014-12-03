@@ -14,37 +14,23 @@ var Nav = React.createClass({
             links = this.props.links || this.state.links,
             context = this.props.context,
             linkHTML = Object.keys(links).map(function (name) {
-                var className = '',
+                var className = 'item',
                     link = links[name];
                 if(link.group=='topnav'){
                   if (selected === name) {
-                    className = 'active';
+                    className += ' active';
                   }
                   return (
-                    <li className={className} key={link.path}>
+                    <div className={className} key={link.path}>
                       <NavLink routeName={link.page} context={context}>{link.label}</NavLink>
-                    </li>
+                    </div>
                   );
                 }
             });
         return (
-          <nav className="navbar navbar-default navbar-static-top" role="navigation">
-            <div className="container">
-              <div className="navbar-header">
-                <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span className="sr-only">Toggle navigation</span>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-                </button>
-                <a className="navbar-brand" routeName='home' context={context}>SlideWiki</a>
-              </div>
-              <div id="navbar" className="navbar-collapse collapse">
-                <ul className="nav navbar-nav">
-                  {linkHTML}
-                </ul>
-              </div>
-            </div>
+          <nav id="main_navbar" className="ui menu inverted navbar page grid">
+            <a href="/" className="brand item">SlideWiki</a>
+            {linkHTML}
           </nav>
         );
     }

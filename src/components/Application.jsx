@@ -1,6 +1,7 @@
 'use strict';
 var React = require('react');
 var Nav = require('./Nav.jsx');
+var Footer = require('./Footer.jsx');
 var Home = require('./Home.jsx');
 var About = require('./About.jsx');
 var Deck = require('./Deck.jsx');
@@ -40,7 +41,8 @@ var Application = React.createClass({
         return (
             <div>
                   <Nav selected={this.state.route} links={this.state.routes} context={this.props.context} />
-                  {output}
+                      {output}
+                  <Footer />
             </div>
         );
     }
