@@ -27,8 +27,14 @@ var ContributorsPanel = React.createClass({
     render: function() {
         return (
           <div className="sw-contributors-panel">
-            <h2 className="ui header">ContributorsPanel</h2>
-            <ContributorsView contributors={this.state.contributors}/>
+            <div className="panel">
+              <div className="ui secondary top attached segment">
+                ContributorsPanel
+              </div>
+              <div className="ui bottom attached segment">
+              <ContributorsView contributors={this.state.contributors}/>
+              </div>
+            </div>
           </div>
         );
     }

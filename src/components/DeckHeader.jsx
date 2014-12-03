@@ -7,7 +7,7 @@ var DeckHeader = React.createClass({
     },
     render: function() {
         return (
-          <div className="sw-deck-header">
+          <div className="ui menu sw-deck-header">
           <h2> DeckHeader </h2>
           </div>
         );

@@ -30,16 +30,22 @@ var ContentPanel = React.createClass({
         var content='';
         switch(this.state.content_type){
           case 'deck':
-            content=<DeckPanel id={this.state.content_type} context={this.props.context} />;
+            content=<DeckPanel id={this.state.content_id} context={this.props.context} />;
             break;
           case 'slide':
             content=<SlidePanel id={this.state.content_id} context={this.props.context} />;
             break;
         }
         return (
-          <div className='sw-content-panel'>
-            <h2 className="ui header">ContentPanel</h2>
-            {content}
+          <div className="sw-content-panel">
+            <div className="panel">
+              <div className="ui secondary top attached segment">
+              ContentPanel
+              </div>
+              <div className="ui bottom attached segment">
+                {content}
+              </div>
+            </div>
           </div>
         );
     }

@@ -27,8 +27,14 @@ var SlidePanel = React.createClass({
     render: function() {
         return (
           <div className="sw-slide-panel">
-            <h3> SlidePanel {this.props.id} </h3>
-            <SlideView id={this.props.id} content={this.state.content} context={this.props.context} />
+            <div className="panel">
+              <div className="ui secondary top blue attached segment">
+              SlidePanel {this.props.id}
+              </div>
+              <div className="ui bottom attached segment">
+                <SlideView id={this.props.id} content={this.state.content} context={this.props.context} />
+              </div>
+            </div>
           </div>
         );
     }

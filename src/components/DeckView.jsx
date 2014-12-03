@@ -7,7 +7,7 @@ var DeckView = React.createClass({
     },
     render: function() {
         return (
-          <div className="sw-deck">
+          <div className="sw-deck ui segment secondary">
           <h3> Deck {this.props.id} </h3>
           <h4> {this.props.content.body} </h4>
           </div>

@@ -28,8 +28,14 @@ var TreePanel = React.createClass({
     render: function() {
         return (
           <div className="sw-tree-panel">
-          <h2 className="ui header">TreePanel</h2>
-          <TreeView nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+            <div className="panel">
+              <div className="ui secondary top attached segment">
+              TreePanel
+              </div>
+              <div className="ui bottom attached segment">
+                <TreeView nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+              </div>
+            </div>
           </div>
         );
     }

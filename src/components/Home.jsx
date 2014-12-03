@@ -14,7 +14,7 @@ var Home = React.createClass({
                   <div className="ui huge message page grid">
                     <h1 className="ui huge header">SlideWiki</h1>
                     <p>SlideWiki aims to revolutionize the way how educational material is authored, shared and used.</p>
-                    <a className="ui blue button" href="/deck/1">Try a Sample Deck &raquo;</a>
+                    <a className="ui blue button" href="">Learn more &raquo;</a>
                   </div>
                 </div>
               </div>
@@ -28,7 +28,7 @@ var Home = React.createClass({
                 </div>
                 <div className="column">
                   <h2 className="ui header">Presentations</h2>
-                  <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+                  <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.<a className="ui button tiny" href="/deck/1">Try a Sample Deck &raquo;</a></p>
                 </div>
                 <div className="column">
                   <h2 className="ui header">User Activities</h2>

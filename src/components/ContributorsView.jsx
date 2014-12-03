@@ -13,8 +13,14 @@ var ContributorsView = React.createClass({
 
         return (
           <div className="sw-contributors">
-          <h3> Contributors </h3>
-          <h4> {list} </h4>
+            <div className="panel">
+              <div className="ui secondary top red attached segment">
+                Contributors
+              </div>
+              <div className="ui bottom attached segment">
+                {list}
+              </div>
+            </div>
           </div>
         );
     }

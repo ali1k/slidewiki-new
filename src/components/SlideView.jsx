@@ -7,7 +7,7 @@ var SlideView = React.createClass({
     },
     render: function() {
         return (
-          <div className="sw-slide">
+          <div className="sw-slide ui segment secondary">
           <h3> Slide {this.props.id} </h3>
           <h4> {this.props.content.body} </h4>
           </div>
