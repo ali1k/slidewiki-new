@@ -2,15 +2,13 @@
 var React = require('react');
 var StoreMixin = require('fluxible-app').StoreMixin;
 //stores
-var DeckStore = require('../stores/DeckStore');
-//SlideWiki components
-var DeckView=require('./DeckView.jsx');
+var DeckSliderStore = require('../stores/DeckSliderStore');
 
-var DeckPanel = React.createClass({
+var DeckSlider = React.createClass({
     mixins: [StoreMixin],
     statics: {
       storeListeners: {
-        _onChange: [DeckStore]
+        _onChange: [DeckSliderStore]
       }
     },
     getInitialState: function () {
@@ -18,21 +16,23 @@ var DeckPanel = React.createClass({
     },
     getStateFromStores: function () {
       return {
-        content: this.getStore(DeckStore).getContent(),
+        slides: this.getStore(DeckSliderStore).getSlides(),
       };
     },
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
     render: function() {
+        var slidesnumber=this.state.slides.length
         return (
-          <div className="sw-deck-panel">
+          <div className="sw-deckslider-panel">
             <div className="panel">
-              <div className="ui secondary top yellow attached segment">
-                DeckPanel {this.props.id}
+              <div className="ui secondary top green attached segment">
+                DeckSliderPanel
               </div>
               <div className="ui bottom attached segment">
-                <DeckView id={this.props.id} content={this.state.content} context={this.props.context} />
+                <h4> {this.props.cover.description} </h4>
+                Slides Number: {slidesnumber}
               </div>
             </div>
           </div>
@@ -40,4 +40,4 @@ var DeckPanel = React.createClass({
     }
 });
 
-module.exports = DeckPanel;
+module.exports = DeckSlider;

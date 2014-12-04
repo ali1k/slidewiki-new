@@ -6,8 +6,11 @@ var prepareContentType = require('../actions/prepareContentType');
 var showDeck = require('../actions/showDeck');
 var showSlide = require('../actions/showSlide');
 var updateTreeNodeSelector = require('../actions/updateTreeNodeSelector');
+var fillDeckSlider = require('../actions/fillDeckSlider');
 //use TreeStore to prevent requesting for deck tree on every request if it is already loaded
 var TreeStore = require('../stores/TreeStore');
+//use DeckSliderStore to check if we need to initialize it or not
+var DeckSliderStore = require('../stores/DeckSliderStore');
 
 //payload ={deck:? , selector: {type:? , id: ?}}
 module.exports = function(context, payload, done) {
@@ -57,6 +60,21 @@ module.exports = function(context, payload, done) {
         context.executeAction(showContributors, {
           selector: payload.selector
         }, callback);
+      },
+      ////////////////////////////////////
+      //load slides for slider
+      function(callback) {
+        //only load slides lists once
+        var sliderDeckID=context.getStore(DeckSliderStore).getDeckID();
+        //check if we have selected a slide and if we still do not have slide list
+        //note: for decks, slider will be loaded after showing the deck with the selected deck id
+        if (payload.selector.type=='slide' && sliderDeckID != payload.deck) {
+          context.executeAction(fillDeckSlider, {
+            selector: {type: 'deck', id: payload.deck}
+          }, callback);
+        }else{
+          callback(null);
+        }
       },
       ////////////////////////////////////
     ],

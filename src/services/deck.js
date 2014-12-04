@@ -15,41 +15,41 @@ module.exports = {
         id: 1,
         type: 'deck',
         children: [{
-          title: 'child 1',
+          title: 'slide 11',
           id: 11,
           type: 'slide'
         }, {
-          title: 'child 2',
+          title: 'slide 12',
           id: 12,
           type: 'slide'
         }, {
-          title: 'child 3',
+          title: 'deck 13',
           id: 13,
           type: 'deck',
           children: [{
-            title: 'child 31',
+            title: 'slide 131',
             id: 131,
             type: 'slide'
           }, {
-            title: 'child 32',
+            title: 'deck 132',
             id: 132,
             type: 'deck',
             children: [{
-              title: 'child 321',
+              title: 'slide 1321',
               id: 1321,
               type: 'slide'
             }, {
-              title: 'child 322',
+              title: 'slide 1322',
               id: 1322,
               type: 'slide'
             }, ]
           }, {
-            title: 'child 33',
+            title: 'slide 133',
             id: 133,
             type: 'slide'
           }]
         }, {
-          title: 'child 4',
+          title: 'slide 14',
           id: 14,
           type: 'slide'
         }]
@@ -78,9 +78,9 @@ module.exports = {
         id: 3
       }]
 
-      console.log('retrieving contributors...');
+      //console.log('retrieving contributors...');
       setTimeout(function() {
-        console.log('contributors retrieved!');
+        //console.log('contributors retrieved!');
 
         callback(null, {
           contributors: contributors
@@ -94,18 +94,44 @@ module.exports = {
       } else {
         var selector = JSON.parse(params.selector);
       }
-      var text = 'Here comes content for item type ' + selector.type +
-        ' and ID ' + selector.id;
-      var res = {
-        id: selector.id,
-        type: selector.type,
-        content: {
-          body: text
-        }
+      //separate handler for slides & decks
+      switch(selector.type){
+        case 'deck':
+          var res = {
+            id: selector.id,
+            type: selector.type,
+            content: {
+              title: 'deck '+ selector.id,
+              description: 'description for deck '+ selector.id
+            },
+            slides:[
+              {id: 11},
+              {id: 12},
+              {id: 131},
+              {id: 1321},
+              {id: 1322},
+              {id: 133},
+              {id: 14}
+            ]
+          }
+        break;
+        case 'slide':
+          var body = 'Here comes content for item type ' + selector.type +
+          ' and ID ' + selector.id;
+          var res = {
+            id: selector.id,
+            type: selector.type,
+            content: {
+              title: 'slide '+ selector.id,
+              body: body
+            }
+          }
+        break;
       }
-      console.log('retrieving content...');
+
+      //console.log('retrieving content...');
       setTimeout(function() {
-        console.log('content retrieved!');
+        //console.log('content retrieved!');
 
         callback(null, res);
       }, randomResponseTime(10, 500));

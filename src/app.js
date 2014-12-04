@@ -22,6 +22,7 @@ app.registerStore(require('./stores/ContributorsStore'));
 app.registerStore(require('./stores/ContentStore'));
 app.registerStore(require('./stores/DeckStore'));
 app.registerStore(require('./stores/SlideStore'));
+app.registerStore(require('./stores/DeckSliderStore'));
 
 
 module.exports = app;

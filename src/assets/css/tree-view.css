@@ -1,10 +1,11 @@
 .sw-tree-view{
-  
+
 }
-.sw-tree-view A:link {text-decoration: none}
-.sw-tree-view A:visited {text-decoration: none}
-.sw-tree-view A:active {text-decoration: none}
-.sw-tree-view A:hover {text-decoration: none}
+
+.sw-tree-view a:link {text-decoration: none}
+.sw-tree-view a:visited {text-decoration: none}
+.sw-tree-view a:active {text-decoration: none}
+.sw-tree-view a:hover {text-decoration: none}
 
 .sw-tree-view-selected {
   color:red;

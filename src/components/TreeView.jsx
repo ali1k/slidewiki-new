@@ -32,19 +32,22 @@ var TreeView = React.createClass({
                </li>
       });
     }
-
+    var path=this._getPath();
     return (
       <div className="sw-tree-view">
-      <span ref="treeNode" context={this.props.context} className={nodeClasses} onClick={this._onClick} onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}>
+      <a ref="treeNode" href={path} context={this.props.context} className={nodeClasses} onClick={this._onClick} onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}>
         {this.props.nodes.title}
-      </span>
+      </a>
       {childNumber? <ul>{childNodes}</ul>:''}
       </div>
     );
   },
-  _onClick: function() {
-    var path='/deck/'+this.props.rootID+'/'+this.props.nodes.type + '/' + this.props.nodes.id;
-    this.props.context.executeAction(navigateAction, {path: path});
+  _onClick: function(e) {
+    this.props.context.executeAction(navigateAction, {path: this._getPath()});
+    e.preventDefault();
+  },
+  _getPath: function(e) {
+      return '/deck/'+this.props.rootID+'/'+this.props.nodes.type + '/' + this.props.nodes.id;
   },
   //ToDo: add states for onMouseOver and onMouseOut events if needed
   _onMouseOver: function() {
