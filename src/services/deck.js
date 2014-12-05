@@ -97,27 +97,42 @@ module.exports = {
       //separate handler for slides & decks
       switch(selector.type){
         case 'deck':
+          var slides=[];
+          if(selector.id==1){
+            slides=[
+            {id: 11},
+            {id: 12},
+            {id: 131},
+            {id: 1321},
+            {id: 1322},
+            {id: 133},
+            {id: 14}
+            ]
+          }else if(selector.id==13){
+            slides=[
+            {id: 131},
+            {id: 1321},
+            {id: 1322},
+            {id: 133}
+            ]
+          }else if(selector.id==132){
+            slides=[
+            {id: 1321},
+            {id: 1322}
+            ]
+          }
           var res = {
             id: selector.id,
             type: selector.type,
             content: {
               title: 'deck '+ selector.id,
-              description: 'description for deck '+ selector.id
+              description: 'description for <b>deck</b> '+ selector.id
             },
-            slides:[
-              {id: 11},
-              {id: 12},
-              {id: 131},
-              {id: 1321},
-              {id: 1322},
-              {id: 133},
-              {id: 14}
-            ]
+            slides:slides
           }
         break;
         case 'slide':
-          var body = 'Here comes content for item type ' + selector.type +
-          ' and ID ' + selector.id;
+          var body = 'Here comes content for <b>slide</b> ' + selector.id;
           var res = {
             id: selector.id,
             type: selector.type,

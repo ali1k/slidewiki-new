@@ -48,21 +48,21 @@ var SlideView = React.createClass({
         var prevPath=this._getPrevPath();
         prevElement=<a onClick={this._onPrevClick} ref="prevButton" href={prevPath} path={prevPath} title="previous"> <i className="chevron big circle left icon green"></i> </a>;
       }else{
-        prevElement="";
+        prevElement=<i className="chevron big circle left icon green disabled"></i>;
       }
       var nextElement="";
       if(this.state.next){
         var nextPath=this._getNextPath();
         nextElement=<a onClick={this._onNextClick} ref="nextButton" href={nextPath} title="next"> <i className="chevron big circle right icon green"></i> </a>;
       }else{
-        nextElement="";
+        nextElement=<i className="chevron big circle right icon green disabled"></i>;
       }
 
         return (
           <div className="sw-slide">
             <div className="ui segment">
               <h3> Slide {this.props.id} </h3>
-              <h4> {this.props.content.body} </h4>
+              <h4 dangerouslySetInnerHTML={{__html: this.props.content.body}} />
               {prevElement}
               {nextElement}
             </div>

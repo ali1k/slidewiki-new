@@ -30,9 +30,18 @@ var DeckSlider = React.createClass({
               <div className="ui secondary top green attached segment">
                 DeckSliderPanel
               </div>
-              <div className="ui bottom attached segment">
-                <h4> {this.props.cover.description} </h4>
-                Slides Number: {slidesnumber}
+              <div className="ui attached segment">
+              <h4 dangerouslySetInnerHTML={{__html: this.props.cover.description}} />
+              </div>
+              <div className="ui secondary bottom attached segment center aligned">
+                <div className="bottom attached compact ui icon buttons">
+                  <div className="ui button"><i className="icon step backward"></i></div>
+                  <div className="ui button"><i className="icon caret left"></i></div>
+                  <div className="ui blue button">0/{slidesnumber}</div>
+                  <div className="ui button"><i className="icon caret right"></i></div>
+                  <div className="ui button"><i className="icon step forward"></i></div>
+                  <div className="ui teal button"><i className="icon maximize"></i></div>
+                </div>
               </div>
             </div>
           </div>
