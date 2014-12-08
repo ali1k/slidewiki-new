@@ -87,6 +87,34 @@ module.exports = {
         });
       }, randomResponseTime(10, 500));
       /////////////////////////////////////////////
+    } else if (resource === 'deck.slideslist') {
+      var deck_id = params.deck;
+      //handle Ajax requests return object
+      if (typeof(params.selector) === 'object') {
+        var selector = params.selector;
+      } else {
+        var selector = JSON.parse(params.selector);
+      }
+        var slides=[
+        {id: 11},
+        {id: 12},
+        {id: 131},
+        {id: 1321},
+        {id: 1322},
+        {id: 133},
+        {id: 14}
+        ]
+        var res = {
+          deckID: deck_id,
+          currentSlideID: selector.id,
+          slides: slides
+        }
+        setTimeout(function() {
+          //console.log('content retrieved!');
+
+          callback(null, res);
+        }, randomResponseTime(10, 500));
+        /////////////////////////////////////////////
     } else if (resource === 'deck.content') {
       //handle Ajax requests return object
       if (typeof(params.selector) === 'object') {
@@ -97,38 +125,13 @@ module.exports = {
       //separate handler for slides & decks
       switch(selector.type){
         case 'deck':
-          var slides=[];
-          if(selector.id==1){
-            slides=[
-            {id: 11},
-            {id: 12},
-            {id: 131},
-            {id: 1321},
-            {id: 1322},
-            {id: 133},
-            {id: 14}
-            ]
-          }else if(selector.id==13){
-            slides=[
-            {id: 131},
-            {id: 1321},
-            {id: 1322},
-            {id: 133}
-            ]
-          }else if(selector.id==132){
-            slides=[
-            {id: 1321},
-            {id: 1322}
-            ]
-          }
           var res = {
             id: selector.id,
             type: selector.type,
             content: {
               title: 'deck '+ selector.id,
               description: 'description for <b>deck</b> '+ selector.id
-            },
-            slides:slides
+            }
           }
         break;
         case 'slide':

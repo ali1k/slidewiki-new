@@ -5,8 +5,10 @@ var showContributors = require('../actions/showContributors');
 var prepareContentType = require('../actions/prepareContentType');
 var showDeck = require('../actions/showDeck');
 var showSlide = require('../actions/showSlide');
+var hideSliderControl = require('../actions/hideSliderControl');
 var updateTreeNodeSelector = require('../actions/updateTreeNodeSelector');
-var fillDeckSlider = require('../actions/fillDeckSlider');
+var updateSliderControl = require('../actions/updateSliderControl');
+var showSliderControl = require('../actions/showSliderControl');
 //use TreeStore to prevent requesting for deck tree on every request if it is already loaded
 var TreeStore = require('../stores/TreeStore');
 //use DeckSliderStore to check if we need to initialize it or not
@@ -62,20 +64,28 @@ module.exports = function(context, payload, done) {
         }, callback);
       },
       ////////////////////////////////////
+      //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
       //load slides for slider
       function(callback) {
-        //only load slides lists once
-        var sliderDeckID=context.getStore(DeckSliderStore).getDeckID();
-        //check if we have selected a slide and if we still do not have slide list
-        //note: for decks, slider will be loaded after showing the deck with the selected deck id
-        if (payload.selector.type=='slide' && sliderDeckID != payload.deck) {
-          context.executeAction(fillDeckSlider, {
-            selector: {type: 'deck', id: payload.deck}
-          }, callback);
+        if (payload.selector.type=='slide'){
+          //show slider control
+          if (context.getStore(DeckSliderStore).isAlreadyComplete()) {
+            //there is no need to load slides list
+            context.executeAction(updateSliderControl, {
+              selector: {type: 'slide', id:payload.selector.id}
+            },callback);
+          } else {
+            //reload slides list
+            context.executeAction(showSliderControl, {deck: payload.deck,
+              selector: {type: 'slide', id:payload.selector.id}
+            },callback);
+          }
         }else{
-          callback(null);
+          //hide slider control
+          context.executeAction(hideSliderControl, {}, callback);
         }
-      },
+
+    },
       ////////////////////////////////////
     ],
     // optional callback

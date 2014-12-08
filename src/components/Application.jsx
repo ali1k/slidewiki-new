@@ -34,7 +34,7 @@ var Application = React.createClass({
           output=<About/>
           break;
         case 'deck':
-          output=<Deck context={this.props.context}/>
+          output=<Deck context={this.props.context} deckParams={this.state.route.params} />
           break;
       }
       //render content

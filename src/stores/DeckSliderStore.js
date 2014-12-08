@@ -4,36 +4,48 @@ var createStore = require('fluxible-app/utils/createStore');
 module.exports = createStore({
   storeName: 'DeckSliderStore',
   handlers: {
-    'FILL_DECK_SLIDER_SUCCESS': '_fillDeckSliderSuccess',
-    'SHOW_DECK_SUCCESS': '_showDeckSuccess',
-    'SHOW_SLIDE_SUCCESS': '_showSlideSuccess'
+    'SHOW_SLIDER_CONTROL_SUCCESS': '_showSliderControlSuccess',
+    'SHOW_SLIDER_CONTROL_START': '_showSliderControlStart',
+    'SHOW_SLIDER_CONTROL_START_FAILURE': '_showSliderControlFailure',
+    'UPDATE_SLIDER_CONTROL':'_updateSliderControl',
+    'HIDE_SLIDER_CONTROL':'_hideSliderControl'
   },
   initialize: function () {
     this.deckID=0;
+    //a sequence of slides
     this.slides=[];
-    this.currentSlide={index:0, id:0}
+    this.currentSlide=0;
+    this.visibility=1;
   },
-  _fillDeckSliderSuccess: function (res) {
-    this.deckID=res.id;
-    this.slides=res.slides;
+  _hideSliderControl: function () {
+    this.visibility=0;
+    this.emitChange();
   },
-  _showDeckSuccess: function (res) {
-    this.deckID=res.id;
-    this.slides=res.slides;
-    var self = this;
-    this.dispatcher.waitFor('DeckStore', function () {
-      self.emitChange();
-    });
+  _getSlideIndex: function(id){
+    var index = this.slides.map(function(x) {return parseInt(x.id); }).indexOf(id);
+    return index;
   },
-  _showSlideSuccess: function (res) {
-    //we need to convert from string to int if needed
-    var index = this.slides.map(function(x) {return parseInt(x.id); }).indexOf(parseInt(res.id));
-    //we need index to start from 1
-    this.currentSlide={index:index+1, id:res.id}
-    var self = this;
-    this.dispatcher.waitFor('SlideStore', function () {
-      self.emitChange();
-    });
+  _showSliderControlSuccess: function (res) {
+    this.visibility=1;
+    this.deckID= parseInt(res.deckID);
+    this.slides= res.slides;
+    var currentSlideID= parseInt(res.currentSlideID);
+    var index = this._getSlideIndex(currentSlideID);
+    this.currentSlide={index:index+1, id:currentSlideID};
+    this.emitChange();
+  },
+  _updateSliderControl: function (res) {
+    this.visibility=1;
+    var currentSlideID= parseInt(res.currentSlideID);
+    var index = this._getSlideIndex(currentSlideID);
+    this.currentSlide={index:index+1, id:currentSlideID};
+    this.emitChange();
+  },
+  _showSliderControlStart: function (res) {
+
+  },
+  _showSliderControlFailure: function (res) {
+
   },
   isLastSlide: function (index) {
     return (index==this.slides.length);
@@ -42,24 +54,66 @@ module.exports = createStore({
     return (index==1);
   },
   getNextSlide: function () {
-    if(this.isLastSlide(this.currentSlide.index)){
+    //check if slides are loaded
+    if(!this.slides.length || !this.currentSlide){
       return 0;
     }else{
-      return this.slides[this.currentSlide.index];
+      if(this.isLastSlide(this.currentSlide.index)){
+        return 0;
+      }else{
+        return {index:this.currentSlide.index+1, id: this.slides[this.currentSlide.index].id};
+      }
     }
   },
   getPreviousSlide: function () {
-    if(this.isFirstSlide(this.currentSlide.index)){
+    //check if slides are loaded
+    if(!this.slides.length || !this.currentSlide || this.isFirstSlide(this.currentSlide.index)){
       return 0;
     }else{
-      return this.slides[this.currentSlide.index-2];
+      var slide=this.slides[this.currentSlide.index-2];
+      return {index:this.currentSlide.index-1, id: slide.id};
+    }
+  },
+  getCurrentSlide: function () {
+      return this.currentSlide;
+  },
+  getFirstSlide: function () {
+    if(!this.slides.length){
+      return 0;
+    }else{
+      return {index:1, id: this.slides[0].id};
+    }
+  },
+  getLastSlide: function () {
+    if(!this.slides.length){
+      return 0;
+    }else{
+      return {index:this.slides.length, id: this.slides[this.slides.length-1].id};
     }
   },
   getSlides: function () {
     return this.slides;
   },
+  getSlidesNumber: function () {
+    return this.slides.length;
+  },
   getDeckID: function () {
     return this.deckID;
+  },
+  //check to hide or show component
+  isVisible: function () {
+    return this.visibility;
+  },
+  //this method checks if we already received the slide list
+  //it is used for preventing rendering/API calls on each request
+  //todo: we can change this on update actions to reload slide list
+  isAlreadyComplete: function() {
+    if (!this.slides.length) {
+      //empty
+      return false;
+    } else {
+      return true;
+    }
   },
   dehydrate: function () {
     return {
