@@ -1,6 +1,7 @@
 // Gulpfile.js
 var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
+  uglify = require('gulp-uglify'),
   jshint = require('gulp-jshint'),
   webpack = require('gulp-webpack'),
   webpackDevServer = require("webpack-dev-server"),
@@ -36,6 +37,12 @@ gulp.task('lint', function() {
   gulp.src('src/**/*.js')
     .pipe(jshint())
 })
+
+gulp.task('compress', function() {
+  gulp.src('build/js/*.js')
+  .pipe(uglify())
+  .pipe(gulp.dest('build/js/'))
+});
 
 gulp.task('nodemon-lint', function() {
   nodemon({

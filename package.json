@@ -10,7 +10,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "gulp nodemon-lint & gulp webpack-watch",
-    "build": "gulp",
+    "build": "gulp && gulp compress",
     "start": "node src/server.js"
   },
   "author": "Ali Khalili <hyperir@gmail.com> (http://ali1k.com/)",
@@ -34,6 +34,7 @@
     "gulp-concat": "^2.4.2",
     "gulp-jshint": "^1.9.0",
     "gulp-nodemon": "^1.0.4",
+    "gulp-uglify": "^1.0.2",
     "gulp-webpack": "^1.1.0",
     "jsx-loader": "^0.12.0",
     "nodemon": "^1.2.1",
