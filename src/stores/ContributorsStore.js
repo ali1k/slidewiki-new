@@ -13,10 +13,10 @@ module.exports = createStore({
     this.contributors=[];
   },
   _showContributorsStart: function (res) {
-    console.log('Start loading contributors...');
+    //console.log('Start loading contributors...');
   },
   _showContributorsFailure: function (res) {
-    console.log('Error in loading contributors!');
+    //console.log('Error in loading contributors!');
   },
   _showContributorsSuccess: function (res) {
     this.contributors=res.contributors;

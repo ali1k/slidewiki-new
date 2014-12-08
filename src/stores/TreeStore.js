@@ -17,10 +17,10 @@ module.exports = createStore({
     this.selector = {};
   },
   _showDeckTreeStart: function(res) {
-    console.log('Start loading the deck tree...');
+    //console.log('Start loading the deck tree...');
   },
   _showDeckTreeFailure: function(res) {
-    console.log('Error in loading deck tree!');
+    //console.log('Error in loading deck tree!');
   },
   _showDeckTreeSuccess: function(res) {
     this.nodes = res.nodes;

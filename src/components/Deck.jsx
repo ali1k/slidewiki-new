@@ -17,7 +17,6 @@ var Deck = React.createClass({
       if(deckParams.stype=='slide'){
         slider=<SliderControl context={this.props.context} />
       }
-      
         return (
           <div className="ui vertically padded grid page">
             <div className="row">

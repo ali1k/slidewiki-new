@@ -14,10 +14,10 @@ module.exports = createStore({
     this.content={};
   },
   _showSlideStart: function (res) {
-    console.log('Start loading the deck content...');
+    //console.log('Start loading the deck content...');
   },
   _showSlideFailure: function (res) {
-    console.log('Error loading the deck content!');
+    //console.log('Error loading the deck content!');
   },
   _showSlideSuccess: function (res) {
     this.id=res.id;

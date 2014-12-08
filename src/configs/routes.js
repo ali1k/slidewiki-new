@@ -28,7 +28,7 @@ module.exports = {
           }else{
             selector={type: 'deck', id: payload.params.id}
           }
-          console.log(selector);
+          //console.log(selector);
           context.executeAction(initializeDeckPage, {deck: payload.params.id, selector: selector}, done);
           //other actions to load deck content and contributors, etc.
           //here
