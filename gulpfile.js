@@ -2,6 +2,7 @@
 var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
   uglify = require('gulp-uglify'),
+  minifyCSS = require('gulp-minify-css'),
   jshint = require('gulp-jshint'),
   webpack = require('gulp-webpack'),
   webpackDevServer = require("webpack-dev-server"),
@@ -38,10 +39,18 @@ gulp.task('lint', function() {
     .pipe(jshint())
 })
 
-gulp.task('compress', function() {
+gulp.task('minify-css', function() {
+  gulp.src('build/css/*.css')
+    .pipe(minifyCSS({
+      keepBreaks: true
+    }))
+    .pipe(gulp.dest('build/css/'))
+});
+
+gulp.task('compress', ["minify-css"], function() {
   gulp.src('build/js/*.js')
-  .pipe(uglify())
-  .pipe(gulp.dest('build/js/'))
+    .pipe(uglify())
+    .pipe(gulp.dest('build/js/'))
 });
 
 gulp.task('nodemon-lint', function() {
