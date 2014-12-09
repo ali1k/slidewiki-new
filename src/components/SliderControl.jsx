@@ -112,7 +112,7 @@ var SliderControl = React.createClass({
                 <div className="ui blue button">{this.state.current.index}/{this.state.slidesnumber}</div>
                 {nextElement}
                 {lastElement}
-                <div className="ui teal button" onClick={this._onFullscreenClick}><i className="icon maximize"></i></div>
+                <div className="ui teal button" onClick={this._onFullscreenClick}><i className="icon expand"></i></div>
                 </div>
               </div>
 

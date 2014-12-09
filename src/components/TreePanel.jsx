@@ -26,12 +26,26 @@ var TreePanel = React.createClass({
       this.setState(this.getStateFromStores());
     },
     render: function() {
+        var addButton=this.state.selector.type=='slide' ? <i className="blue add icon disabled"></i> : <i className="blue add icon"></i>
         return (
           <div className="sw-tree-panel">
             <div className="panel">
               <div className="ui secondary top attached segment">
               TreePanel
               </div>
+
+              <div className="3 fluid ui attached small icon buttons">
+                <div className="ui button">
+                  {addButton}
+                </div>
+                <div className="ui button">
+                  <i className="teal edit icon"></i>
+                </div>
+                <div className="ui button">
+                  <i className="red remove icon"></i>
+                </div>
+              </div>
+
               <div className="ui bottom attached segment">
                 <TreeView nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
