@@ -66,7 +66,9 @@ var SliderControl = React.createClass({
       if(this.state.visible){
         var percentage=(this.state.current.index/this.state.slidesnumber)*100;
         var progressbar = this.refs.progressbar.getDOMNode();
+        //the following part only executes when javascript is enabled!
         $(progressbar).progress({percent: percentage});
+        //$(progressbar).show();
       }
     },
     render: function() {
@@ -95,16 +97,16 @@ var SliderControl = React.createClass({
         return (
           <div className="sw-slidercontrol-panel">
             <div className="panel">
-              <div className="ui secondary top green attached segment">
+              <div className="ui secondary top attached segment">
               SliderControlPanel
               </div>
-              <div className="ui secondary bottom attached segment center aligned">
 
-              <div className="ui tiny teal progress" ref="progressbar" id="slidercontrol_progressbar">
+              <div className="ui bottom attached progress" ref="progressbar">
                 <div className="bar"></div>
               </div>
 
-                <div className="bottom attached compact ui icon buttons">
+              <div className="ui bottom attached segment center aligned">
+                <div className="compact ui icon buttons">
                 {firstElement}
                 {prevElement}
                 <div className="ui blue button">{this.state.current.index}/{this.state.slidesnumber}</div>
@@ -113,6 +115,7 @@ var SliderControl = React.createClass({
                 <div className="ui teal button" onClick={this._onFullscreenClick}><i className="icon maximize"></i></div>
                 </div>
               </div>
+
             </div>
           </div>
         );
