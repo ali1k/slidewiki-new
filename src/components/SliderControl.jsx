@@ -62,6 +62,13 @@ var SliderControl = React.createClass({
     _onFullscreenClick: function() {
 
     },
+    _updateProgressbar: function() {
+      if(this.state.visible){
+        var percentage=(this.state.current.index/this.state.slidesnumber)*100;
+        var progressbar = this.refs.progressbar.getDOMNode();
+        $(progressbar).progress({percent: percentage});
+      }
+    },
     render: function() {
       if(!this.state.visible){
         return (null);
@@ -92,6 +99,11 @@ var SliderControl = React.createClass({
               SliderControlPanel
               </div>
               <div className="ui secondary bottom attached segment center aligned">
+
+              <div className="ui tiny teal progress" ref="progressbar" id="slidercontrol_progressbar">
+                <div className="bar"></div>
+              </div>
+
                 <div className="bottom attached compact ui icon buttons">
                 {firstElement}
                 {prevElement}
@@ -105,6 +117,14 @@ var SliderControl = React.createClass({
           </div>
         );
       }
+    },
+    //executed only first time
+    componentDidMount: function(){
+      this._updateProgressbar();
+    },
+    //executes every time component rerenders
+    componentDidUpdate: function(){
+      this._updateProgressbar();
     }
 });
 

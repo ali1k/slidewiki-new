@@ -3,6 +3,7 @@ var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
   uglify = require('gulp-uglify'),
   minifyCSS = require('gulp-minify-css'),
+  stripDebug = require('gulp-strip-debug'),
   jshint = require('gulp-jshint'),
   webpack = require('gulp-webpack'),
   webpackDevServer = require("webpack-dev-server"),
@@ -45,6 +46,12 @@ gulp.task('minify-css', function() {
       keepBreaks: true
     }))
     .pipe(gulp.dest('build/css/'))
+});
+
+gulp.task('strip-debug', function() {
+  gulp.src('build/js/*.js')
+    .pipe(stripDebug())
+    .pipe(gulp.dest('build/js/'))
 });
 
 gulp.task('compress', ["minify-css"], function() {
