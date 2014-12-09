@@ -67,25 +67,32 @@ module.exports = function(context, payload, done) {
       //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
       //load slides for slider
       function(callback) {
-        if (payload.selector.type=='slide'){
+        if (payload.selector.type == 'slide') {
           //show slider control
           if (context.getStore(DeckSliderStore).isAlreadyComplete()) {
             //there is no need to load slides list
             context.executeAction(updateSliderControl, {
-              selector: {type: 'slide', id:payload.selector.id}
-            },callback);
+              selector: {
+                type: 'slide',
+                id: payload.selector.id
+              }
+            }, callback);
           } else {
             //reload slides list
-            context.executeAction(showSliderControl, {deck: payload.deck,
-              selector: {type: 'slide', id:payload.selector.id}
-            },callback);
+            context.executeAction(showSliderControl, {
+              deck: payload.deck,
+              selector: {
+                type: 'slide',
+                id: payload.selector.id
+              }
+            }, callback);
           }
-        }else{
+        } else {
           //hide slider control
           context.executeAction(hideSliderControl, {}, callback);
         }
 
-    },
+      },
       ////////////////////////////////////
     ],
     // optional callback
@@ -93,6 +100,11 @@ module.exports = function(context, payload, done) {
       if (!err) {
         //done() is the call back for initializeDeckPage action
         //when all the parallel actions are run done() will be invoked
+        //update page title
+        context.dispatch('UPDATE_PAGE_TITLE', {
+          pageTitle: 'SlideWiki | Deck | ' + payload.deck + ' > ' +
+            payload.selector.type + ' : ' + payload.selector.id
+        });
         done();
       }
     });
