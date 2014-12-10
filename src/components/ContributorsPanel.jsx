@@ -32,7 +32,7 @@ var ContributorsPanel = React.createClass({
                 ContributorsPanel
               </div>
               <div className="ui bottom attached segment">
-              <ContributorsView contributors={this.state.contributors}/>
+              <ContributorsView contributors={this.state.contributors} context={this.props.context}/>
               </div>
             </div>
           </div>

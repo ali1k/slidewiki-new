@@ -1,3 +1,7 @@
 .sw-tree-panel{
-  background-color: #F0DF81;
+
+}
+.sw-tree-panel .segment{
+  margin-right:0;
+  padding-right:0;
 }

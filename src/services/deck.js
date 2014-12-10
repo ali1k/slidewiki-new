@@ -65,7 +65,7 @@ module.exports = {
               id: 2321,
               type: 'slide'
             }, {
-              title: 'slide 2322',
+              title: 'slide 2322 with a long title...',
               id: 2322,
               type: 'slide'
             }, ]
