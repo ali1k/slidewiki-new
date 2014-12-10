@@ -1,5 +1,9 @@
 'use strict';
 var React = require('react');
+//SlideWiki components
+var Breadcrumb=require('./Breadcrumb.jsx');
+//Actions
+var navigateAction = require('flux-router-component/actions/navigate');
 
 var DeckHeader = React.createClass({
     getInitialState: function () {
@@ -11,6 +15,9 @@ var DeckHeader = React.createClass({
             <a className="active item">
              DeckHeader
             </a>
+            <div className="item">
+              <Breadcrumb context={this.props.context} />
+            </div>
             <div className="right menu">
               <div className="item">
                 <div className="ui transparent icon input">

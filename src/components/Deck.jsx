@@ -21,7 +21,7 @@ var Deck = React.createClass({
           <div className="ui vertically padded grid page">
             <div className="row">
               <div className="column">
-                <h2 className="ui header"><DeckHeader /></h2>
+                <h2 className="ui header"><DeckHeader context={this.props.context} /></h2>
               </div>
             </div>
 

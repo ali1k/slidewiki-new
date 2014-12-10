@@ -25,9 +25,11 @@
     "fluxible-app": "^0.1.0",
     "fluxible-plugin-fetchr": "^0.1.0",
     "fluxible-plugin-routr": "^0.2.0",
+    "lodash": "^2.4.1",
     "node-jsx": "^0.12.0",
     "react": "^0.12.0",
-    "serve-favicon": "^2.1.6"
+    "serve-favicon": "^2.1.6",
+    "t": "^0.5.1"
   },
   "devDependencies": {
     "gulp": "^3.8.10",

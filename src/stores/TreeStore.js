@@ -1,6 +1,7 @@
 'use strict';
 var createStore = require('fluxible-app/utils/createStore');
-
+var _ = require('lodash');
+var t = require('t');
 
 module.exports = createStore({
   storeName: 'TreeStore',
@@ -15,6 +16,8 @@ module.exports = createStore({
     this.nodes = {};
     //current node which is selected
     this.selector = {};
+    //holds a breadcrumb based on the selector
+    this.breadcrumb = [];
   },
   _showDeckTreeStart: function(res) {
     //console.log('Start loading the deck tree...');
@@ -26,11 +29,63 @@ module.exports = createStore({
     this.nodes = res.nodes;
     this.selector = res.selector;
     //console.log('change emitted by Tree store!');
-    this.emitChange();
+    var self = this;
+    this._createBreadcrumb(function(path) {
+      self.breadcrumb = path;
+      self.emitChange();
+    })
   },
   _updateSelector: function(res) {
     this.selector = res.selector;
-    this.emitChange();
+    var self = this;
+    this._createBreadcrumb(function(path) {
+      self.breadcrumb = path;
+      self.emitChange();
+    })
+  },
+  //fn callback function
+  _createBreadcrumb: function(fn) {
+    var found = 0;
+    var self = this;
+    //collect first level nodes for DFS
+    var firstlevel = [];
+    _.forEach(self.nodes.children, function(node) {
+      if (node.type == 'deck') {
+        firstlevel.push(node.id);
+      }
+    });
+    var path = [];
+    t.dfs(self.nodes, [], function(node, par, ctrl) {
+      if (node.type == 'deck') {
+        if (_.indexOf(firstlevel, node.id) > 0) {
+          path = [{
+            id: self.nodes.id,
+            title: self.nodes.title
+          }];
+        }
+        if (!found) {
+          path.push({
+            id: node.id,
+            title: node.title
+          });
+        }
+      }
+      if (node.id == self.selector.id && node.type == self.selector.type) {
+        //prevent duplicate decks in path
+        if (node.type != 'deck') {
+          path.push({
+            id: node.id,
+            title: node.title
+          });
+        }
+        //id found
+        found = 1;
+        return fn(path);
+      }
+    })
+  },
+  getBreadcrumb: function() {
+    return this.breadcrumb;
   },
   getNodes: function() {
     return this.nodes;
@@ -58,11 +113,13 @@ module.exports = createStore({
   dehydrate: function() {
     return {
       nodes: this.nodes,
-      selector: this.selector
+      selector: this.selector,
+      breadcrumb: this.breadcrumb,
     };
   },
   rehydrate: function(state) {
     this.nodes = state.nodes;
     this.selector = state.selector;
+    this.breadcrumb = state.breadcrumb;
   }
 });
