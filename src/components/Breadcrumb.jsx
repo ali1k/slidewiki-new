@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react');
 var StoreMixin = require('fluxible-app').StoreMixin;
-
+var navigateAction = require('flux-router-component/actions/navigate');
 var TreeStore = require('../stores/TreeStore');
 //SlideWiki components
 
@@ -32,7 +32,7 @@ var Breadcrumb = React.createClass({
             return <div key={index} className='section active'> {node.title} </div>
           }else{
             path=self._getPath('deck', node.id);
-            return <div key={index} className='section'><a href={path} context={self.props.context} onClick={self._onClick} > {node.title} </a><i className="right chevron icon divider"></i></div>
+            return <div key={index} className='section'><a href={path} context={self.props.context} onClick={ self._onClick.bind(self, node.id)} > {node.title} </a><i className="right chevron icon divider"></i></div>
           }
         });
         return (
@@ -46,10 +46,9 @@ var Breadcrumb = React.createClass({
   _getPath: function(type,id) {
       return '/deck/'+this.state.breadcrumb[0].id+'/'+type + '/' + id;
   },
-  _onClick: function(e) {
-    //TODO: pass node.id to navigateAction
-    //this.props.context.executeAction(navigateAction, {path: this._getPath('deck',11)});
-    //e.preventDefault();
+  _onClick: function(id,e) {
+    e.preventDefault();
+    this.props.context.executeAction(navigateAction, {path: this._getPath('deck', id)});
   },
 });
 
