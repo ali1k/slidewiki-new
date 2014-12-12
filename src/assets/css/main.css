@@ -15,3 +15,7 @@ body {
 #main_navbar{
   margin-bottom: 0px
 }
+
+.sw-hidden{
+  display:none;
+}

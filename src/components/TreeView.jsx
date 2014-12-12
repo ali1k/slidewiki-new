@@ -40,7 +40,7 @@ var TreeView = React.createClass({
               {this.props.nodes.title}
             </a>
 
-            <span ref="actionBar" className="hidden">
+            <span ref="actionBar" className="sw-hidden">
               <i className="small ellipsis vertical icon"></i>
               {this.props.nodes.type=='deck'? <i className="small blue icon add link"></i> :''}
               <i className="small teal icon edit link"></i>
@@ -72,7 +72,7 @@ var TreeView = React.createClass({
     var newClasses=current.className.replace(re, "");
     current.className=newClasses
     var actionBar = this.refs.actionBar.getDOMNode();
-    actionBar.className ="hidden";
+    actionBar.className ="sw-hidden";
   }
 });
 
