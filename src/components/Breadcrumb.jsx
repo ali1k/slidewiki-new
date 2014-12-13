@@ -48,7 +48,7 @@ var Breadcrumb = React.createClass({
   },
   _onClick: function(id,e) {
     e.preventDefault();
-    this.props.context.executeAction(navigateAction, {path: this._getPath('deck', id)});
+    this.props.context.executeAction(navigateAction, {url: this._getPath('deck', id)});
   },
 });
 

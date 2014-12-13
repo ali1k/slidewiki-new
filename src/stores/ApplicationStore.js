@@ -26,7 +26,7 @@ var ApplicationStore = createStore({
     this.emitChange();
   },
   _isTheCurrentRoute: function(route) {
-    if (this.currentRoute && route.path == this.currentRoute.path) {
+    if (this.currentRoute && route.url == this.currentRoute.path) {
       return true;
     } else {
       return false;

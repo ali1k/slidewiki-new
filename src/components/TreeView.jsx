@@ -52,7 +52,7 @@ var TreeView = React.createClass({
     );
   },
   _onClick: function(e) {
-    this.props.context.executeAction(navigateAction, {path: this._getPath()});
+    this.props.context.executeAction(navigateAction, {url: this._getPath()});
     e.preventDefault();
   },
   _getPath: function() {
