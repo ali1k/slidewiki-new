@@ -15,6 +15,13 @@ var DeckHeader = React.createClass({
             <div className="item">
               <Breadcrumb context={this.props.context} />
             </div>
+            <div className="item right">
+              <div className="ui transparent icon input">
+                <input type="text" placeholder="Search..." />
+                <i className="search link icon"></i>
+              </div>
+            </div>
+
           </div>
         );
     }
