@@ -6,7 +6,7 @@ var ContentPanel = require('./ContentPanel.jsx');
 var ContributorsPanel = require('./ContributorsPanel.jsx');
 var SliderControl = require('./SliderControl.jsx');
 
-var Deck = React.createClass({
+var DeckPage = React.createClass({
     getInitialState: function () {
         return {};
     },
@@ -48,4 +48,4 @@ var Deck = React.createClass({
     }
 });
 
-module.exports = Deck;
+module.exports = DeckPage;

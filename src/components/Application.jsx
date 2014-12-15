@@ -2,9 +2,9 @@
 var React = require('react');
 var Nav = require('./Nav.jsx');
 var Footer = require('./Footer.jsx');
-var Home = require('./Home.jsx');
-var About = require('./About.jsx');
-var Deck = require('./Deck.jsx');
+var HomePage = require('./HomePage.jsx');
+var AboutPage = require('./AboutPage.jsx');
+var DeckPage = require('./DeckPage.jsx');
 var ApplicationStore = require('../stores/ApplicationStore');
 var RouterMixin = require('flux-router-component').RouterMixin;
 var StoreMixin = require('fluxible-app').StoreMixin;
@@ -28,13 +28,13 @@ var Application = React.createClass({
       //choose the right page based on the route
       switch(this.state.route.name){
         case 'home':
-          output=<Home/>
+          output=<HomePage/>
           break;
         case 'about':
-          output=<About/>
+          output=<AboutPage/>
           break;
         case 'deck':
-          output=<Deck context={this.props.context} deckParams={this.state.route.params} />
+          output=<DeckPage context={this.props.context} deckParams={this.state.route.params} />
           break;
       }
       //render content
