@@ -20,7 +20,7 @@ var DeckPage = React.createClass({
       }
       //show news feed control only if a deck is selected
       var deckNewsFeed=null;
-      if(deckParams.stype=='deck'){
+      if(!deckParams.stype || deckParams.stype=='deck'){
         deckNewsFeed=<DeckNewsFeed context={this.props.context} />
       }
         return (

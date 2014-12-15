@@ -64,21 +64,21 @@ var DeckNewsFeed = React.createClass({
                     <img src="http://semantic-ui.com/images/avatar/small/elliot.jpg"/>
                     </div>
                     <div className="content">
-                    <div className="date">
-                    4 days ago
-                    </div>
-                    <div className="summary">
-                    <a>Bob Ray</a> added <a>2 new slides</a>
-                    </div>
-                    <div className="extra images">
-                    <a><img src="http://semantic-ui.com/images/wireframe/image.png"/></a>
-                    <a><img src="http://semantic-ui.com/images/wireframe/image.png"/></a>
-                    </div>
-                    <div className="meta">
-                    <a className="like">
-                    <i className="like icon"></i> 1 Like
-                    </a>
-                    </div>
+                      <div className="date">
+                      4 days ago
+                      </div>
+                      <div className="summary">
+                        <a>Bob Ray</a> added <a>2 new slides</a>
+                      </div>
+                      <div className="extra images">
+                        <a href="/deck/1/slide/11"><img src="http://semantic-ui.com/images/wireframe/image.png"/></a>
+                        <a href="/deck/1/slide/233"><img src="http://semantic-ui.com/images/wireframe/image.png"/></a>
+                      </div>
+                      <div className="meta">
+                        <a className="like">
+                        <i className="like icon"></i> 1 Like
+                        </a>
+                      </div>
                     </div>
                 </div>
 
