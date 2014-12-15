@@ -101,9 +101,6 @@ var SliderControl = React.createClass({
         return (
           <div className="sw-slidercontrol-panel">
             <div className="panel">
-              <div className="ui secondary top attached segment">
-              SliderControlPanel
-              </div>
 
               <div className="ui bottom attached progress" ref="progressbar">
                 <div className="bar"></div>
@@ -129,11 +126,15 @@ var SliderControl = React.createClass({
     componentDidMount: function(){
       this._updateProgressbar();
       key('right', this._onNextClick);
+      key('shift+right', this._onLastClick);
       key('left', this._onPrevClick);
+      key('shift+left', this._onFirstClick);
     },
     componentWillUnmount: function(){
       key.unbind('right');
+      key.unbind('shift+right');
       key.unbind('left');
+      key.unbind('shift+left');
     },
     //executes every time component rerenders
     componentDidUpdate: function(){

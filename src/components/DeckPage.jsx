@@ -5,6 +5,7 @@ var TreePanel = require('./TreePanel.jsx');
 var ContentPanel = require('./ContentPanel.jsx');
 var ContributorsPanel = require('./ContributorsPanel.jsx');
 var SliderControl = require('./SliderControl.jsx');
+var DeckNewsFeed = require('./DeckNewsFeed.jsx');
 
 var DeckPage = React.createClass({
     getInitialState: function () {
@@ -16,6 +17,11 @@ var DeckPage = React.createClass({
       var slider=null;
       if(deckParams.stype=='slide'){
         slider=<SliderControl context={this.props.context} />
+      }
+      //show news feed control only if a deck is selected
+      var deckNewsFeed=null;
+      if(deckParams.stype=='deck'){
+        deckNewsFeed=<DeckNewsFeed context={this.props.context} />
       }
         return (
           <div className="ui vertically padded grid page">
@@ -37,6 +43,9 @@ var DeckPage = React.createClass({
                 </div>
                 <div className="row">
                   {slider}
+                </div>
+                <div className="row">
+                  {deckNewsFeed}
                 </div>
               </div>
               <div className="three wide column">

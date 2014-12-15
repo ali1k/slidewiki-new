@@ -30,10 +30,14 @@ var TreePanel = React.createClass({
         return (
           <div className="sw-tree-panel">
             <div className="panel">
-              <div className="ui secondary top attached segment">
-              TreePanel
+              <div className="ui attached menu">
+                <div className="item">
+                <div className="ui transparent icon input">
+                <input type="text" placeholder="Search..." />
+                <i className="search link icon"></i>
+                </div>
+                </div>
               </div>
-
               <div className="3 fluid ui attached small icon buttons">
                 <div className="ui button">
                   {addButton}
