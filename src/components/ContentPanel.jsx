@@ -38,10 +38,35 @@ var ContentPanel = React.createClass({
         }
         return (
           <div className="sw-content-panel">
-            <div className="panel">
-              <div className="ui secondary top attached segment">
-              ContentPanel
+            <div className="ui top attached tabular menu">
+              <a className="active item">
+                View
+              </a>
+              <a className="item">
+                Edit
+              </a>
+              <a className="item">
+              Questions<span className="ui tiny label">12</span>
+              </a>
+              <a className="item" title="Comments">
+                <i className="comments red medium icon"></i>5
+              </a>
+              <div className="item">
+                <a title="download">
+                  <i className="download icon"></i>
+                </a>
+                <a title="print">
+                  <i className="print icon"></i>
+                </a>
+                <a title="export">
+                  <i className="share external icon"></i>
+                </a>
+                <a title="share">
+                  <i className="share alternate icon"></i>
+                </a>
               </div>
+            </div>
+            <div className="panel">
               <div className="ui bottom attached segment">
                 {content}
               </div>
