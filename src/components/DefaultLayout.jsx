@@ -30,6 +30,7 @@ var DefaultLayout = React.createClass({
             <script dangerouslySetInnerHTML={{__html: this.props.state}}></script>
             <script src="/public/bower_components/jquery/dist/jquery.min.js" defer></script>
             <script src="/public/bower_components/semantic-ui/dist/components/progress.min.js" defer></script>
+            <script src="/public/bower_components/keymaster/keymaster.js" defer></script>
             <script src="/public/js/bundle.js" defer></script>
             </html>
         );

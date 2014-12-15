@@ -44,11 +44,15 @@ var SliderControl = React.createClass({
       return "/deck/"+ this.state.deckID +"/slide/" + this.state.last.id;
     },
     _onPrevClick: function(e) {
-      this.props.context.executeAction(navigateAction, {url: this._getPrevPath()});
+      if(this.state.previous){
+        this.props.context.executeAction(navigateAction, {url: this._getPrevPath()});
+      }
       e.preventDefault();
     },
     _onNextClick: function(e) {
-      this.props.context.executeAction(navigateAction, {url: this._getNextPath()});
+      if(this.state.next){
+        this.props.context.executeAction(navigateAction, {url: this._getNextPath()});
+      }
       e.preventDefault();
     },
     _onLastClick: function() {
@@ -124,6 +128,12 @@ var SliderControl = React.createClass({
     //executed only first time
     componentDidMount: function(){
       this._updateProgressbar();
+      key('right', this._onNextClick);
+      key('left', this._onPrevClick);
+    },
+    componentWillUnmount: function(){
+      key.unbind('right');
+      key.unbind('left');
     },
     //executes every time component rerenders
     componentDidUpdate: function(){
