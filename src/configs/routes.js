@@ -29,12 +29,21 @@ module.exports = {
     }
   },
   deck: {
-    path: '/deck/:id/:stype?/:sid?',
+    path: '/deck/:id/:stype?/:sid?/:mode?',
     method: 'get',
     page: 'deck',
     group: 'deck-app',
     action: function(context, payload, done) {
+      //node which is selected
       var selector = {};
+      //mode: view, edit, questions, history, usage, comments, etc.
+      var mode='';
+      if (payload.params.mode){
+        //ToDo: restrict modes to a set of predefined modes and give errors on unknown modes
+        mode=payload.params.mode;
+      }else{
+        mode='view';
+      }
       if (payload.params.stype && payload.params.sid) {
         selector = {
           type: payload.params.stype,
@@ -49,7 +58,8 @@ module.exports = {
       //console.log(selector);
       context.executeAction(initializeDeckPage, {
         deck: payload.params.id,
-        selector: selector
+        selector: selector,
+        mode:mode
       }, done);
       //other actions to load deck content and contributors, etc.
       //here

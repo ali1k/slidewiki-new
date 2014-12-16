@@ -2,5 +2,10 @@
 
 }
 .sw-slide-fullscreen{
-
+  width:85%;
+  height:85%;
+}
+.sw-slide-fullscreen .segment{
+  width:100%;
+  height:100%;
 }
