@@ -64,7 +64,20 @@ var SliderControl = React.createClass({
       e.preventDefault();
     },
     _onFullscreenClick: function() {
-
+      var elem = document.getElementById('sw_slide');
+      if (screenfull.enabled) {
+        //go to fullscreen mode
+        elem.className += " sw-slide-fullscreen"
+        screenfull.request(elem);
+        //listen to fullscreen changes
+        document.addEventListener(screenfull.raw.fullscreenchange, function () {
+          if (!screenfull.isFullscreen) {
+            var re = / sw-slide-fullscreen/gi;
+            var newClasses=elem.className.replace(re, "");
+            elem.className=newClasses
+          }
+        });
+      }
     },
     _updateProgressbar: function() {
       if(this.state.visible){
