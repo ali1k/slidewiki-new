@@ -66,8 +66,8 @@ var ContentPanel = React.createClass({
                 </a>
               </div>
             </div>
-            <div className="panel">
-              <div className="ui bottom attached segment">
+            <div className="bottom attached panel active">
+              <div className="ui segment">
                 {content}
               </div>
             </div>
