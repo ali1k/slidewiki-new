@@ -10,10 +10,12 @@ module.exports = createStore({
   initialize: function () {
     this.content_type='';
     this.content_id=0;
+    this.mode='view';
   },
   _prepareContentType: function (res) {
     this.content_type = res.selector.type;
     this.content_id = res.selector.id;
+    this.mode = res.mode;
     this.emitChange();
   },
   getContentType: function () {
@@ -22,14 +24,19 @@ module.exports = createStore({
   getContentID: function () {
     return this.content_id;
   },
+  getMode: function () {
+    return this.mode;
+  },
   dehydrate: function () {
     return {
       content_type: this.content_type,
-      content_id: this.content_id
+      content_id: this.content_id,
+      mode: this.mode
     };
   },
   rehydrate: function (state) {
     this.content_type = state.content_type;
     this.content_id = state.content_id;
+    this.mode = state.mode;
   }
 });

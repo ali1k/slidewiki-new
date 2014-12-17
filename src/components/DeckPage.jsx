@@ -39,7 +39,7 @@ var DeckPage = React.createClass({
               </div>
               <div className="nine wide column">
                 <div className="row">
-                  <ContentPanel context={this.props.context}/>
+                  <ContentPanel context={this.props.context} rootDeckID={this.props.deckParams.id} />
                 </div>
                 <div className="row">
                   {slider}

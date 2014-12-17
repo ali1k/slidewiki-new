@@ -39,7 +39,8 @@ module.exports = function(context, payload, done) {
       function(callback) {
         //first need to prepare the right container for deck/slide/etc.
         context.executeAction(prepareContentType, {
-          selector: payload.selector
+          selector: payload.selector,
+          mode:payload.mode
         }, function(res) {
           //then run the corresponding action
           switch (payload.selector.type) {
