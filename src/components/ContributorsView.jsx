@@ -8,7 +8,7 @@ var ContributorsView = React.createClass({
     render: function() {
         var list;
         list = this.props.contributors.map(function(node, index) {
-          return <li key={index}>{node.name}</li>
+          return <li key={index}><a href={"/user/"+ node.id}>{node.username}</a> </li>
         });
 
         return (

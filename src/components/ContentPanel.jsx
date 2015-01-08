@@ -30,7 +30,7 @@ var ContentPanel = React.createClass({
     this.setState(this.getStateFromStores());
   },
   _onTabClick: function(mode, e) {
-    this.props.context.executeAction(navigateAction, {url: this._getTabPath(mode)});
+    this.props.context.executeAction(navigateAction, {type: 'click', url: this._getTabPath(mode)});
     e.preventDefault();
   },
   _getTabPath: function(mode) {

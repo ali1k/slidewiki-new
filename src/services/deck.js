@@ -1,4 +1,10 @@
 'use strict';
+var http = require('http');
+var httpOptions = {
+  host: 'localhost',
+  port: 8080,
+  path: '/api'
+};
 
 var randomResponseTime = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -9,80 +15,22 @@ module.exports = {
   read: function(req, resource, params, config, callback) {
     if (resource === 'deck.tree') {
       var deck_id = params.deck;
-      //we retrieve deck content from DB
-      var nodes = {
-        title: 'root',
-        id: 1,
-        type: 'deck',
-        children: [{
-          title: 'slide 11',
-          id: 11,
-          type: 'slide'
-        }, {
-          title: 'slide 12',
-          id: 12,
-          type: 'slide'
-        }, {
-          title: 'deck 13',
-          id: 13,
-          type: 'deck',
-          children: [{
-            title: 'slide 131',
-            id: 131,
-            type: 'slide'
-          }, {
-            title: 'deck 132',
-            id: 132,
-            type: 'deck',
-            children: [{
-              title: 'slide 1321',
-              id: 1321,
-              type: 'slide'
-            }, {
-              title: 'slide 1322',
-              id: 1322,
-              type: 'slide'
-            }, ]
-          }, {
-            title: 'slide 133',
-            id: 133,
-            type: 'slide'
-          }]
-        }, {
-          title: 'deck 23',
-          id: 23,
-          type: 'deck',
-          children: [{
-            title: 'slide 231',
-            id: 231,
-            type: 'slide'
-          }, {
-            title: 'deck 232',
-            id: 232,
-            type: 'deck',
-            children: [{
-              title: 'slide 2321',
-              id: 2321,
-              type: 'slide'
-            }, {
-              title: 'slide 2322 with a long title...',
-              id: 2322,
-              type: 'slide'
-            }, ]
-          }, {
-            title: 'slide 233',
-            id: 233,
-            type: 'slide'
-          }]
-        }, {
-          title: 'slide 14',
-          id: 14,
-          type: 'slide'
-        }]
-      }
-      callback(null, {
-        nodes: nodes
+      httpOptions.path = "/api/deck/tree/" + deck_id;
+      http.get(httpOptions, function(response) {
+        // Continuously update stream with data
+        var body = '';
+        response.on('data', function(d) {
+          body += d;
+        });
+        response.on('end', function() {
+          // Data reception is done, do whatever with it!
+          var parsed = JSON.parse(body);
+          callback(null, {
+            nodes: parsed
+          });
+        });
       });
+
       /////////////////////////////////////////////
     } else if (resource === 'deck.contributors') {
       //handle Ajax requests return object
@@ -91,27 +39,22 @@ module.exports = {
       } else {
         var selector = JSON.parse(params.selector);
       }
-      var contributors = [{
-        name: 'Ali Khalili',
-        id: 1,
-        usernmae: 'ali1k',
-        role: 'creator'
-      }, {
-        name: 'user' + selector.id,
-        id: 2
-      }, {
-        name: 'user' + selector.type,
-        id: 3
-      }]
-
-      //console.log('retrieving contributors...');
-      setTimeout(function() {
-        //console.log('contributors retrieved!');
-
-        callback(null, {
-          contributors: contributors
+      httpOptions.path = "/api/content/contributors/" + selector.type + "/" +
+      selector.id;
+      http.get(httpOptions, function(response) {
+        // Continuously update stream with data
+        var body = '';
+        response.on('data', function(d) {
+          body += d;
         });
-      }, randomResponseTime(10, 500));
+        response.on('end', function() {
+          // Data reception is done, do whatever with it!
+          var parsed = JSON.parse(body);
+          callback(null, {
+            contributors: parsed
+          });
+        });
+      });
       /////////////////////////////////////////////
     } else if (resource === 'deck.slideslist') {
       var deck_id = params.deck;
@@ -121,39 +64,25 @@ module.exports = {
       } else {
         var selector = JSON.parse(params.selector);
       }
-      var slides = [{
-        id: 11
-      }, {
-        id: 12
-      }, {
-        id: 131
-      }, {
-        id: 1321
-      }, {
-        id: 1322
-      }, {
-        id: 133
-      }, {
-        id: 231
-      }, {
-        id: 2321
-      }, {
-        id: 2322
-      }, {
-        id: 233
-      }, {
-        id: 14
-      }]
-      var res = {
-        deckID: deck_id,
-        currentSlideID: selector.id,
-        slides: slides
-      }
-      setTimeout(function() {
-        //console.log('content retrieved!');
-
-        callback(null, res);
-      }, randomResponseTime(10, 500));
+      //TODO: set offset and limit
+      httpOptions.path = "/api/deck/slides/" + deck_id + "/offset/1/limit/54";
+      http.get(httpOptions, function(response) {
+        // Continuously update stream with data
+        var body = '';
+        response.on('data', function(d) {
+          body += d;
+        });
+        response.on('end', function() {
+          // Data reception is done, do whatever with it!
+          var parsed = JSON.parse(body);
+          var res = {
+            deckID: deck_id,
+            currentSlideID: selector.id,
+            slides: parsed.slides
+          }
+          callback(null, res);
+        });
+      });
       /////////////////////////////////////////////
     } else if (resource === 'deck.content') {
       //handle Ajax requests return object
@@ -165,48 +94,60 @@ module.exports = {
       //separate handler for slides & decks
       switch (selector.type) {
         case 'deck':
-          var res = {
-            id: selector.id,
-            type: selector.type,
-            content: {
-              title: 'deck ' + selector.id,
-              description: 'description for <b>deck</b> ' + selector.id
-            }
-          }
+          httpOptions.path = "/api/deck/" + selector.id;
+          http.get(httpOptions, function(response) {
+            // Continuously update stream with data
+            var body = '';
+            response.on('data', function(d) {
+              body += d;
+            });
+            response.on('end', function() {
+              // Data reception is done, do whatever with it!
+              var parsed = JSON.parse(body);
+              var res = {
+                id: selector.id,
+                type: selector.type,
+                content: parsed
+              }
+              callback(null, res);
+            });
+          });
           break;
-        case 'slide':
-          var body = 'Here comes content for <b>slide</b> ' + selector.id;
-          var res = {
-            id: selector.id,
-            type: selector.type,
-            content: {
-              title: 'slide ' + selector.id,
-              body: body
-            }
+          case 'slide':
+            httpOptions.path = "/api/slide/" + selector.id;
+            http.get(httpOptions, function(response) {
+              // Continuously update stream with data
+              var body = '';
+              response.on('data', function(d) {
+                body += d;
+              });
+              response.on('end', function() {
+                // Data reception is done, do whatever with it!
+                var parsed = JSON.parse(body);
+                var res = {
+                  id: selector.id,
+                  type: selector.type,
+                  content: parsed
+                }
+                callback(null, res);
+              });
+            });
+            break;
           }
-          break;
+          /////////////////////////////////////////////
+        } else if (resource === 'deck.others') {
+
+        } else {
+
+        }
+      },
+      create: function(req, resource, params, body, config, callback) {
+
+      },
+      update: function(req, resource, params, body, config, callback) {
+
+      },
+      delete: function(req, resource, params, config, callback) {
+
       }
-
-      //console.log('retrieving content...');
-      setTimeout(function() {
-        //console.log('content retrieved!');
-
-        callback(null, res);
-      }, randomResponseTime(10, 500));
-      /////////////////////////////////////////////
-    } else if (resource === 'deck.others') {
-
-    } else {
-
-    }
-  },
-  create: function(req, resource, params, body, config, callback) {
-
-  },
-  update: function(req, resource, params, body, config, callback) {
-
-  },
-  delete: function(req, resource, params, config, callback) {
-
-  }
-};
+    };

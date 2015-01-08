@@ -40,7 +40,7 @@ module.exports = function(context, payload, done) {
         //first need to prepare the right container for deck/slide/etc.
         context.executeAction(prepareContentType, {
           selector: payload.selector,
-          mode:payload.mode
+          mode: payload.mode
         }, function(res) {
           //then run the corresponding action
           switch (payload.selector.type) {
@@ -93,7 +93,7 @@ module.exports = function(context, payload, done) {
           context.executeAction(hideSliderControl, {}, callback);
         }
 
-      },
+      }
       ////////////////////////////////////
     ],
     // optional callback
@@ -103,8 +103,9 @@ module.exports = function(context, payload, done) {
         //when all the parallel actions are run done() will be invoked
         //update page title
         context.dispatch('UPDATE_PAGE_TITLE', {
-          pageTitle: 'SlideWiki | Deck | ' + payload.deck + ' > ' +
-            payload.selector.type + ' : ' + payload.selector.id
+          pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
+            payload.selector.type + ' : ' + payload.selector.id + ' | ' +
+            payload.mode
         });
         done();
       }

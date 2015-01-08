@@ -37,12 +37,12 @@ module.exports = {
       //node which is selected
       var selector = {};
       //mode: view, edit, questions, history, usage, comments, etc.
-      var mode='';
-      if (payload.params.mode){
+      var mode = '';
+      if (payload.params.mode) {
         //ToDo: restrict modes to a set of predefined modes and give errors on unknown modes
-        mode=payload.params.mode;
-      }else{
-        mode='view';
+        mode = payload.params.mode;
+      } else {
+        mode = 'view';
       }
       if (payload.params.stype && payload.params.sid) {
         selector = {
@@ -59,7 +59,7 @@ module.exports = {
       context.executeAction(initializeDeckPage, {
         deck: payload.params.id,
         selector: selector,
-        mode:mode
+        mode: mode
       }, done);
       //other actions to load deck content and contributors, etc.
       //here
