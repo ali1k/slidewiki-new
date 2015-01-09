@@ -5,3 +5,7 @@
   margin-right:0;
   padding-right:0;
 }
+.sw-tree-container{
+  height:540px;
+  overflow:auto;
+}

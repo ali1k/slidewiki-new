@@ -29,7 +29,7 @@ var DeckPanel = React.createClass({
           <div className="sw-deck-panel">
             <div className="panel">
               <div className="ui secondary top yellow attached segment">
-                DeckPanel {this.props.id}
+                {this.state.content.title}
               </div>
               <div className="ui bottom attached segment">
                 <DeckView id={this.props.id} content={this.state.content} context={this.props.context} />

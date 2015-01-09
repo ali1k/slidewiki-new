@@ -1,5 +1,6 @@
 .sw-slide{
-
+  height:360px;
+  overflow:auto;
 }
 .sw-slide-fullscreen{
   width:85%;

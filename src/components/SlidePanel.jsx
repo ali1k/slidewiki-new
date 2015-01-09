@@ -29,7 +29,7 @@ var SlidePanel = React.createClass({
           <div className="sw-slide-panel">
             <div className="panel">
               <div className="ui secondary top blue attached segment">
-              SlidePanel {this.props.id}
+                {this.state.content.title}
               </div>
               <div className="ui bottom attached segment">
                 <SlideView id={this.props.id} content={this.state.content} context={this.props.context} />

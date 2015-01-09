@@ -8,8 +8,7 @@ var SlideView = React.createClass({
         return (
           <div className="sw-slide" id="sw_slide">
             <div className="ui segment">
-              <h3> {this.props.content.title} </h3>
-              <h4 dangerouslySetInnerHTML={{__html: this.props.content.body}} />
+              <div dangerouslySetInnerHTML={{__html: this.props.content.body}} />
             </div>
           </div>
         );

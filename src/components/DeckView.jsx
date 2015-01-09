@@ -8,9 +8,8 @@ var DeckView = React.createClass({
     },
     render: function() {
         return (
-          <div className="sw-deck ui segment secondary">
-            <h3> {this.props.content.title} </h3>
-            <h4 dangerouslySetInnerHTML={{__html: this.props.content.description}} />
+          <div className="sw-deck ui segment">
+            <div dangerouslySetInnerHTML={{__html: this.props.content.description}} />
           </div>
         );
     }
