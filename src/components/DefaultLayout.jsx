@@ -32,6 +32,7 @@ var DefaultLayout = React.createClass({
             <script src="/public/bower_components/semantic-ui/dist/components/progress.min.js" defer></script>
             <script src="/public/bower_components/keymaster/keymaster.js" defer></script>
             <script src="/public/bower_components/screenfull/dist/screenfull.min.js" defer></script>
+            <script src="/public/js/jQuery.scrollIntoView.min.js" defer></script>
             <script src="/public/js/bundle.js" defer></script>
             </html>
         );
