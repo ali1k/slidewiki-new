@@ -48,6 +48,14 @@ var TreePanel = React.createClass({
             </div>
           </div>
         );
+    },
+    componentDidMount: function() {
+      //make the selected node visible in the view
+      $(".sw-tree-view-selected").scrollIntoView();
+    },
+    componentDidUpdate: function() {
+      //make the selected node visible in the view
+      $(".sw-tree-view-selected").scrollIntoView();
     }
 });
 

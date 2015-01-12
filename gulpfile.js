@@ -80,6 +80,9 @@ gulp.task('assets', function() {
   //images
   gulp.src('src/assets/img/**/*.*')
     .pipe(gulp.dest('build/img'));
+  //js files
+  gulp.src('src/assets/js/**/*.*')
+    .pipe(gulp.dest('build/js'));
 })
 
 gulp.task("webpack-watch", ["assets", "lint", "webpack"], function() {
