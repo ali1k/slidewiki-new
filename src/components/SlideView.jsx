@@ -12,6 +12,11 @@ var SlideView = React.createClass({
             </div>
           </div>
         );
+    },
+    componentDidUpdate: function(prevProps, prevState) {
+      //do actions after slide is shown -> post processing actions
+      //render MathJax Content
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     }
 });
 
