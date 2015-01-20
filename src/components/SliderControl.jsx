@@ -45,22 +45,22 @@ var SliderControl = React.createClass({
     },
     _onPrevClick: function(e) {
       if(this.state.previous){
-        this.props.context.executeAction(navigateAction, {url: this._getPrevPath()});
+        this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPrevPath()});
       }
       e.preventDefault();
     },
     _onNextClick: function(e) {
       if(this.state.next){
-        this.props.context.executeAction(navigateAction, {url: this._getNextPath()});
+        this.props.context.executeAction(navigateAction, {type: 'click', url: this._getNextPath()});
       }
       e.preventDefault();
     },
     _onLastClick: function() {
-      this.props.context.executeAction(navigateAction, {url: this._getLastPath()});
+      this.props.context.executeAction(navigateAction, {type: 'click', url: this._getLastPath()});
       e.preventDefault();
     },
     _onFirstClick: function() {
-      this.props.context.executeAction(navigateAction, {url: this._getFirstPath()});
+      this.props.context.executeAction(navigateAction, {type: 'click', url: this._getFirstPath()});
       e.preventDefault();
     },
     _onFullscreenClick: function() {
