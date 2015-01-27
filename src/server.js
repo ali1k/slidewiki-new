@@ -22,8 +22,11 @@ server.use(bodyParser.json());
 
 // Get access to the fetchr plugin instance
 var fetchrPlugin = app.getPlugin('FetchrPlugin');
+
 // Register our todos REST service
 fetchrPlugin.registerService(require('./services/deck'));
+fetchrPlugin.registerService(require('./services/login'));
+
 
 // Set up the fetchr middleware
 server.use(fetchrPlugin.getXhrPath(), fetchrPlugin.getMiddleware());

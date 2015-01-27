@@ -1,5 +1,6 @@
 //actions used by the routes
 var initializeDeckPage = require('../actions/initializeDeckPage');
+var loadLoginPage = require('../actions/loadLoginPage');
 
 module.exports = {
   home: {
@@ -24,6 +25,19 @@ module.exports = {
     action: function(context, payload, done) {
       context.dispatch('UPDATE_PAGE_TITLE', {
         pageTitle: 'SlideWiki | About'
+      });
+      done();
+    }
+  },
+  login: {
+    path: '/login',
+    method: 'get',
+    page: 'about',
+    group: 'topnav',
+    label: 'About',
+    action: function(context, payload, done) {
+      context.dispatch('UPDATE_PAGE_TITLE', {
+        pageTitle: 'SlideWiki | Login'
       });
       done();
     }
