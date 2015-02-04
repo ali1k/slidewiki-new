@@ -10,22 +10,27 @@ module.exports = createStore({
     'SHOW_DECK_SUCCESS': '_showDeckSuccess'
   },
   initialize: function () {
-    this.id=0;
+    this.id = 0;
     this.content={};
   },
   _showDeckStart: function (res) {
     //console.log('Start loading the deck content...');
   },
   _showDeckFailure: function (res) {
-    //console.log('Error loading the deck content!');
+    console.log('Error loading the deck content!');
+    this.error = res;
+    this.emitChange();
   },
   _showDeckSuccess: function (res) {
-    this.id=res.id;
-    this.content=res.content;
+    this.id = res.id;
+    this.content = res.content;
     this.emitChange();
   },
   getContent: function (res) {
     return this.content;
+  },
+  getError: function() {
+    return this.error;
   },
   dehydrate: function () {
     return {

@@ -35,6 +35,7 @@ module.exports = {
     group: 'deck-app',
     action: function(context, payload, done) {
       //node which is selected
+      
       var selector = {};
       //mode: view, edit, questions, history, usage, comments, etc.
       var mode = '';

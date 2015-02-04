@@ -17,7 +17,9 @@ module.exports = createStore({
     //console.log('Start loading the deck content...');
   },
   _showSlideFailure: function (res) {
-    //console.log('Error loading the deck content!');
+    console.log('Error loading the deck content!');
+    this.error = res;
+    this.emitChange();
   },
   _showSlideSuccess: function (res) {
     this.id=res.id;
@@ -26,6 +28,9 @@ module.exports = createStore({
   },
   getContent: function (res) {
     return this.content;
+  },
+  getError: function() {
+    return this.error;
   },
   dehydrate: function () {
     return {

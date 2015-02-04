@@ -41,6 +41,7 @@ server.use(function(req, res, next) {
       if (err.status && err.status === 404) {
         next();
       } else {
+          
         next(err);
       }
       return;

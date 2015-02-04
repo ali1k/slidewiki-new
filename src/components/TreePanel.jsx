@@ -18,6 +18,7 @@ var TreePanel = React.createClass({
     },
     getStateFromStores: function () {
       return {
+          error: this.getStore(TreeStore).getError(),
           nodes: this.getStore(TreeStore).getNodes(),
           selector: this.getStore(TreeStore).getSelector()
       };
@@ -26,9 +27,11 @@ var TreePanel = React.createClass({
       this.setState(this.getStateFromStores());
     },
     render: function() {
+
+        var tree
         var addButton=this.state.selector.type=='slide' ? <i className="blue add icon disabled"></i> : <i className="blue add icon"></i>
-        return (
-          <div className="sw-tree-panel">
+        if (!this.state.error) {
+          tree = <div className="sw-tree-panel">
             <div className="panel">
               <div className="3 fluid ui attached small icon buttons">
                 <div className="ui button">
@@ -47,7 +50,13 @@ var TreePanel = React.createClass({
               </div>
             </div>
           </div>
-        );
+        }else{
+        tree = <div className="sw-tree-panel">ERROR!!</div>
+        } 
+
+        return (
+          <div>{tree}</div>
+        )
     },
     componentDidMount: function() {
       //make the selected node visible in the view

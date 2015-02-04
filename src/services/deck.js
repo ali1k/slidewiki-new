@@ -25,9 +25,9 @@ module.exports = {
         response.on('end', function() {
           // Data reception is done, do whatever with it!
           var parsed = JSON.parse(body);
-          callback(null, {
-            nodes: parsed
-          });
+          callback(parsed.error, {nodes: parsed});
+          
+          
         });
       });
 
@@ -50,9 +50,7 @@ module.exports = {
         response.on('end', function() {
           // Data reception is done, do whatever with it!
           var parsed = JSON.parse(body);
-          callback(null, {
-            contributors: parsed
-          });
+          callback(parsed.error, {contributors: parsed});
         });
       });
       /////////////////////////////////////////////
@@ -74,12 +72,17 @@ module.exports = {
         response.on('end', function() {
           // Data reception is done, do whatever with it!
           var parsed = JSON.parse(body);
-          var res = {
-            deckID: deck_id,
-            currentSlideID: selector.id,
-            slides: parsed.slides
+          if (parsed.error){
+              callback(parsed.error, null);
+          }else{
+              var res = {
+                deckID: deck_id,
+                currentSlideID: selector.id,
+                slides: parsed.slides
+              }
+            callback(null, res);
           }
-          callback(null, res);
+          
         });
       });
       /////////////////////////////////////////////
@@ -103,12 +106,17 @@ module.exports = {
             response.on('end', function() {
               // Data reception is done, do whatever with it!
               var parsed = JSON.parse(body);
-              var res = {
-                id: selector.id,
-                type: selector.type,
-                content: parsed
-              }
-              callback(null, res);
+              if (parsed.error){
+              callback(parsed.error, null);
+                }else{
+                    var res = {
+                      id: selector.id,
+                      type: selector.type,
+                      content: parsed
+                    }
+                    callback(null, res);
+                }
+
             });
           });
           break;
@@ -123,12 +131,17 @@ module.exports = {
               response.on('end', function() {
                 // Data reception is done, do whatever with it!
                 var parsed = JSON.parse(body);
-                var res = {
+                if (parsed.error){
+                    callback(parsed.error, null);
+                }else{
+                    var res = {
                   id: selector.id,
                   type: selector.type,
                   content: parsed
                 }
                 callback(null, res);
+                }
+                
               });
             });
             break;

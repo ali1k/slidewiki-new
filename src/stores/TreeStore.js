@@ -23,7 +23,9 @@ module.exports = createStore({
     //console.log('Start loading the deck tree...');
   },
   _showDeckTreeFailure: function(res) {
-    //console.log('Error in loading deck tree!');
+    console.log('Error in loading deck tree!');
+    this.error = res;
+    this.emitChange();
   },
   _showDeckTreeSuccess: function(res) {
     this.nodes = res.nodes;
@@ -41,22 +43,23 @@ module.exports = createStore({
     this._createBreadcrumb(function(path) {
       self.breadcrumb = path;
       self.emitChange();
-    })
+    });
   },
   //fn callback function
   _createBreadcrumb: function(fn) {
+      
     var found = 0;
     var self = this;
     //collect first level nodes for DFS
     var firstlevel = [];
     _.forEach(self.nodes.children, function(node) {
-      if (node.type == 'deck') {
+      if (node.type === 'deck') {
         firstlevel.push(node.id);
       }
     });
     var path = [];
     t.dfs(self.nodes, [], function(node, par, ctrl) {
-      if (node.type == 'deck') {
+      if (node.type === 'deck') {
         if (_.indexOf(firstlevel, node.id) > 0) {
           path = [{
             id: self.nodes.id,
@@ -70,9 +73,9 @@ module.exports = createStore({
           });
         }
       }
-      if (node.id == self.selector.id && node.type == self.selector.type) {
+      if (node.id === self.selector.id && node.type == self.selector.type) {
         //prevent duplicate decks in path
-        if (node.type != 'deck') {
+        if (node.type !== 'deck') {
           path.push({
             id: node.id,
             title: node.title
@@ -82,13 +85,16 @@ module.exports = createStore({
         found = 1;
         return fn(path);
       }
-    })
+    });
   },
   getBreadcrumb: function() {
     return this.breadcrumb;
   },
   getNodes: function() {
     return this.nodes;
+  },
+  getError: function() {
+    return this.error;
   },
   //this method checks if we already received the complete tree
   //it is used for preventing rendering/API calls on each request

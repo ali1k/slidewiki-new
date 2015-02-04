@@ -7,8 +7,8 @@ module.exports = function(context, payload, done) {
 
   context.service.read('deck.tree', payload, {}, function(err, res) {
     if (err) {
-      context.dispatch('SHOW_DECK_TREE_FAILURE', payload);
-      done(err);
+      context.dispatch('SHOW_DECK_TREE_FAILURE', err);
+      done();
       return;
     }
     context.dispatch('SHOW_DECK_TREE_SUCCESS', {

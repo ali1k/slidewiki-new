@@ -16,7 +16,9 @@ module.exports = createStore({
     //console.log('Start loading contributors...');
   },
   _showContributorsFailure: function (res) {
-    //console.log('Error in loading contributors!');
+    console.log('Error in loading contributors!');
+    this.error = res;
+    this.emitChange();
   },
   _showContributorsSuccess: function (res) {
     this.contributors=res.contributors;
@@ -24,6 +26,9 @@ module.exports = createStore({
   },
   getContributors: function () {
     return this.contributors;
+  },
+  getError: function() {
+    return this.error;
   },
   dehydrate: function () {
     return {
@@ -33,4 +38,5 @@ module.exports = createStore({
   rehydrate: function (state) {
     this.contributors = state.contributors;
   }
+  
 });

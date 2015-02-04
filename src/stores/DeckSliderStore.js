@@ -6,7 +6,7 @@ module.exports = createStore({
   handlers: {
     'SHOW_SLIDER_CONTROL_SUCCESS': '_showSliderControlSuccess',
     'SHOW_SLIDER_CONTROL_START': '_showSliderControlStart',
-    'SHOW_SLIDER_CONTROL_START_FAILURE': '_showSliderControlFailure',
+    'SHOW_SLIDER_CONTROL_START_FAILURE': '_showSliderControlFailure', //todo
     'UPDATE_SLIDER_CONTROL':'_updateSliderControl',
     'HIDE_SLIDER_CONTROL':'_hideSliderControl'
   },
@@ -34,6 +34,7 @@ module.exports = createStore({
     this.currentSlide={index:index+1, id:currentSlideID};
     this.emitChange();
   },
+  
   _updateSliderControl: function (res) {
     this.visibility=1;
     var currentSlideID= parseInt(res.currentSlideID);
@@ -45,13 +46,13 @@ module.exports = createStore({
 
   },
   _showSliderControlFailure: function (res) {
-
+      console.log('Error loading the SliderController!');
   },
   isLastSlide: function (index) {
-    return (index==this.slides.length);
+    return (index === this.slides.length);
   },
   isFirstSlide: function (index) {
-    return (index==1);
+    return (index === 1);
   },
   getNextSlide: function () {
     //check if slides are loaded
@@ -103,6 +104,9 @@ module.exports = createStore({
   //check to hide or show component
   isVisible: function () {
     return this.visibility;
+  },
+  getError: function() {
+    return this.error;
   },
   //this method checks if we already received the slide list
   //it is used for preventing rendering/API calls on each request
