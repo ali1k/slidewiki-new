@@ -18,8 +18,9 @@ module.exports = createStore({
   },
   _showSlideFailure: function (res) {
     console.log('Error loading the deck content!');
+    var self  = this;
     this.error = res;
-    this.emitChange();
+    self.emitChange();
   },
   _showSlideSuccess: function (res) {
     this.id=res.id;

@@ -18,6 +18,7 @@ var ContributorsPanel = React.createClass({
   },
   getStateFromStores: function () {
     return {
+      error: this.getStore(ContributorsStore).getError(),
       contributors: this.getStore(ContributorsStore).getContributors()
     };
   },
@@ -25,8 +26,9 @@ var ContributorsPanel = React.createClass({
     this.setState(this.getStateFromStores());
   },
     render: function() {
-        return (
-          <div className="sw-contributors-panel">
+        var contr
+        if (!this.state.error){
+            contr = <div className="sw-contributors-panel">
             <div className="panel">
               <div className="ui secondary top attached segment">
                 ContributorsPanel
@@ -36,6 +38,11 @@ var ContributorsPanel = React.createClass({
               </div>
             </div>
           </div>
+        }else{
+            contr = <div>error</div>
+        }
+        return (
+           <div>{contr}</div>
         );
     }
 });
