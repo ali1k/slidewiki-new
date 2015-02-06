@@ -2,15 +2,24 @@
 var React = require('react');
 //stores
 var AuthStore = require('../stores/AuthStore');
-var LoginActions = require('../actions/LoginActions');
+var StoreMixin = require('fluxible-app').StoreMixin;
+var sendLogin = require('../actions/sendLogin');
 
 var LoginPage = React.createClass({
     
-    getInitialState: function () {
-      return {}
+    mixins: [StoreMixin],
+    statics: {
+      storeListeners: {
+        _onChange: [AuthStore]
+      }
     },
-   
-    
+    getInitialState: function () {
+        return this.getStore(AuthStore).getState();
+    },
+    _onChange: function () {
+        var state = this.getStore(AuthStore).getState();
+        this.setState(state);
+    },
     render: function() {
         var self = this;
         return (
@@ -27,9 +36,7 @@ var LoginPage = React.createClass({
                     <div className="field">
                         <button onClick={this._handleSubmit} className="btn btn-primary btn-block" >Log in </button>
                     </div>
-                    <div className="field">
-                        <button className="btn btn-primary btn-block" >Log out </button>
-                    </div>
+                    
                 
             </div>
         );
@@ -38,7 +45,7 @@ var LoginPage = React.createClass({
         console.log('submitting');
         var username = this.refs.username.getDOMNode().value.trim();
         var password = this.refs.password.getDOMNode().value.trim(); 
-        LoginActions.sendLoginActions(username, password);
+        this.props.context.executeAction(sendLogin, {username : username, password: password});
     }
 
 });

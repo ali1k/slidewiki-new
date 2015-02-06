@@ -1,10 +1,10 @@
 'use strict';
 var React = require('react');
-var FluxibleApp = require('fluxible-app');
+var Fluxible = require('fluxible');
 var routrPlugin = require('fluxible-plugin-routr');
 var fetchrPlugin = require('fluxible-plugin-fetchr');
 
-var app = new FluxibleApp({
+var app = new Fluxible({
     appComponent: React.createFactory(require('./components/Application.jsx'))
 });
 //plugin for managing routes
@@ -23,6 +23,7 @@ app.registerStore(require('./stores/ContentStore'));
 app.registerStore(require('./stores/DeckStore'));
 app.registerStore(require('./stores/SlideStore'));
 app.registerStore(require('./stores/DeckSliderStore'));
+app.registerStore(require('./stores/AuthStore'));
 
 
 

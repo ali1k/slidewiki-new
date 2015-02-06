@@ -6,37 +6,42 @@ var LoginActions = require('../actions/LoginActions');
 var http = require('http');
 var api = require('../configs/config').api;
 var agent = require('superagent');
+var debug = require('debug');
+var createStore = require('fluxible/utils/createStore');
 
 
-var AuthStore = Reflux.createStore({
-    listenables: [LoginActions],
+var AuthStore = createStore({
     storeName: 'AuthStore',
+    handlers: {
+        'SEND_LOGIN': 'onSendLogin'
+    },
+    
     initialize: function () {
-        this.currentUser = 'darya';
+        this.currentUser = {};
         this.isLoggedIn = false;
         this.isLoggingIn = false; 
     },
-    onSendLoginActions: function(username, password) {
+    onSendLogin: function(payload) {
         
-        api.path = api.path + '/login';
+        console.log('Im in Store!');
         
         this.isLoggingIn = true;
         
         agent
-            .post('http://localhost:8080/api/login')
+            .post(api.path + '/login')
             .type('form')
-            .send({ username: username, password: password })
-            .end(function(err, res){ console.log(res);});
-//        api
-//            .post(config.apiRoot + '/login')
-//            .send({
-//                username: username,
-//                password: password
-//            })
-//            .set('Accept', 'application/json')
-//            .end(function(res) {
-//                console.log(res);
-//            }); 
+            .send({ username: payload.username, password: payload.password })
+            .end(function(err, res){
+                if (err){
+                    debug(err);
+                }
+                if (res.id){
+                    this._setLoggedIn(res);
+                }else{
+                    console.log(res);
+                }
+            });
+
         
         
     },
@@ -56,18 +61,13 @@ var AuthStore = Reflux.createStore({
         this.isLoggedIn = false;
         return this.emit('change');
     },
-    _setLoggedIn: function(token) {
-        if (token != null || token != '') {
-            localStorage.setItem('loginToken', token);
-            this.isLoggingIn = false;
-            this.isLoggedIn = true;
-            return this.emit('change');
-        } else {
-            console.log('errror');
-            return _setLoggedOut({
-                error: "There was an error logging in."
-            });
-        }
+    _setLoggedIn: function(user) {
+        
+        this.isLoggingIn = false;
+        this.isLoggedIn = true;
+        this.currentUser = user;
+        this.emitChange();
+       
     }, 
     dehydrate: function () {
         return {

@@ -1,6 +1,6 @@
 'use strict';
 var createStore = require('fluxible-app/utils/createStore');
-var routesConfig = require('../configs/routes')
+var routesConfig = require('../configs/routes');
 
 var ApplicationStore = createStore({
   storeName: 'ApplicationStore',
