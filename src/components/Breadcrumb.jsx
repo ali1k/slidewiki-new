@@ -35,7 +35,7 @@ var Breadcrumb = React.createClass({
                   return <div key={index} className='section active'> {node.title} </div>
                 }else{
                   path=self._getPath('deck', node.id);
-                  return <div key={index} className='section'><a href={path} context={self.props.context} onClick={ self._onClick.bind(self, node.id)} > {node.title} </a><i className="right chevron icon divider"></i></div>
+                  return <div key={index} className='section'><a href={path} context={self.props.context} > {node.title} </a><i className="right chevron icon divider"></i></div>
                 }
               });
         }else{

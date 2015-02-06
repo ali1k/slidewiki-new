@@ -5,6 +5,7 @@ var Footer = require('./Footer.jsx');
 var HomePage = require('./HomePage.jsx');
 var AboutPage = require('./AboutPage.jsx');
 var DeckPage = require('./DeckPage.jsx');
+var LoginPage = require('./LoginPage.jsx');
 var ApplicationStore = require('../stores/ApplicationStore');
 var RouterMixin = require('flux-router-component').RouterMixin;
 var StoreMixin = require('fluxible-app').StoreMixin;
@@ -36,6 +37,9 @@ var Application = React.createClass({
         case 'deck':
           output=<DeckPage context={this.props.context} deckParams={this.state.route.params} />
           break;
+        case 'login':
+          output=<LoginPage context={this.props.context}/>
+          break;  
       }
       //render content
         return (

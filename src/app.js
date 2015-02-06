@@ -25,4 +25,5 @@ app.registerStore(require('./stores/SlideStore'));
 app.registerStore(require('./stores/DeckSliderStore'));
 
 
+
 module.exports = app;

@@ -65,5 +65,18 @@ module.exports = {
       //other actions to load deck content and contributors, etc.
       //here
     }
-  }
+  },
+    login: {
+    path: '/login',
+    method: 'get',
+    page: 'login',
+    group: 'topnav',
+    label: 'Login',
+    action: function(context, payload, done) {
+      context.dispatch('UPDATE_PAGE_TITLE', {
+        pageTitle: 'SlideWiki | Login'
+      });
+      done();
+    }
+  },
 };
