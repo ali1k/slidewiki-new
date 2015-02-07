@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react');
-var StoreMixin = require('fluxible-app').StoreMixin;
+var StoreMixin = require('fluxible').Mixin;
 //stores
 var DeckSliderStore = require('../stores/DeckSliderStore');
 //actions

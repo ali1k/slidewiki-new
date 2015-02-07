@@ -6,12 +6,12 @@ var express = require('express');
 var favicon = require('serve-favicon');
 var expressState = require('express-state');
 var navigateAction = require('flux-router-component').navigateAction;
+var serialize = require('serialize-javascript');
 var debug = require('debug')('SlideWiki');
 var bodyParser = require('body-parser');
 var React = require('react');
 var app = require('./app');
-var DefaultLayoutComponent = React.createFactory(require(
-  './components/DefaultLayout.jsx'));
+var DefaultLayoutComponent = React.createFactory(require('./components/DefaultLayout.jsx'));
 
 var server = express();
 expressState.extend(server);
@@ -48,21 +48,20 @@ server.use(function(req, res, next) {
     }
 
     debug('Exposing context state');
-    res.expose(app.dehydrate(context), 'App');
+    var exposed = 'window.App=' + serialize(app.dehydrate(context)) + ';';
 
     debug('Rendering Application component into DefaultLayout');
+    
     var AppComponent = app.getAppComponent();
-    var html = React.renderToStaticMarkup(DefaultLayoutComponent({
-      state: res.locals.state,
-      context: context.getComponentContext(),
-      markup: React.renderToString(AppComponent({
-        context: context.getComponentContext()
-      }))
-    }));
+        React.withContext(context.getComponentContext(), function () {
+            var html = React.renderToStaticMarkup(DefaultLayoutComponent({
+                state: exposed,
+                markup: React.renderToString(AppComponent())
+            }));
 
-    debug('Sending markup');
-    res.write(html);
-    res.end();
+            res.write(html);
+            res.end();
+        });
   });
 });
 

@@ -1,25 +1,16 @@
 'use strict';
 var React = require('react');
 var ApplicationStore = require('../stores/ApplicationStore');
-/**
- * React class to handle the rendering of the HTML head section
- *
- * @class Head
- * @constructor
- */
+var FluxibleMixin = require('fluxible').Mixin;
+
 var DefaultLayout = React.createClass({
-    /**
-     * Refer to React documentation render
-     *
-     * @method render
-     * @return {Object} HTML head section
-     */
+    mixins: [FluxibleMixin],
     render: function() {
         return (
             <html>
             <head>
                 <meta charSet="utf-8" />
-                <title>{this.props.context.getStore(ApplicationStore).getPageTitle()}</title>
+                <title>{this.getStore(ApplicationStore).getPageTitle()}</title>
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
                 <link href="/public/bower_components/semantic-ui/dist/semantic.min.css" rel="stylesheet" type="text/css" />
                 <link href="/public/css/bundle.css" rel="stylesheet" type="text/css" />

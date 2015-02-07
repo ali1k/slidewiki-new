@@ -2,7 +2,7 @@
 var React = require('react');
 var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
-var StoreMixin = require('fluxible-app').StoreMixin;
+var StoreMixin = require('fluxible').Mixin;
 //stores
 var ContentStore = require('../stores/ContentStore');
 //SlideWiki components

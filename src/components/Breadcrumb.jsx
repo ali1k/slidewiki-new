@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react');
-var StoreMixin = require('fluxible-app').StoreMixin;
+var StoreMixin = require('fluxible').Mixin;
 var navigateAction = require('flux-router-component/actions/navigate');
 var TreeStore = require('../stores/TreeStore');
 //SlideWiki components
