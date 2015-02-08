@@ -11,7 +11,7 @@ var AboutPage = React.createClass({
             <div className="row">
               <div className="column">
                 <h2 className="ui header">About</h2>
-                <p>Here comes the description of the SlideWiki.</p>
+                <p>Welcome!</p>
               </div>
             </div>
           </div>

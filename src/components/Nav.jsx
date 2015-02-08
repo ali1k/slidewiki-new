@@ -123,7 +123,7 @@ var LoginButton = React.createClass({
         var style = {cursor : 'pointer'};
         return (
             <div className='item'>
-                <a style={style} onClick={self._handleOpenForm} > Login </a>
+                <a style={style} onClick={self._handleOpenForm} > Login -> </a>
             </div>
         )
     }

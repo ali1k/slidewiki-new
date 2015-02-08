@@ -9,7 +9,7 @@
   },
   "main": "src/server.js",
   "scripts": {
-    "dev": "gulp nodemon-lint & gulp webpack-watch",
+    "dev": "grunt --gruntfile Gruntfile.js --taskName slidewiki_new",
     "build": "gulp && gulp compress",
     "start": "node src/server.js"
   },
@@ -39,6 +39,12 @@
     "t": "^0.5.1"
   },
   "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-nodemon": "^0.4.0",
+    "grunt-webpack": "^1.0.8",
     "gulp": "^3.8.10",
     "gulp-concat": "^2.4.2",
     "gulp-jshint": "^1.9.0",
