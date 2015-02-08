@@ -11,16 +11,20 @@ module.exports = function (grunt) {
                 logConcurrentOutput: true
             }
         },
+		concat: {
+			dist: {
+				src: ['./src/assets/css/*'],
+				dest: 'build/css/bundle.css',
+			},
+		},
         copy: {
-            slidewiki_new: {
-                files: [{
-                    expand: true,
-                    cwd: './src/assets/css/',
-                    src: ['*.*'],
-                    dest: './build/'
-                }]
-            }
-        },
+			js: {
+				cwd: './src/assets/js/',  // set working folder / root to copy
+				src: '**/*',           // copy all files and subfolders
+				dest: 'build/js',    // destination folder
+				expand: true           // required when using cwd
+			}
+		},
         nodemon: {
             dev: {
                 script: './src/server.js',
@@ -38,7 +42,7 @@ module.exports = function (grunt) {
                 entry: './src/client.js',
                 output: {
                     path: 'build/js',
-                    filename: 'client.js'
+                    filename: 'bundle.js'
                 },
                 module: {
                     loaders: [
@@ -62,7 +66,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-webpack');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['clean:dist', 'copy:slidewiki_new', 'concurrent:dev']);
+    grunt.registerTask('default', ['clean:dist', 'copy:js',  'concat', 'concurrent:dev']);
     
 };

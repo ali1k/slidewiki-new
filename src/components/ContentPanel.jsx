@@ -8,6 +8,7 @@ var ContentStore = require('../stores/ContentStore');
 //SlideWiki components
 var DeckPanel=require('./DeckPanel.jsx');
 var SlidePanel=require('./SlidePanel.jsx');
+var deckActions = require('../actions/DeckActions');
 
 var ContentPanel = React.createClass({
   mixins: [StoreMixin],
@@ -114,7 +115,11 @@ var ContentPanel = React.createClass({
             </div>
           </div>
         );
-    }
+    },
+    //componentDidMount: function() {
+    //    var payload = {deck:this.props.rootDeckID, mode: 'view', selector : {id :this.props.rootDeckID, type: 'deck'}};
+    //    this.props.context.executeAction(deckActions.loadContainer, payload);
+    //}
 });
 
 module.exports = ContentPanel;

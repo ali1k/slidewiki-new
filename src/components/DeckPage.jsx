@@ -6,6 +6,9 @@ var ContentPanel = require('./ContentPanel.jsx');
 var ContributorsPanel = require('./ContributorsPanel.jsx');
 var SliderControl = require('./SliderControl.jsx');
 var DeckNewsFeed = require('./DeckNewsFeed.jsx');
+var deckActions = require('../actions/DeckActions');
+var initialize = require('../actions/initializeDeckPage');
+var async = require('async');
 
 var DeckPage = React.createClass({
     getInitialState: function () {
@@ -35,7 +38,7 @@ var DeckPage = React.createClass({
 
             <div className="row">
               <div className="four wide column">
-                <TreePanel context={this.props.context} />
+                <TreePanel context={this.props.context} rootDeckID={this.props.deckParams.id}/>
               </div>
               <div className="nine wide column">
                 <div className="row">
@@ -49,12 +52,13 @@ var DeckPage = React.createClass({
                 </div>
               </div>
               <div className="three wide column">
-                <ContributorsPanel context={this.props.context} />
+                <ContributorsPanel context={this.props.context} rootDeckID={this.props.deckParams.id}/>
               </div>
             </div>
           </div>
         );
-    }
+    },
+    
 });
 
 module.exports = DeckPage;

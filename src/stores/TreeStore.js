@@ -2,6 +2,7 @@
 var createStore = require('fluxible/utils/createStore');
 var _ = require('lodash');
 var t = require('t');
+var debug = require('debug');
 
 module.exports = createStore({
   storeName: 'TreeStore',
@@ -20,18 +21,20 @@ module.exports = createStore({
     this.breadcrumb = [];
   },
   _showDeckTreeStart: function(res) {
-    //console.log('Start loading the deck tree...');
+    debug('Start loading the deck tree...');
   },
   _showDeckTreeFailure: function(res) {
-    //console.log('Error in loading deck tree!');
+    debug('Error in loading deck tree!');
     var self = this;
     this.error = true;
     self.emitChange();
   },
   _showDeckTreeSuccess: function(res) {
+    debug('Success in loading deck tree!');
     this.nodes = res.nodes;
     this.selector = res.selector;
     //console.log('change emitted by Tree store!');
+    this.emitChange();
     var self = this;
     this._createBreadcrumb(function(path) {
       self.breadcrumb = path;

@@ -5,6 +5,7 @@ var StoreMixin = require('fluxible').Mixin;
 var ContributorsStore = require('../stores/ContributorsStore');
 //SlideWiki components
 var ContributorsView=require('./ContributorsView.jsx');
+var deckActions = require('../actions/DeckActions');
 
 var ContributorsPanel = React.createClass({
   mixins: [StoreMixin],
@@ -44,7 +45,13 @@ var ContributorsPanel = React.createClass({
         return (
            <div>{contr}</div>
         );
+    },
+    componentDidMount: function() {
+       
+    //    var payload = {deck:this.props.rootDeckID, mode: 'view', selector : {id :this.props.rootDeckID, type: 'deck'}};
+    //    this.props.context.executeAction(deckActions.loadContributors, payload);
     }
+    
 });
 
 module.exports = ContributorsPanel;

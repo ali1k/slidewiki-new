@@ -34,7 +34,7 @@ var Application = React.createClass({
       var output='';
       var loginDiv;
 
-      console.log(this.state);
+      
       //choose the right page based on the route
       switch(this.state.route.name){
         case 'home':

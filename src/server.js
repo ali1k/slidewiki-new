@@ -25,6 +25,8 @@ var fetchrPlugin = app.getPlugin('FetchrPlugin');
 // Register our todos REST service
 fetchrPlugin.registerService(require('./services/deck'));
 
+
+
 // Set up the fetchr middleware
 server.use(fetchrPlugin.getXhrPath(), fetchrPlugin.getMiddleware());
 

@@ -16,13 +16,21 @@ module.exports = createStore({
     //console.log('Start loading contributors...');
   },
   _showContributorsFailure: function (res) {
-    console.log('Error in loading contributors!');
+    
     this.error = res;
     this.emitChange();
   },
   _showContributorsSuccess: function (res) {
     this.contributors=res.contributors;
     this.emitChange();
+  },
+  isAlreadyComplete: function() {
+    if (this.contributors.length) {
+      //not empty
+      return true;
+    } else {
+      return false;
+    }
   },
   getContributors: function () {
     return this.contributors;

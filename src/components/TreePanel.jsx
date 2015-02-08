@@ -3,8 +3,8 @@ var React = require('react');
 var StoreMixin = require('fluxible').Mixin;
 
 var TreeStore = require('../stores/TreeStore');
-//SlideWiki components
 var TreeView=require('./TreeView.jsx');
+var deckActions = require('../actions/DeckActions');
 
 var TreePanel = React.createClass({
     mixins: [StoreMixin],
@@ -51,7 +51,7 @@ var TreePanel = React.createClass({
             </div>
           </div>
         }else{
-        tree = <div className="sw-tree-panel">ERROR!!</div>
+        tree = <div className="sw-tree-panel">{this.state}</div>
         } 
 
         return (
@@ -61,6 +61,10 @@ var TreePanel = React.createClass({
     componentDidMount: function() {
       //make the selected node visible in the view
       $(".sw-tree-view-selected").scrollIntoView();
+
+    //    var payload = {deck:this.props.rootDeckID, mode: 'view', selector : {id :this.props.rootDeckID, type: 'deck'}};
+    //    this.props.context.executeAction(deckActions.loadUpdateTree, payload);
+      
     },
     componentDidUpdate: function() {
       //make the selected node visible in the view

@@ -34,8 +34,8 @@ module.exports = function(context, payload, done) {
         }
 
       },
-      ////////////////////////////////////
-      //load content for deck/slide
+      //////////////////////////////////
+//      load content for deck/slide
       function(callback) {
         //first need to prepare the right container for deck/slide/etc.
         context.executeAction(prepareContentType, {
@@ -57,13 +57,18 @@ module.exports = function(context, payload, done) {
           }
         });
       },
-      ////////////////////////////////////
-      //load contributors
+      //////////////////////////////////
+//      Update contributors
       function(callback) {
-        context.executeAction(showContributors, {
-          selector: payload.selector
-        }, callback);
-      },
+        
+          //only highlight node
+        
+            context.executeAction(showContributors, {
+              selector: payload.selector
+            }, callback);
+        
+    },
+      
       ////////////////////////////////////
       //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
       //load slides for slider
@@ -102,11 +107,11 @@ module.exports = function(context, payload, done) {
         //done() is the call back for initializeDeckPage action
         //when all the parallel actions are run done() will be invoked
         //update page title
-        context.dispatch('UPDATE_PAGE_TITLE', {
-          pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
-            payload.selector.type + ' : ' + payload.selector.id + ' | ' +
-            payload.mode
-        });
+//        context.dispatch('UPDATE_PAGE_TITLE', {
+//          pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
+//            payload.selector.type + ' : ' + payload.selector.id + ' | ' +
+//            payload.mode
+//        });
         done();
       }
     });
