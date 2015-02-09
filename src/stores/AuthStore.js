@@ -6,10 +6,12 @@ var createStore = require('fluxible/utils/createStore');
 
 //error messages: 
 var internal =  {loginError : true, passError : true, message : 'An internal error occured, please try one more time'};
-var wrong_user =  {loginError : true, passError : true, message : 'The username is already taken, please pick another one'};
+var wrong_user =  {loginError : true, passError : false, message : 'The username is already taken, please pick another one'};
 var wrong_pass =  {loginError : false, passError : true, message : 'The username is correct, but the password does not match'};
 var no_user =  {loginError : true, passError : false, message : 'The username is not correct or you are not registered yet'};
-
+var empty_user =  {loginError : true, passError : false, message : 'The username is required'};
+var empty_pass =  {loginError : false, passError : true, message : 'Password is required'};
+var empty_email =  {loginError : false, passError : false, emailError: true, message : 'Email is required'};
 
 var AuthStore = createStore({
     storeName: 'AuthStore',
@@ -17,8 +19,7 @@ var AuthStore = createStore({
         'SEND_LOGIN': 'onSendLogin',
         'SEND_FACEBOOK': 'onSendFacebook',
         'SEND_SIGNUP' : 'onSendSignUp',
-        'OPEN_FORM': 'onFormOpen',
-        'CLOSE_FORM': 'onFormClose',
+        'OPEN_CLOSE_FORM': 'onFormOpenClose',
         'LOGOUT': '_setLoggedOut',
         'SHOW_SIGN_FORM': 'onShowSignForm',
         'SHOW_LOGIN_FORM': 'onShowLoginForm'
@@ -34,12 +35,8 @@ var AuthStore = createStore({
         this.showSignForm = false;
         this.showLoginForm = true;
     },
-    onFormOpen: function(payload){
+    onFormOpenClose: function(payload){
         this.isFormOpened = true;
-        this.emitChange();
-    },
-    onFormClose: function(payload){
-        this.isFormOpened = false;
         this.emitChange();
     },
     getIsLoginFormOpened: function(){
@@ -61,43 +58,68 @@ var AuthStore = createStore({
         this.isLoggingIn = true;
         this.emitChange();
         var self = this;
-        agent
-            .post(api.path + '/login')
-            .type('form')
-            .send({ username: payload.username, password: payload.password })
-            .end(function(err, res){
-                if (err){
-                    self.error = internal;
-                    return self.emitChange();
-                }else{
-                    console.log(res.body.error);
-                    switch (res.body.error) {
-                        case 'INTERNAL' :
-                            self.error = internal;
-                            self.isLoggingIn = false;
-                            return self.emitChange();
-                            break;
-                        case 'NO_USER' :
-                            self.error = no_user;
-                            self.isLoggingIn = false;
-                            return self.emitChange();
-                            break;
-                        case 'WRONG_PASS' :
-                            self.error = wrong_pass;
-                            self.isLoggingIn = false;
-                            return self.emitChange();
-                            break;
-                        default:
-                            return self._setLoggedIn(res.body);
+        if (!payload.username){
+            this.error = empty_user;
+        }
+        if (!payload.password){
+            this.error = empty_pass;
+        }
+        this.emitChange();
+        if (payload.username && payload.password){
+            agent
+                .post(api.path + '/login')
+                .type('form')
+                .send({ username: payload.username, password: payload.password })
+                .end(function(err, res){
+                    if (err){
+                        self.error = internal;
+                        return self.emitChange();
+                    }else{
+                        console.log(res.body.error);
+                        switch (res.body.error) {
+                            case 'INTERNAL' :
+                                self.error = internal;
+                                self.isLoggingIn = false;
+                                return self.emitChange();
+                                break;
+                            case 'NO_USER' :
+                                self.error = no_user;
+                                self.isLoggingIn = false;
+                                return self.emitChange();
+                                break;
+                            case 'WRONG_PASS' :
+                                self.error = wrong_pass;
+                                self.isLoggingIn = false;
+                                return self.emitChange();
+                                break;
+                            default:
+                                return self._setLoggedIn(res.body);
+                        }
                     }
-                }
             });
+        }
+        
     },
     onSendSignUp :  function(payload) { 
         this.isLoggingIn = true;
         this.emitChange();
         var self = this;
-        agent
+        console.log(payload);
+        if (!payload.username.length){
+            this.error = empty_user;
+            this.isLoggingIn = false;
+        }
+        if (!payload.password.length){
+            this.error = empty_pass;
+            this.isLoggingIn = false;
+        }
+        if (!payload.email.length){
+            this.error = empty_email;
+            this.isLoggingIn = false;
+        }  
+        this.emitChange();
+        if (payload.username.length && payload.password.length && payload.email.length){
+            agent
             .post(api.path + '/signup')
             .type('form')
             .send({ username: payload.username, password: payload.password, email: payload.email })
@@ -122,6 +144,8 @@ var AuthStore = createStore({
                     }
                 }
             });
+        }
+        
     },
 //    onSendFacebook: function(payload) {
 //        this.isLoggingIn = true;

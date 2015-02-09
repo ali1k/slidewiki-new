@@ -30,24 +30,26 @@ var LoginPage = React.createClass({
         this.setState(this.getStateFromStores());
     },
    
-    
-   
     render: function() {
+        var output;
         var self = this;
         var loaderClass = "ui blue submit button";
         if (this.state.isLoggingIn){
             loaderClass = "ui blue submit button loading";
         }
-        return (
-            <div className="html ui six wide segment">
-                <div className="ui two column middle aligned relaxed fitted centered stackable grid ">
-                    <div className="column four wide"><LoginForm context={this.props.context} isLoggingIn={self.state.isLoggingIn} /></div>
-                    <div className="ui vertical divider ">
-                      Or
+        if (this.state.isFormOpened){
+            output = <div className="html ui six wide segment">
+                        <div className="ui two column middle aligned relaxed fitted centered stackable grid ">
+                            <div className="column four wide"><LoginForm context={this.props.context} /></div>
+                            <div className="ui vertical divider ">
+                              Or
+                            </div>
+                            <div className="center aligned column four wide"><SignForm context={this.props.context}/></div>
+                        </div>
                     </div>
-                    <div className="center aligned column four wide"><SignForm context={this.props.context} isLoggingIn={self.state.isLoggingIn} /></div>
-                </div>
-            </div>    
+        }
+        return (
+             <div>{output}</div>   
         )
     },
 });
@@ -86,14 +88,19 @@ var LoginForm = React.createClass({
         var userInputClass = "ui left icon input";
         var passInputClass = "ui left icon input";
         var loaderClass = "ui blue submit button";
+        var loginHint;
+        var passHint;
         if (this.state.error){
             if (this.state.error.loginError){
                 userInputClass += ' error';
+                loginHint = <div className="ui pointing tiny label error">{this.state.error.message}</div>
             }
             if (this.state.error.passError){
                 passInputClass += ' error';
+                passHint = <div className="ui pointing tiny label error">{this.state.error.message}</div>
             }
         }
+        
         var outputLogin;
         var self = this;
         if (this.state.showLoginForm){
@@ -104,6 +111,7 @@ var LoginForm = React.createClass({
                                     <input placeholder="Username" ref="username" type="text" />
                                     <i className="user icon"></i>
                                 </div>
+                                {loginHint}                               
                             </div>
                             <div className="field">
                                 <label>Password</label>
@@ -111,6 +119,7 @@ var LoginForm = React.createClass({
                                     <input type="password" ref="password" />
                                     <i className="lock icon"></i>
                                 </div>
+                                {passHint}
                             </div>
                             <div className={loaderClass} onClick={this._handleSubmit}>Login</div>
                         </div>
@@ -157,15 +166,29 @@ var SignForm = React.createClass({
     render: function() {
         var self = this;
         var loaderClass = "ui green submit button";
-        if (self.props.isLoggingIn){
+        if (self.state.isLoggingIn){
             loaderClass = "ui green submit button loading";
         }
         var userInputClass = "ui left icon input";
+        var emailInputClass = "ui left icon input";
+        var passInputClass = "ui left icon input";
+        var loginHint;
+        var passHint;
+        var emailHint;
         
         if (self.state.error){
             if (self.state.error.loginError){
                 userInputClass += ' error';
-            }            
+                loginHint = <div className="ui pointing tiny label red">{this.state.error.message}</div>;
+            }    
+            if (self.state.error.passError){
+                passInputClass += ' error';
+                passHint = <div className="ui pointing tiny label red">{this.state.error.message}</div>;
+            }
+            if (self.state.error.emailError){
+                emailInputClass += ' error';
+                emailHint = <div className="ui pointing tiny label red">{this.state.error.message}</div>
+            }         
         }
         var outputSign;
         if (this.state.showSignForm){
@@ -176,20 +199,23 @@ var SignForm = React.createClass({
                                 <input placeholder="Username" ref="username" type="text" />
                                 <i className="user icon"></i>
                             </div>
+                            {loginHint}
                         </div>
                         <div className="field">
                             <label>Email</label>
-                            <div className="ui left icon input">
+                            <div className={emailInputClass}>
                                 <input placeholder="Email" ref="email" type="text" />
                                 <i className="mail icon"></i>
                             </div>
+                            {emailHint}
                         </div>
                         <div className="field">
                             <label>Password</label>
-                            <div className="ui left icon input">
+                            <div className={passInputClass}>
                                 <input type="password" ref="password" />
                                 <i className="lock icon"></i>
                             </div>
+                            {passHint}
                         </div>
                         <div className={loaderClass} onClick={this._handleSubmit}>SignUp</div>
                         

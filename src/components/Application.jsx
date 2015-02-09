@@ -48,16 +48,12 @@ var Application = React.createClass({
           break;
           
       };
-        if (this.state.isLoginFormOpened){ 
-            loginDiv = <LoginPage context={this.props.context}/>
-        }else{
-            loginDiv = ''
-        }     
+             
       //render content
         return (
             <div>
                   <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
-                        {loginDiv}
+                        <LoginPage context={this.props.context}/>
                       {output}
                   <Footer />
             </div>

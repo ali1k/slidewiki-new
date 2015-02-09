@@ -79,9 +79,9 @@ var UserMenu = React.createClass({
         var self = this;
         var menu;
         if (this.state.isLoggedIn){
-            menu = <DropdownB context = {this.props.context} user = {this.state.currentUser} />;
+            menu = <Dropdown context = {this.props.context} user = {this.state.currentUser} />;
         }else{
-            menu = <LoginButton context = {this.props.context} />;
+            menu = <LoginButton context = {this.props.context} isLoggedIn = {this.state.isLoggedIn} />;
         }
         return (
             <div className="item">{menu}</div>
@@ -90,38 +90,12 @@ var UserMenu = React.createClass({
 });
 
 var Dropdown = React.createClass({
-    getInitialState: function () {
-        return {
-            isOpened : false
-        }        
-    },
-    _handleLogout : function(e){
-        this.props.context.executeAction(loginActions.logOut);
-    },
-    _openMenu: function(e){
-        this.setState({isOpened: true});
-    },
-    render : function(){
-        var self  = this;
-        var visibility = this.state.isOpened ? "visible" : "hidden";
-        var visibilityMenu = "ui inverted " + visibility;
-    return (
-        <div className="ui inverted" onClick={self._openMenu}>                        
-            {this.props.user.username}<i className="dropdown icon"></i>
-            <div className={visibilityMenu}>
-                <div onClick={self._handleLogout}><i>className="sign out icon"</i>Logout</div>
-            </div>
-        </div>
-    )}
-});
-
-var DropdownB = React.createClass({
     _handleLogout : function(e){
         this.props.context.executeAction(loginActions.logOut);
     },
     render : function(){
         var self  = this;
-        var style = {"z-index" : "1000 !important"};
+        var style = {"zIndex" : "1000 !important"};
     return (
         <div className="ui dropdown simple inverted" style={style}>                        
             {this.props.user.username}<i className="dropdown icon"></i>
@@ -133,40 +107,16 @@ var DropdownB = React.createClass({
 });
 
 var LoginButton = React.createClass({
-    mixins: [StoreMixin],
-    statics: {
-      storeListeners: {
-        _onChange: [AuthStore]
-      }
-    },
-    getInitialState: function () {
-        var state = this.getStateFromStores();
-        return state;
-    },
-    getStateFromStores: function () {        
-      return {
-          isLoggedIn: this.getStore(AuthStore).getIsLoggedIn(),
-          isLoginFormOpened: this.getStore(AuthStore).getIsLoginFormOpened(),
-          isLoggingIn: this.getStore(AuthStore).getIsLoggingIn(),
-          currentUser: this.getStore(AuthStore).getCurrentUser(),
-      };
-    },
-
-    _onChange: function() {
-        var state = this.getStateFromStores();
-        this.setState(state);
-    },    
-   
-    _handleOpenForm: function(e){
+    _handleOpenCloseForm: function(e){
         e.preventDefault();
         
-        this.props.context.executeAction(loginActions.openForm, {});
+        this.props.context.executeAction(loginActions.openCloseForm, {});
     },
     render : function(){
         var self = this;
         var style = {cursor : 'pointer'};
        
-        var login = this.state.isLoggedIn ? null : <a style={style} onClick={self._handleOpenForm} > Login </a>
+        var login = this.props.isLoggedIn ? null : <a style={style} onClick={self._handleOpenCloseForm} > Login </a>
         
         return (
             <div>
