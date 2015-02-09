@@ -2,13 +2,20 @@
 var React = require('react');
 var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
+
+
+
+
+
+
 var TreeView = React.createClass({
-  //list of properties for validation
-  propTypes: {
-    selector: React.PropTypes.object,
-    nodes: React.PropTypes.object,
-  },
-  render: function() {
+    //list of properties for validation
+    propTypes: {
+        selector: React.PropTypes.object,
+        nodes: React.PropTypes.object,
+    },
+
+    render: function() {
     //it has a fixed value
     var selector=this.props.selector;
     var context=this.props.context;
@@ -27,18 +34,21 @@ var TreeView = React.createClass({
     if (this.props.nodes.children != null) {
       childNumber=this.props.nodes.children.length;
       childNodes = this.props.nodes.children.map(function(node, index) {
-        return <li key={index} className={index==(childNumber-1)?'last-child':''}>
+        return <li key={index} className={index==(childNumber-1)?'last-child':''} >
                   <TreeView nodes={node} selector={selector} context={context} rootID={rootID} />
                </li>
       });
     }
     var path=this._getPath();
+    
     return (
       <div className="sw-tree-view">
         <div onMouseOver={this._onMouseOver} onMouseOut={this._onMouseOut}>
             <a ref="treeNode" href={path} context={this.props.context} className={nodeClasses} onClick={this._onClick}>
               {this.props.nodes.title}
             </a>
+            
+            
 
             <span ref="actionBar" className="sw-hidden">
               <i className="small ellipsis vertical icon"></i>

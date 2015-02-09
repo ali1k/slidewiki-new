@@ -5,6 +5,9 @@ var StoreMixin = require('fluxible').Mixin;
 var TreeStore = require('../stores/TreeStore');
 var TreeView=require('./TreeView.jsx');
 var deckActions = require('../actions/DeckActions');
+var Container = require('./Container.jsx');
+
+
 
 var TreePanel = React.createClass({
     mixins: [StoreMixin],
@@ -26,6 +29,7 @@ var TreePanel = React.createClass({
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
+    
     render: function() {
 
         var tree
@@ -46,7 +50,7 @@ var TreePanel = React.createClass({
               </div>
 
               <div className="ui bottom attached segment sw-tree-container">
-                <TreeView nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <Container nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>
