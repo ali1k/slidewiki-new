@@ -4,6 +4,11 @@ var agent = require('superagent');
 var debug = require('debug');
 var createStore = require('fluxible/utils/createStore');
 
+//error messages: 
+var internal =  {loginError : true, passError : true, message : 'An internal error occured, please try one more time'};
+var wrong_user =  {loginError : true, passError : true, message : 'The username is already taken, please pick another one'};
+var wrong_pass =  {loginError : false, passError : true, message : 'The username is correct, but the password does not match'};
+var no_user =  {loginError : true, passError : false, message : 'The username is not correct or you are not registered yet'};
 
 
 var AuthStore = createStore({
@@ -13,7 +18,10 @@ var AuthStore = createStore({
         'SEND_FACEBOOK': 'onSendFacebook',
         'SEND_SIGNUP' : 'onSendSignUp',
         'OPEN_FORM': 'onFormOpen',
-        'CLOSE_FORM': 'onFormClose'
+        'CLOSE_FORM': 'onFormClose',
+        'LOGOUT': '_setLoggedOut',
+        'SHOW_SIGN_FORM': 'onShowSignForm',
+        'SHOW_LOGIN_FORM': 'onShowLoginForm'
     },
     
     initialize: function () {
@@ -21,6 +29,10 @@ var AuthStore = createStore({
         this.isLoggedIn = false;
         this.isLoggingIn = false; 
         this.isFormOpened = false;
+        this.openForm = false;
+        this.error = null;
+        this.showSignForm = false;
+        this.showLoginForm = true;
     },
     onFormOpen: function(payload){
         this.isFormOpened = true;
@@ -33,6 +45,18 @@ var AuthStore = createStore({
     getIsLoginFormOpened: function(){
         return this.isFormOpened;
     },
+    onShowSignForm : function(){
+        this.showSignForm = true;
+        this.showLoginForm = false;
+        this.error = null;
+        this.emitChange();
+    },
+    onShowLoginForm : function(){
+        this.showLoginForm = true;
+        this.showSignForm = false;
+        this.error = null;
+        this.emitChange();
+    },
     onSendLogin: function(payload) {
         this.isLoggingIn = true;
         this.emitChange();
@@ -43,16 +67,29 @@ var AuthStore = createStore({
             .send({ username: payload.username, password: payload.password })
             .end(function(err, res){
                 if (err){
-                    debug(err);
-                }
-                if (res.body.id){
-                    debug('res.id');
-                    debug(res.body);
-                    self._setLoggedIn(res.body);
-                    self.emitChange();
+                    self.error = internal;
+                    return self.emitChange();
                 }else{
-                    debug('no res id');
-                    debug(res.body);
+                    console.log(res.body.error);
+                    switch (res.body.error) {
+                        case 'INTERNAL' :
+                            self.error = internal;
+                            self.isLoggingIn = false;
+                            return self.emitChange();
+                            break;
+                        case 'NO_USER' :
+                            self.error = no_user;
+                            self.isLoggingIn = false;
+                            return self.emitChange();
+                            break;
+                        case 'WRONG_PASS' :
+                            self.error = wrong_pass;
+                            self.isLoggingIn = false;
+                            return self.emitChange();
+                            break;
+                        default:
+                            return self._setLoggedIn(res.body);
+                    }
                 }
             });
     },
@@ -66,41 +103,48 @@ var AuthStore = createStore({
             .send({ username: payload.username, password: payload.password, email: payload.email })
             .end(function(err, res){
                 if (err){
-                    debug(err);
-                }
-                if (res.body.id){
-                    debug('res.id');
-                    debug(res.body);
-                    self._setLoggedIn(res.body);
-                    self.emitChange();
+                    self.error = internal;
+                    return self.emitChange();
                 }else{
-                    debug('no res id');
-                    debug(res.body);
+                    switch (res.body.error) {
+                        case 'INTERNAL' :
+                            self.error = internal;
+                            self.isLoggingIn = false;
+                            return self.emitChange();
+                            break;
+                        case 'WRONG_USERNAME' :
+                            self.error = wrong_user;
+                            self.isLoggingIn = false;
+                            return self.emitChange();
+                            break;
+                        default: 
+                            return self._setLoggedIn(res.body);
+                    }
                 }
             });
     },
-    onSendFacebook: function(payload) {
-        this.isLoggingIn = true;
-        this.emitChange();
-        var self = this;
-        agent
-            .get(api.path + '/auth/facebook')
-            .end(function(err, res){
-                console.log(err);
-                if (err){
-                    console.log(err);
-                }
-                if (res.body.id){
-                    console.log('res.id');
-                    console.log(res.body);
-                    self._setLoggedIn(res.body);
-                    self.emitChange();
-                }else{
-                    console.log('no res id');
-                    console.log(res.body);
-                }
-            });
-    },
+//    onSendFacebook: function(payload) {
+//        this.isLoggingIn = true;
+//        this.emitChange();
+//        var self = this;
+//        agent
+//            .get(api.path + '/auth/facebook')
+//            .end(function(err, res){
+//                console.log(err);
+//                if (err){
+//                    console.log(err);
+//                }
+//                if (res.body.id){
+//                    console.log('res.id');
+//                    console.log(res.body);
+//                    self._setLoggedIn(res.body);
+//                    self.emitChange();
+//                }else{
+//                    console.log('no res id');
+//                    console.log(res.body);
+//                }
+//            });
+//    },
     getState: function() {
         
         return {
@@ -108,6 +152,9 @@ var AuthStore = createStore({
             isLoggedIn: this.isLoggedIn,
             isLoggingIn: this.isLoggingIn,
             isFormOpened: this.isFormOpened,
+            showSignForm : this.showSignForm,
+            showLoginForm : this.showLoginForm,
+            error: this.error
         };
         
     },
@@ -126,6 +173,9 @@ var AuthStore = createStore({
         this.isLoggingIn = false;
         this.isLoggedIn = false;
         this.isFormOpened = false;
+        this.showSignForm = false;
+        this.showLoginForm = true;
+        this.error = false;
         return this.emitChange();
     },
     _setLoggedIn: function(user) {
@@ -134,6 +184,9 @@ var AuthStore = createStore({
         this.isLoggedIn = true;
         this.currentUser = user;
         this.isFormOpened = false;
+        this.showSignForm = false;
+        this.showLoginForm = true;
+        this.error = false;
         return this.emitChange();
         
     }, 
@@ -145,6 +198,9 @@ var AuthStore = createStore({
         this.isLoggedIn = state.isLoggedIn;
         this.isLoggingIn = state.isLoggingIn; 
         this.isFormOpened = state.isFormOpened;
+        this.showSignForm = state.showSignForm;
+        this.showLoginForm = state.showLoginForm;
+        this.error = state.error;
     }
 });
 

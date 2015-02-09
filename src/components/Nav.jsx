@@ -34,13 +34,13 @@ var Nav = React.createClass({
             });
             
         return (
+          <div>
           <nav id="main_navbar" className="ui menu inverted navbar page grid">
             <a href="/" className="brand item">SlideWiki</a>
             {linkHTML}
-            <LoginButton context={context}/>
-            <UserIcon context={context }/>
-           
+            <UserMenu context={context} />
           </nav>
+        </div> 
         );
     }
 });
@@ -49,8 +49,8 @@ var Nav = React.createClass({
 
 
 
-var UserIcon = React.createClass({
-    displayName: 'UserIcon',
+var UserMenu = React.createClass({
+    displayName: 'UserMenu',
     mixins: [StoreMixin, LocalStorageMixin],
     statics: {
       storeListeners: {
@@ -64,27 +64,72 @@ var UserIcon = React.createClass({
     },
     getStateFromStores: function () { 
         
-      return this.getStore(AuthStore).getState()
+      var state = this.getStore(AuthStore).getState();
+      return state;
          
     },
 
     _onChange: function() {
-        var state = this.getStateFromStores();
-        console.log('userIcon_OnChange:' + this.getStore(AuthStore).getIsLoggedIn()); 
+        var state = this.getStateFromStores();        
         this.setState(state);
     }, 
-    _handleLogout : function(e){
-        console.log('logout');
-    },
+    
+    
     render : function(){
         var self = this;
-        var style = {cursor : 'pointer'};
-        var logout = <a style={style} onClick={self._handleLogout} > Logout </a>
-        var username = this.state.isLoggedIn ? this.state.currentUser.username : null;
+        var menu;
+        if (this.state.isLoggedIn){
+            menu = <DropdownB context = {this.props.context} user = {this.state.currentUser} />;
+        }else{
+            menu = <LoginButton context = {this.props.context} />;
+        }
         return (
-            <div className="item">{username}</div>
+            <div className="item">{menu}</div>
         )
     }
+});
+
+var Dropdown = React.createClass({
+    getInitialState: function () {
+        return {
+            isOpened : false
+        }        
+    },
+    _handleLogout : function(e){
+        this.props.context.executeAction(loginActions.logOut);
+    },
+    _openMenu: function(e){
+        this.setState({isOpened: true});
+    },
+    render : function(){
+        var self  = this;
+        var visibility = this.state.isOpened ? "visible" : "hidden";
+        var visibilityMenu = "ui inverted " + visibility;
+    return (
+        <div className="ui inverted" onClick={self._openMenu}>                        
+            {this.props.user.username}<i className="dropdown icon"></i>
+            <div className={visibilityMenu}>
+                <div onClick={self._handleLogout}><i>className="sign out icon"</i>Logout</div>
+            </div>
+        </div>
+    )}
+});
+
+var DropdownB = React.createClass({
+    _handleLogout : function(e){
+        this.props.context.executeAction(loginActions.logOut);
+    },
+    render : function(){
+        var self  = this;
+        var style = {"z-index" : "1000 !important"};
+    return (
+        <div className="ui dropdown simple inverted" style={style}>                        
+            {this.props.user.username}<i className="dropdown icon"></i>
+            <div className="menu ui inverted" style={style}>
+                <div className = "item"><a onClick={self._handleLogout}>Logout</a></div>
+            </div>
+        </div>
+    )}
 });
 
 var LoginButton = React.createClass({
@@ -116,14 +161,16 @@ var LoginButton = React.createClass({
         e.preventDefault();
         
         this.props.context.executeAction(loginActions.openForm, {});
-        
     },
     render : function(){
         var self = this;
         var style = {cursor : 'pointer'};
+       
+        var login = this.state.isLoggedIn ? null : <a style={style} onClick={self._handleOpenForm} > Login </a>
+        
         return (
-            <div className='item'>
-                <a style={style} onClick={self._handleOpenForm} > Login -> </a>
+            <div>
+                {login}
             </div>
         )
     }
