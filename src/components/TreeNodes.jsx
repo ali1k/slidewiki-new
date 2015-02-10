@@ -6,7 +6,9 @@ var PropTypes = React.PropTypes;
 var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
 
-
+function shorten(title){
+    return title.length > 20 ? title.substring(0, 17) + '...' : title
+}
 
 var TreeNodes = React.createClass({
     mixins: [DragDropMixin],
@@ -87,10 +89,10 @@ var TreeNodes = React.createClass({
         if(this.props.nodes.children) {
             childNumber=this.props.nodes.children.length;
             
-            var output = <ul>
-                {this.props.nodes.children.map(function(node, index) {
+            var output = 
+                <ul>{this.props.nodes.children.map(function(node, index) {
                 return (
-                    <TreeNodes
+                    <li><TreeNodes
                         moveNode = {self.props.moveNode}
                         nodes = {node}
                         key={node.frontId}
@@ -101,23 +103,27 @@ var TreeNodes = React.createClass({
                         frontId={node.frontId}
                         className={index==(childNumber-1)?'last-child':''}
                         ref = {node.frontId}
-                    />
+                    /></li>
                 );
-            })}</ul>}
+            })}</ul>
+        }
+     
         
         return (
-            <div className="sw-tree-view">
-                <div 
-                    onMouseOver={this._onMouseOver} 
-                    onMouseOut={this._onMouseOut} 
-                    {...this.dragSourceFor(ItemTypes.NODE)}
-                    {...this.dropTargetFor(ItemTypes.NODE)}
-                    style ={{
-                        opacity : isDragging? 0.2 : 1
-                    }}
-                    >
-                    <a ref="treeNode" href={path} context={this.props.context} className={nodeClasses} onClick={this._onClick}>
-                      {this.props.nodes.title}
+            
+                <li className="sw-tree-view">
+                    <a ref="treeNode" href={path} context={this.props.context} className={nodeClasses} onClick={this._onClick}
+                        onMouseOver={this._onMouseOver} 
+                        onMouseOut={this._onMouseOut} 
+                        {...this.dragSourceFor(ItemTypes.NODE)}
+                        {...this.dropTargetFor(ItemTypes.NODE)}
+                        style ={{
+                            opacity : isDragging ? 0.3 : 1,
+                            border: isDragging ? "dotted 1px grey" : "none",
+                            backgroundColor : isDragging ? "rgb(255, 244, 176)" : ""
+                        }}
+                    ></li>
+                      {shorten(this.props.nodes.title)}
                     </a>
                     <span ref="actionBar" className="sw-hidden">
                       <i className="small ellipsis vertical icon"></i>
@@ -125,9 +131,10 @@ var TreeNodes = React.createClass({
                       <i className="small teal icon edit link"></i>
                       <i className="small red icon remove link"></i>
                     </span>
-                </div>
-                <div>{output}</div>
-            </div>
+                    
+                    <li>{output}</li>
+                
+           
         );
     },
     _onClick: function(e) {

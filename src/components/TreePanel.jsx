@@ -3,7 +3,6 @@ var React = require('react');
 var StoreMixin = require('fluxible').Mixin;
 
 var TreeStore = require('../stores/TreeStore');
-var TreeView=require('./TreeView.jsx');
 var deckActions = require('../actions/DeckActions');
 var TreeNodes = require('./TreeNodes.jsx');
 

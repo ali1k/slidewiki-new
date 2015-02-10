@@ -8,37 +8,59 @@
 .sw-tree-view a:hover {text-decoration: none}
 
 .sw-tree-view-selected {
-  color:red;
+    color:red;
 }
 .sw-tree-view-over {
-  background-color: rgb(245, 229, 132);
-  cursor: pointer;
+    background-color: rgb(255, 244, 176);
+    cursor: pointer;
 }
-.sw-tree-view-node {
-
-}
-.sw-tree-view ul{
-  list-style-type:none;
-  border-left: 1px grey dotted;
-  margin: 0;
-  padding: 0;
-}
-.sw-tree-view  ul {
-     margin-left: 10px;
+.sw-tree-view,
+.sw-tree-view ul {
+  margin:0;
+  padding:0;
+  list-style:none;
 }
 
-.sw-tree-view  li {
-    margin: 0;
-    padding: 0 12px;
-    line-height: 20px;
+.sw-tree-view ul {
+  margin-left:0.2em; /* indentation */
+  position:relative;
 }
-.sw-tree-view li.last-child {
-  border-bottom: 1px grey dotted;
+
+.sw-tree-view ul ul {margin-left:.1em} /* (indentation/2) */
+
+.sw-tree-view ul:before {
+  content:"";
+  display:block;
+  width:0;
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  border-left:1px dotted;
 }
+
 .sw-tree-view-deck{
-  border-bottom: 1px grey dotted;
-  font-weight: bold;
+    font-weight: bold;
 }
-.sw-tree-view-slide{
 
+.sw-tree-view li {
+  margin:0;
+  padding:0 .5em; /* indentation + .5em */
+  line-height:1.2em; /* default list item's `line-height` */
+  color:#369;
+  position:relative;
 }
+
+.sw-tree-view ul li:before {
+  content:"";
+  display:block;
+  width:.2em; /* same with indentation */
+  height:0;
+  border-top:1px solid;
+  margin-top:-1px; /* border top width */
+  position:absolute;
+  top:1em; /* (line-height/2) */
+  left:0;
+}
+
+
