@@ -14,29 +14,33 @@
     background-color: rgb(255, 244, 176);
     cursor: pointer;
 }
+
+.sw-tree-view-over .sw-tree-view-selected{
+    color: red;
+}
 .sw-tree-view,
 .sw-tree-view ul {
-  margin:0;
-  padding:0;
-  list-style:none;
+    margin:0;
+    padding:0;
+    list-style:none;
 }
 
 .sw-tree-view ul {
-  margin-left:0.2em; /* indentation */
-  position:relative;
+    margin-left:0.5em; /* indentation */
+    position:relative;
 }
 
-.sw-tree-view ul ul {margin-left:.1em} /* (indentation/2) */
+.sw-tree-view ul ul {margin-left:.3em} /* (indentation/2) */
 
 .sw-tree-view ul:before {
-  content:"";
-  display:block;
-  width:0;
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:0;
-  border-left:1px dotted;
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    border-left:1px solid rgba(39, 41, 43, 0.35);
 }
 
 .sw-tree-view-deck{
@@ -44,23 +48,30 @@
 }
 
 .sw-tree-view li {
-  margin:0;
-  padding:0 .5em; /* indentation + .5em */
-  line-height:1.2em; /* default list item's `line-height` */
-  color:#369;
-  position:relative;
+    margin:0;
+    padding:0 1em; /* indentation + .5em */
+    line-height:1.2em; /* default list item's `line-height` */
+    color:#369;
+    position:relative;
 }
 
 .sw-tree-view ul li:before {
-  content:"";
-  display:block;
-  width:.2em; /* same with indentation */
-  height:0;
-  border-top:1px solid;
-  margin-top:-1px; /* border top width */
-  position:absolute;
+    content:"";
+    display:block;
+    width:.5em; /* same with indentation */
+    height:0;
+    border-top:1px solid rgba(39, 41, 43, 0.35);
+    margin-top:-5px; /* border top width */
+    position:absolute;
+    top:1em; /* (line-height/2) */
+    left:0;
+}
+
+.sw-tree-view ul li:last-child:before {
+  background:white; /* same with body background */
+  height:auto;
   top:1em; /* (line-height/2) */
-  left:0;
+  bottom:0;
 }
 
 

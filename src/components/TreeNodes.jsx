@@ -90,7 +90,7 @@ var TreeNodes = React.createClass({
             childNumber=this.props.nodes.children.length;
             
             var output = 
-                <ul>{this.props.nodes.children.map(function(node, index) {
+                this.props.nodes.children.map(function(node, index) {
                 return (
                     <li><TreeNodes
                         moveNode = {self.props.moveNode}
@@ -105,26 +105,30 @@ var TreeNodes = React.createClass({
                         ref = {node.frontId}
                     /></li>
                 );
-            })}</ul>
+            })
         }
      
         
         return (
-            
-                <li className="sw-tree-view">
-                    <a ref="treeNode" href={path} context={this.props.context} className={nodeClasses} onClick={this._onClick}
-                        onMouseOver={this._onMouseOver} 
-                        onMouseOut={this._onMouseOut} 
-                        {...this.dragSourceFor(ItemTypes.NODE)}
+                <div className="sw-tree-view">
+                    <div {...this.dragSourceFor(ItemTypes.NODE)}
                         {...this.dropTargetFor(ItemTypes.NODE)}
                         style ={{
                             opacity : isDragging ? 0.3 : 1,
                             border: isDragging ? "dotted 1px grey" : "none",
                             backgroundColor : isDragging ? "rgb(255, 244, 176)" : ""
                         }}
-                    ></li>
+                    >
+                    <a ref="treeNode" 
+                        href={path} 
+                        context={this.props.context} 
+                        className={nodeClasses} 
+                        onClick={this._onClick} 
+                        onMouseOver={this._onMouseOver}
+                        onMouseOut={this._onMouseOut} 
+                    >
                       {shorten(this.props.nodes.title)}
-                    </a>
+                    </a></div>
                     <span ref="actionBar" className="sw-hidden">
                       <i className="small ellipsis vertical icon"></i>
                       {this.props.nodes.type=='deck'? <i className="small blue icon add link"></i> :''}
@@ -132,9 +136,8 @@ var TreeNodes = React.createClass({
                       <i className="small red icon remove link"></i>
                     </span>
                     
-                    <li>{output}</li>
-                
-           
+                    <ul>{output}</ul>
+                </div>
         );
     },
     _onClick: function(e) {
