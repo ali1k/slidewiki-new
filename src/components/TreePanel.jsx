@@ -5,8 +5,7 @@ var StoreMixin = require('fluxible').Mixin;
 var TreeStore = require('../stores/TreeStore');
 var TreeView=require('./TreeView.jsx');
 var deckActions = require('../actions/DeckActions');
-var Container = require('./Container.jsx');
-var Node = require('./Node.jsx');
+var TreeNodes = require('./TreeNodes.jsx');
 
 
 
@@ -47,24 +46,31 @@ var TreePanel = React.createClass({
     },
     moveNode : function(item, targetDeck, frontAfterId) {
         var frontId = item.frontId;
-        var parentDeck = item.parentDeck;
-        var parentState = item.parentDeck.state;
-        var targetState = targetDeck.state;
-        var node = parentState.nodes.children.filter(function(i){return i.frontId===frontId})[0];  
-        
-        var afterNode = targetState.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];   
-        var nodeIndex = parentState.nodes.children.indexOf(node);
-        var afterIndex = targetState.nodes.children.indexOf(afterNode);
-        parentState.nodes.children.splice(nodeIndex, 1);
-        targetState.nodes.children.splice(afterIndex, 0, node);
-        item.parentDeck = targetDeck;
-        
-        parentDeck.setState(parentState);
-        targetDeck.setState(targetState);
-        item.targetDeck = targetDeck;
+        //set moving state for opacity
         if(targetDeck.refs[item.frontId]){
             targetDeck.refs[item.frontId].setState({isDragging : true});
         }
+        var parentDeck = item.parentDeck;
+        var parentState = item.parentDeck.state;
+        var targetState = targetDeck.state;
+        //search a moving node
+        var node = parentState.nodes.children.filter(function(i){return i.frontId===frontId})[0];  
+        //search a current place for dropping
+        var afterNode = targetState.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];   
+        var nodeIndex = parentState.nodes.children.indexOf(node);
+        var afterIndex = targetState.nodes.children.indexOf(afterNode);
+        //remove moving node
+        parentState.nodes.children.splice(nodeIndex, 1);
+        //insert moving node to a new place
+        targetState.nodes.children.splice(afterIndex, 0, node);
+        //update current deck
+        item.parentDeck = targetDeck;
+        //update both source and target decks
+        parentDeck.setState(parentState);
+        targetDeck.setState(targetState);
+        //update moving item
+        item.targetDeck = targetDeck;
+        
     },
     
     render: function() {
@@ -87,7 +93,7 @@ var TreePanel = React.createClass({
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
-                <Node nodes={this.state.nodes} parentDeck={null} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <TreeNodes nodes={this.state.nodes} parentDeck={null} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>
