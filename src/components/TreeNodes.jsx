@@ -111,24 +111,40 @@ var TreeNodes = React.createClass({
         
         return (
                 <div className="sw-tree-view">
-                    <div {...this.dragSourceFor(ItemTypes.NODE)}
-                        {...this.dropTargetFor(ItemTypes.NODE)}
-                        style ={{
-                            opacity : isDragging ? 0.3 : 1,
-                            border: isDragging ? "dotted 1px grey" : "none",
-                            backgroundColor : isDragging ? "rgb(255, 244, 176)" : ""
+                    <div style ={{
+                            position : "relative",
+                            zIndex : 1,                            
+                            opacity : isDragging ? 0 : 1
                         }}
                     >
-                    <a ref="treeNode" 
-                        href={path} 
-                        context={this.props.context} 
-                        className={nodeClasses} 
-                        onClick={this._onClick} 
-                        onMouseOver={this._onMouseOver}
-                        onMouseOut={this._onMouseOut} 
-                    >
-                      {shorten(this.props.nodes.title)}
-                    </a></div>
+                        <a ref="treeNode" 
+                            href={path} 
+                            context={this.props.context} 
+                            className={nodeClasses} 
+                            onClick={this._onClick} 
+                            onMouseOver={this._onMouseOver}
+                            onMouseOut={this._onMouseOut} 
+                        >
+                          {shorten(this.props.nodes.title)}
+                        </a>
+                            <div  {...this.dropTargetFor(ItemTypes.NODE)} {...this.dragSourceFor(ItemTypes.NODE)} style = {{
+                                        position : "absolute", 
+                                        top : "0", bottom : "0", 
+                                        zIndex : 1000,
+                                        opacity : isDragging ? 1 : 0
+                                        }}>
+                            <a ref="treeNode" 
+                                href={path} 
+                                context={this.props.context} 
+                                className={nodeClasses} 
+                                onClick={this._onClick} 
+                                onMouseOver={this._onMouseOver}
+                                onMouseOut={this._onMouseOut} 
+                            >
+                                {shorten(this.props.nodes.title)}
+                            </a>
+                        </div>
+                    </div>
                     <span ref="actionBar" className="sw-hidden">
                       <i className="small ellipsis vertical icon"></i>
                       {this.props.nodes.type=='deck'? <i className="small blue icon add link"></i> :''}
