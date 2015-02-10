@@ -17,7 +17,21 @@ var TreePanel = React.createClass({
       }
     },
     getInitialState: function () {
-      return this.getStateFromStores();
+        var state = this.getStateFromStores();
+        var nodes = state.nodes;
+        nodes.frontId = nodes.type+nodes.id;
+        if (nodes.children){
+            var new_nodes = nodes.children.map(function(node){
+            
+                var new_node = node;
+                new_node.frontId = node.type+node.id;
+                return new_node
+            });
+            nodes.children = new_nodes;
+        } 
+        state.nodes = nodes;
+        return state;
+        
     },
     getStateFromStores: function () {
       return {
@@ -28,6 +42,15 @@ var TreePanel = React.createClass({
     },
     _onChange: function() {
       this.setState(this.getStateFromStores());
+    },
+    moveNode : function(frontId, frontAfterId) {
+        var node = this.state.nodes.children.filter(function(i){return i.frontId===frontId})[0];
+        var afterNode = this.state.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];        
+        var nodeIndex = this.state.nodes.children.indexOf(node);        
+        var afterIndex = this.state.nodes.children.indexOf(afterNode);
+        this.state.nodes.children.splice(nodeIndex, 1);
+        this.state.nodes.children.splice(afterIndex, 0, node);
+        this.setState({nodes : this.state.nodes});
     },
     
     render: function() {
@@ -48,9 +71,9 @@ var TreePanel = React.createClass({
                   <i className="red remove icon"></i>
                 </div>
               </div>
-
+              
               <div className="ui bottom attached segment sw-tree-container">
-                <Container nodes={this.state.nodes} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <Container nodes={this.state.nodes} moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>
