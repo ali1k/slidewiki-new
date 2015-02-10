@@ -6,6 +6,7 @@ var TreeStore = require('../stores/TreeStore');
 var TreeView=require('./TreeView.jsx');
 var deckActions = require('../actions/DeckActions');
 var Container = require('./Container.jsx');
+var Node = require('./Node.jsx');
 
 
 
@@ -25,6 +26,7 @@ var TreePanel = React.createClass({
             
                 var new_node = node;
                 new_node.frontId = node.type+node.id;
+                new_node.key = new_node.frontId;                
                 return new_node
             });
             nodes.children = new_nodes;
@@ -43,14 +45,26 @@ var TreePanel = React.createClass({
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
-    moveNode : function(frontId, frontAfterId) {
-        var node = this.state.nodes.children.filter(function(i){return i.frontId===frontId})[0];
-        var afterNode = this.state.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];        
-        var nodeIndex = this.state.nodes.children.indexOf(node);        
-        var afterIndex = this.state.nodes.children.indexOf(afterNode);
-        this.state.nodes.children.splice(nodeIndex, 1);
-        this.state.nodes.children.splice(afterIndex, 0, node);
-        this.setState({nodes : this.state.nodes});
+    moveNode : function(item, targetDeck, frontAfterId) {
+        var frontId = item.frontId;
+        var parentDeck = item.parentDeck;
+        var parentState = item.parentDeck.state;
+        var targetState = targetDeck.state;
+        var node = parentState.nodes.children.filter(function(i){return i.frontId===frontId})[0];  
+        
+        var afterNode = targetState.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];   
+        var nodeIndex = parentState.nodes.children.indexOf(node);
+        var afterIndex = targetState.nodes.children.indexOf(afterNode);
+        parentState.nodes.children.splice(nodeIndex, 1);
+        targetState.nodes.children.splice(afterIndex, 0, node);
+        item.parentDeck = targetDeck;
+        
+        parentDeck.setState(parentState);
+        targetDeck.setState(targetState);
+        item.targetDeck = targetDeck;
+        if(targetDeck.refs[item.frontId]){
+            targetDeck.refs[item.frontId].setState({isDragging : true});
+        }
     },
     
     render: function() {
@@ -73,7 +87,7 @@ var TreePanel = React.createClass({
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
-                <Container nodes={this.state.nodes} moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <Node nodes={this.state.nodes} parentDeck={null} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>
