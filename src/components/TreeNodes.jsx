@@ -111,6 +111,7 @@ var TreeNodes = React.createClass({
         
         return (
                 <div className="sw-tree-view">
+                    <div style = {{outline : isDragging ? "dotted 1px" : "none"}}>
                     <div style ={{
                             position : "relative",
                             zIndex : 1,                            
@@ -131,8 +132,9 @@ var TreeNodes = React.createClass({
                                         position : "absolute", 
                                         top : "0", bottom : "0", 
                                         zIndex : 1000,
-                                        opacity : isDragging ? 1 : 0
-                                        }}>
+                                        opacity : isDragging ? 1 : 0,
+                                        width : "100%"
+                            }}>
                             <a ref="treeNode" 
                                 href={path} 
                                 context={this.props.context} 
@@ -144,7 +146,7 @@ var TreeNodes = React.createClass({
                                 {shorten(this.props.nodes.title)}
                             </a>
                         </div>
-                    </div>
+                    </div></div>
                     <span ref="actionBar" className="sw-hidden">
                       <i className="small ellipsis vertical icon"></i>
                       {this.props.nodes.type=='deck'? <i className="small blue icon add link"></i> :''}
