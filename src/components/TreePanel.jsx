@@ -92,7 +92,7 @@ var TreePanel = React.createClass({
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
-                <TreeNodes nodes={this.state.nodes} parentDeck={null} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <TreeNodes nodes={this.state.nodes} parentDeck={null} isOpened={true} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>

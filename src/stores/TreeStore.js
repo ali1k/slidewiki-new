@@ -10,7 +10,9 @@ module.exports = createStore({
     'SHOW_DECK_TREE_START': '_showDeckTreeStart',
     'SHOW_DECK_TREE_FAILURE': '_showDeckTreeFailure',
     'SHOW_DECK_TREE_SUCCESS': '_showDeckTreeSuccess',
-    'UPDATE_TREE_NODE_SELECTOR': '_updateSelector'
+    'UPDATE_TREE_NODE_SELECTOR': '_updateSelector',
+    'OPEN_CLOSE_TREE' : '_openCloseTree',
+    'SET_IS_DRAGGING' : '_setIsDragging'
   },
   initialize: function() {
     //tree nodes
@@ -19,6 +21,16 @@ module.exports = createStore({
     this.selector = {};
     //holds a breadcrumb based on the selector
     this.breadcrumb = [];
+    this.isOpened = false;
+    this.isDragging = false;
+  },
+  _openCloseTree : function(){
+     this.isOpened = !this.isOpened;
+     this.emitChange();        
+  },
+  _setIsDragging : function(payload){
+      this.isDragging = payload.state;
+      this.emitChange();
   },
   _showDeckTreeStart: function(res) {
     debug('Start loading the deck tree...');
@@ -119,16 +131,29 @@ module.exports = createStore({
   getSelector: function() {
     return this.selector;
   },
+  getState: function(){
+      return {
+        nodes: this.nodes,
+        selector: this.selector,
+        breadcrumb: this.breadcrumb,
+        isOpened: this.isOpened,
+        isDragging : this.isDragging
+    };
+  },
   dehydrate: function() {
     return {
       nodes: this.nodes,
       selector: this.selector,
       breadcrumb: this.breadcrumb,
+      isOpened: this.isOpened,
+      isDragging : this.isDragging
     };
   },
   rehydrate: function(state) {
     this.nodes = state.nodes;
     this.selector = state.selector;
     this.breadcrumb = state.breadcrumb;
+    this.isOpened = state.isOpened;
+    this.isDragging = state.isDragging;
   }
 });

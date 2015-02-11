@@ -33,7 +33,8 @@ var TreeNodes = React.createClass({
         
         return {
             isDragging : false,
-            nodes : nodes
+            nodes : nodes,
+            isOpened : this.props.isOpened || false
         };
     },
         configureDragDrop : function(registerType) {
@@ -41,7 +42,7 @@ var TreeNodes = React.createClass({
         registerType(ItemTypes.NODE, {
             dragSource: {
                 beginDrag : function() {
-                    this.setState({nodes : this.state.nodes, isDragging : true});
+                    this.setState({nodes : this.state.nodes, isDragging : true, isOpened : false});
                     return {
                         item: {
                             frontId: this.props.frontId,
@@ -51,7 +52,7 @@ var TreeNodes = React.createClass({
                     };
                 },
                 endDrag : function(){
-                    self.setState({nodes : this.state.nodes, isDragging : false});
+                    self.setState({nodes : this.state.nodes, isDragging : false, isOpened: true});
                 }
             },
             dropTarget: {
@@ -59,7 +60,7 @@ var TreeNodes = React.createClass({
                     this.props.moveNode(item, this.props.parentDeck, this.props.frontId);
                 },
                 acceptDrop : function(item) {
-                    item.targetDeck.refs[item.frontId].setState({isDragging : false});
+                    item.targetDeck.refs[item.frontId].setState({isDragging : false, isOpened : true});
                 }
             }
         });
@@ -86,7 +87,7 @@ var TreeNodes = React.createClass({
         var self = this;
         //handling child nodes
         var childNodes, childNumber = 0;
-        if(this.props.nodes.children) {
+        if(this.props.nodes.children && this.state.isOpened) {
             childNumber=this.props.nodes.children.length;
             
             var output = 
@@ -107,7 +108,7 @@ var TreeNodes = React.createClass({
                 );
             })
         }
-     
+        var nodeIcon = this.state.isOpened ? <i className="icon caret down"></i> : <i className="icon caret right"></i>;
         
         return (
                 <div className="sw-tree-view">
@@ -117,7 +118,7 @@ var TreeNodes = React.createClass({
                             zIndex : 1,                            
                             opacity : isDragging ? 0 : 1
                         }}
-                    >
+                    >   {nodeIcon}
                         <a ref="treeNode" 
                             href={path} 
                             context={this.props.context} 
