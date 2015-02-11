@@ -11,7 +11,7 @@
     color:red;
 }
 .sw-tree-view-over {
-    background-color: rgb(255, 244, 176);
+    background-color: rgb(255, 244, 176) !important;
     cursor: pointer;
 }
 
@@ -20,7 +20,7 @@
 }
 .sw-tree-view,
 .sw-tree-view ul {
-    margin:0;
+    margin:0 0;
     padding:0;
     list-style:none;
 }
@@ -51,8 +51,12 @@
     margin:0;
     padding:0 1em; /* indentation + .5em */
     line-height:1.2em; /* default list item's `line-height` */
-    color:#369;
+    color: rgba(39, 41, 43, 0.35);
     position:relative;
+}
+.sw-tree-view .icon.caret {
+    margin : 0 0 0 0px !important;
+    z-index: 1000;
 }
 
 .sw-tree-view ul li:before {

@@ -18,9 +18,11 @@ app.rehydrate(dehydratedState, function (err, context) {
     var mountNode = document.getElementById('app');
 
     bootstrapDebug('React Rendering');
+    
     React.render(app.getAppComponent()({
         context: context.getComponentContext()
     }), mountNode, function () {
         bootstrapDebug('React Rendered');
+        console.log(mountNode.innerHTML);
     });
 });

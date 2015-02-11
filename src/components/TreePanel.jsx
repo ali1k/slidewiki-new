@@ -46,27 +46,30 @@ var TreePanel = React.createClass({
     moveNode : function(item, targetDeck, frontAfterId) {
         var frontId = item.frontId;
         //set moving state for opacity
-        if(targetDeck.refs[item.frontId]){
-            targetDeck.refs[item.frontId].setState({isDragging : true});
-        }
+        
         var parentDeck = item.parentDeck;
         var parentState = item.parentDeck.state;
         var targetState = targetDeck.state;
         //search a moving node
-        var node = parentState.nodes.children.filter(function(i){return i.frontId===frontId})[0];  
+        var node = parentState.item.children.filter(function(i){return i.frontId===frontId})[0];  
         //search a current place for dropping
-        var afterNode = targetState.nodes.children.filter(function(i){return i.frontId===frontAfterId})[0];   
-        var nodeIndex = parentState.nodes.children.indexOf(node);
-        var afterIndex = targetState.nodes.children.indexOf(afterNode);
+        var afterNode = targetState.item.children.filter(function(i){return i.frontId===frontAfterId})[0];   
+        var nodeIndex = parentState.item.children.indexOf(node);
+        var afterIndex = targetState.item.children.indexOf(afterNode);
         //remove moving node
-        parentState.nodes.children.splice(nodeIndex, 1);
+        parentState.item.children.splice(nodeIndex, 1);
         //insert moving node to a new place
-        targetState.nodes.children.splice(afterIndex, 0, node);
+        targetState.item.children.splice(afterIndex, 0, node);
         //update current deck
         item.parentDeck = targetDeck;
         //update both source and target decks
-        parentDeck.setState(parentState);
-        targetDeck.setState(targetState);
+        if(targetDeck.refs[item.frontId]){
+            
+            targetDeck.refs[item.frontId].setState({isDragging : true});
+            console.log(targetDeck.refs[item.frontId]);
+        }
+        //parentDeck.setState(parentState);
+        //targetDeck.setState(targetState);
         //update moving item
         item.targetDeck = targetDeck;
         
@@ -92,7 +95,7 @@ var TreePanel = React.createClass({
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
-                <TreeNodes nodes={this.state.nodes} parentDeck={null} isOpened={true} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <TreeNodes item={this.state.nodes} parentDeck={null} isOpened={true} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
               </div>
             </div>
           </div>
