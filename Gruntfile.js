@@ -17,6 +17,12 @@ module.exports = function (grunt) {
 				dest: 'build/css/bundle.css',
 			},
 		},
+		cssmin: {
+			dist: {
+				src: ['build/css/bundle.css'],
+				dest: 'build/css/bundle.min.css',
+			},
+		},			
         copy: {
 			js: {
 				cwd: './src/assets/js/',  // set working folder / root to copy
@@ -69,6 +75,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['clean:dist', 'copy:js',  'concat', 'concurrent:dev']);
+    grunt.registerTask('default', ['clean:dist', 'copy:js',  'concat', 'cssmin','concurrent:dev']);
     
 };
