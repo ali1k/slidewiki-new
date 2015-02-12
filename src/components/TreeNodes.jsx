@@ -95,12 +95,12 @@ var TreeNodes = React.createClass({
         e.preventDefault();
     },
     _onDragEnter : function(e) {
-        var dropCandidate = {parentID : this.props.parentID, position : this.props.position, ref : this.props.ref, index : this.props.index};
-        this.props.context.executeAction(treeActions.checkDropPossible, {dropCandidate : dropCandidate});
+        var dropCandidate = {parentID : this.props.item.parentID, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.f_index};
+        this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
     },
     _onDragStart : function(e) {
-        var draggingItem = {parentID : this.props.parentID, position : this.props.position, index : this.props.index};
-        this.props.context.executeAction(treeActions._onDragStart, {draggingItem : draggingItem});
+        var draggingItem = {f_index : this.props.item.f_index, type : this.props.item.type};
+        this.props.context.executeAction(treeActions._onDragStart, draggingItem);
     },
     _onDragEnd : function(e) {
         //e.dataTransfer.setData("Text", e.target.id);

@@ -28,6 +28,7 @@ module.exports = createStore({
         this.dragging = {};
         this.opened = [];
     },
+    //::    [{}] * [] * fn => fn({})
     _getElementByIndex : function(nodes, indexes_array, done){
         if (indexes_array.size === 1){ 
             var first = indexes_array.first();
@@ -38,11 +39,11 @@ module.exports = createStore({
         }        
     },
     _onDragStart: function (payload) {
-        this.dragging = payload.draggingItem;
+        this.dragging = payload;
         this.emitChange();
     },
-    //::    {source_deck : {f_index : f_index}, {target_deck : {f_index : f_incex}}, fn => fb(bool)
-    _isCausingLoop: function(payload, done){         
+    //::    {{source_deck : {f_index : f_index}, {target_deck : {f_index : f_incex}} * fn => fb(bool)
+    _isCausingLoop: function(payload, done){
         var deckId = payload.target_deck.id;
         var itemId = payload.source_deck.id;
         var self = this;
@@ -50,7 +51,7 @@ module.exports = createStore({
             if (itemId === deckId) {
                 return done(true); //the moving causing loop
             } else {
-                self._getParentOfItem(payload.target, function(new_parent){
+                self._getParentOfItem(payload.target_deck, function(new_parent){
                     if (new_parent){
                         deckId = new_parent.id; 
                     }else{
@@ -61,29 +62,41 @@ module.exports = createStore({
         }
         return done(false); //the moving does not cause loop
     },
-    
-    _checkDropPossible : function(payload){ //{node : {f_index : f_index}}
+    //::     {f_index : f_index} * this.dragging => console.log(bool)
+    _checkDropPossible : function(payload){ 
+        var self = this;
         if (this.dragging){
-            var self = this;
-            var myImmutable = Immutable.List(payload.node.f_index.split(':')); //array of indexes, must not be mutated
-            var indexes_array = myImmutable; //mutable copy
-            self._getElementByIndex(self.nodes.children, indexes_array, function(node){ //the drop candidate node
-                if (node.type === 'slide'){
-                    self._getParentOfItem(payload, function(parent){
-                        console.log(parent);
-                    });                    
-                }else{ //item is a deck
-                    
-                }
-            });
+           
+            if (this.dragging.type === 'slide'){
+                console.log(true);
+            }else{
+                
+                var myImmutable = Immutable.List(payload.f_index.split(':')); //array of indexes, must not be mutated
+                var indexes_array = myImmutable; //mutable copy
+                self._getElementByIndex(self.nodes.children, indexes_array, function(node){ //the drop target node
+                    if (node.type === 'slide'){
+                        self._getParentOfItem(payload, function(parent){ //get a parentdeck of drop target
+                            self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){ 
+                                console.log(!res);
+                            });
+                        });                    
+                    }else{ //dropping target is a deck
+                        self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
+                            console.log(!res);
+                        });
+                    }
+                });
+            }
+            
         }else{ //this must not happen however...
-            console.log('false');
+            console.log(false);
         };
     },
-    _getParentOfItem : function(payload, callback){ //{node : {f_index : f_index}}
-        if (payload.node.f_index.length){
+    //::    {f_index : f_index} * fn * this.nodes => fn(this.node)
+    _getParentOfItem : function(payload, callback){ 
+        if (payload.f_index.length){
             var self = this;
-            var myImmutable = Immutable.List(payload.node.f_index.split(':')); //Immutable array of indexes
+            var myImmutable = Immutable.List(payload.f_index.split(':')); //Immutable array of indexes
             var indexes_array = myImmutable; //mutable copy
             var parent_index = indexes_array.pop();
             if (parent_index) { //parent is NOT a root
@@ -133,7 +146,6 @@ module.exports = createStore({
     _showDeckTreeSuccess: function (res) {
         debug('Success in loading deck tree!');
         this.nodes = this._setIndexes(res.nodes);
-        console.log(this.nodes);
         this.selector = res.selector;
         //console.log('change emitted by Tree store!');
         this.emitChange();
