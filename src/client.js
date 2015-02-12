@@ -23,6 +23,6 @@ app.rehydrate(dehydratedState, function (err, context) {
         context: context.getComponentContext()
     }), mountNode, function () {
         bootstrapDebug('React Rendered');
-        console.log(mountNode.innerHTML);
+       
     });
 });

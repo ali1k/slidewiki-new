@@ -1,89 +1,17 @@
 'use strict';
 var React = require('react');
-var DragDropMixin = require('react-dnd').DragDropMixin;
 var ItemTypes = require('../configs/ItemTypes');
-var PropTypes = React.PropTypes;
 var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
-var Promise = require('es6-promise').Promise;
+var treeActions = require('../actions/TreeActions');
 
 function shorten(title){
     return title.length > 20 ? title.substring(0, 17) + '...' : title
 }
 
 var TreeNodes = React.createClass({
-    mixins: [DragDropMixin],
-    propTypes: {
-        moveNode: PropTypes.func.isRequired,
-        parentDeck: PropTypes.any.isRequired,
-        frontId:PropTypes.any.isRequired,
-    },
-    getInitialState: function(){
-        return {
-            isDragging : false,
-            item : this.props.item,
-            isOpened : this.props.isOpened || false
-        };
-    },
-    configureDragDrop : function(registerType) {
-        var self = this;
-        registerType(ItemTypes.NODE, {
-            dragSource: {
-                beginDrag : function() {
-                    this.setState({isDragging : true, isOpened : false});
-                    return {
-                        item: {
-                            frontId: this.props.frontId,
-                            parentDeck: this.props.parentDeck,
-                            targetDeck:self
-                        }
-                    };
-                },
-                endDrag : function(){
-                    self.setState({isDragging : false, isOpened : false})
-                }
-            },
-            dropTarget: {
-                over : function(item) {
-                    if (this.props.frontId !== item.frontId){
-                        if (this.state.item.type === "deck"){                            
-                            var frontId = item.frontId;
-                            var targetDeck = self;
-                            var parentDeck = item.parentDeck;
-                            var parentState = item.parentDeck.state;
-                            var targetState = this.state;
-                            this.state.isOpened = true;
-                            //search a moving node
-                            var node = parentState.item.children.filter(function(i){return i.frontId===frontId})[0];  
-                            var nodeIndex = parentState.item.children.indexOf(node);
-                            //remove moving node
-                            item.targetDeck = self; 
-                            item.parentDeck = self;
-                            parentState.item.children.splice(nodeIndex, 1);
-                            //unshift moving node to a new place
-                            this.state.item.children.unshift(node);
-                            parentDeck.setState({item : parentState.item});
-                            //set moving state for opacity
-                            if(this.refs[item.frontId]){
-                                this.setState({isOpened : true});
-                                this.refs[item.frontId].setState({isDragging : true, isOpened : false});
-                            }
-                        }else{
-                            this.props.moveNode(item, this.props.parentDeck, this.props.frontId);
-                        }
-                    }
-                },
-                acceptDrop : function(item) {
-                    if (item){
-                        item.targetDeck.refs[item.frontId].setState({isDragging : false, isOpened : false});
-                    }
-                }
-            }
-        });
-    },
-    render : function() {
-        var isDragging = this.state.isDragging;
-      
+    
+    render : function() {      
         var self = this;
         //it has a fixed value
         var selector=this.props.selector;
@@ -92,6 +20,13 @@ var TreeNodes = React.createClass({
         
         //handling css classes
         var isSelected= (this.props.item.type==this.props.selector.type && this.props.item.id==this.props.selector.id);
+        var isDragging;
+        if (this.props.dragging) {
+            isDragging = (this.props.item.type==this.props.dragging.type && this.props.item.id==this.props.dragging.id);
+        } else {
+            isDragging = false;
+        };
+        var isDraggable= (!(this.props.item.type=="deck" && this.props.item.id==this.props.rootID));
 
         //cx is used to handle adding classes by condition
         var nodeClasses = cx({
@@ -101,41 +36,37 @@ var TreeNodes = React.createClass({
             'sw-tree-view-slide': this.props.item.type=='slide'
         });
         var path=this._getPath();
-        var self = this;
+
         //handling child nodes
         var childNodes, childNumber = 0;
-        if(this.state.item.children && this.state.isOpened) {
-            childNumber=this.props.item.children.length;
-            
+        if(this.props.item.children) {
+            childNumber=this.props.item.children.length;            
             var output = 
                 this.props.item.children.map(function(node, index) {
                 return (
-                    <li><TreeNodes
-                        moveNode = {self.props.moveNode}
+                   <li key={node.type + node.id}>
+                    <TreeNodes
                         item = {node}
-                        key={node.type + node.id}
-                        frontId={node.type + node.id}
-                        selector={self.props.selector}
-                        context={self.props.context} 
+                        position={index + 1}
+                        f_index={node.f_index}
+                        parentID={self.props.item.id}
                         rootID={self.props.rootID}
-                        parentDeck={self}
+                        ref={node.type + node.id}
+                        selector={self.props.selector}
+                        dragging={self.props.dragging}
+                        context={self.props.context} 
                         className={index==(childNumber-1)?'last-child':''}
-                        ref = {node.type + node.id}
+
                     /></li>
                 );
             })
         }
-        var nodeIcon = this.state.item.type==="deck" && this.state.isOpened ? <i className="icon caret down"></i> : <i className="icon caret right"></i>;
+        //var nodeIcon = this.props.item.type==="deck" && this.state.isOpened ? <i className="icon caret down"></i> : <i className="icon caret right"></i>;
         
         return (
                 <div className="sw-tree-view">
-                    <div style = {{outline : isDragging ? "dotted 1px" : "none"}}>
-                    <div style ={{
-                            position : "relative",
-                            zIndex : 1,                            
-                            opacity : isDragging ? 0 : 1
-                        }}
-                    >   {nodeIcon}
+                    <div draggable = {isDraggable} onDragEnter={this._onDragEnter} onDragStart = {this._onDragStart} onDrag = {this._onDrag} onDragEnd = {this._onDragEnd} onDrop = {this._onDrop}>
+                        
                         <a ref="treeNode" 
                             href={path} 
                             context={this.props.context} 
@@ -144,48 +75,52 @@ var TreeNodes = React.createClass({
                             onMouseOver={this._onMouseOver}
                             onMouseOut={this._onMouseOut} 
                         >
-                          {shorten(this.props.item.title)}
+                            {shorten(this.props.item.title)}
                         </a>
-                            <div  {...this.dragSourceFor(ItemTypes.NODE)} {...this.dropTargetFor(ItemTypes.NODE)}  style = {{
-                                        position : "absolute", 
-                                        top : "0", bottom : "0", 
-                                        zIndex : 1000,
-                                        opacity : isDragging ? 1 : 0,
-                                        width : "100%"
-                            }}>
-                            <a ref="treeNode" 
-                                href={path} 
-                                context={this.props.context} 
-                                className={nodeClasses} 
-                                onClick={this._onClick} 
-                                onMouseOver={this._onMouseOver}
-                                onMouseOut={this._onMouseOut} 
-                            >
-                                {shorten(this.props.item.title)}
-                            </a>
-                        </div>
-                    </div></div>
-                    <span ref="actionBar" className="sw-hidden">
-                      <i className="small ellipsis vertical icon"></i>
-                      {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
-                      <i className="small teal icon edit link"></i>
-                      <i className="small red icon remove link"></i>
-                    </span>
-                    
+                       
+                        <span ref="actionBar" className="sw-hidden">
+                          <i className="small ellipsis vertical icon"></i>
+                          {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
+                          <i className="small teal icon edit link"></i>
+                          <i className="small red icon remove link"></i>
+                        </span>
+                    </div>
                     <ul>{output}</ul>
                 </div>
         );
     },
     _onClick: function(e) {
+        
         this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
         e.preventDefault();
+    },
+    _onDragEnter : function(e) {
+        var dropCandidate = {parentID : this.props.parentID, position : this.props.position, ref : this.props.ref, index : this.props.index};
+        this.props.context.executeAction(treeActions.checkDropPossible, {dropCandidate : dropCandidate});
+    },
+    _onDragStart : function(e) {
+        var draggingItem = {parentID : this.props.parentID, position : this.props.position, index : this.props.index};
+        this.props.context.executeAction(treeActions._onDragStart, {draggingItem : draggingItem});
+    },
+    _onDragEnd : function(e) {
+        //e.dataTransfer.setData("Text", e.target.id);
+        //e.preventDefault();
+    },
+    _onDrop : function(e) {
+        var data = event.dataTransfer.getData("Text");
+        //e.dataTransfer.setData("Text", e.target.id);
+        //e.preventDefault();
+    },
+    _onDrag: function(e) {
+        e.preventDefault();
+
+        
     },
     _getPath: function() {
         return '/deck/'+this.props.rootID+'/'+this.props.item.type + '/' + this.props.item.id;
     },
     //ToDo: add states for onMouseOver and onMouseOut events if needed
     _onMouseOver: function(e) {
-        //console.log(e.target);
         var current = this.refs.treeNode.getDOMNode();
         current.className += " sw-tree-view-over"
         var actionBar = this.refs.actionBar.getDOMNode();

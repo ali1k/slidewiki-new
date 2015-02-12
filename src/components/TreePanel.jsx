@@ -16,28 +16,14 @@ var TreePanel = React.createClass({
       }
     },
     getInitialState: function () {
-        var state = this.getStateFromStores();
-        var nodes = state.nodes;
-        nodes.frontId = nodes.type+nodes.id;
-        if (nodes.children){
-            var new_nodes = nodes.children.map(function(node){
-            
-                var new_node = node;
-                new_node.frontId = node.type+node.id;
-                new_node.key = new_node.frontId;                
-                return new_node
-            });
-            nodes.children = new_nodes;
-        } 
-        state.nodes = nodes;
-        return state;
-        
+       return this.getStateFromStores();
     },
     getStateFromStores: function () {
       return {
           error: this.getStore(TreeStore).getError(),
           nodes: this.getStore(TreeStore).getNodes(),
-          selector: this.getStore(TreeStore).getSelector()
+          selector: this.getStore(TreeStore).getSelector(),
+          dragging: this.getStore(TreeStore).getDragging()
       };
     },
     _onChange: function() {
@@ -78,7 +64,7 @@ var TreePanel = React.createClass({
     render: function() {
 
         var tree
-        var addButton=this.state.selector.type=='slide' ? <i className="blue add icon disabled"></i> : <i className="blue add icon"></i>
+        var addButton=this.state.selector.type=='slide' ? <i className="blue add icon disabled"></i> : <i className="blue add icon"></i>;
         if (!this.state.error) {
           tree = <div className="sw-tree-panel">
             <div className="panel">
@@ -95,7 +81,19 @@ var TreePanel = React.createClass({
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
-                <TreeNodes item={this.state.nodes} parentDeck={null} isOpened={true} frontId="{null}" moveNode={this.moveNode} selector={this.state.selector} context={this.props.context} rootID={this.state.nodes.id}/>
+                <TreeNodes 
+                            key={'deck'+this.state.nodes.id}
+                            item={this.state.nodes}
+                            position={1} 
+                            f_index={''}
+                            parentID={0}
+                            rootID={this.state.nodes.id}
+                            selector={this.state.selector} 
+                            dragging={this.state.dragging}
+                            isOpened={true} 
+                            context={this.props.context}
+                            ref={'deck'+this.state.nodes.id}
+                />
               </div>
             </div>
           </div>
