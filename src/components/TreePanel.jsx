@@ -23,7 +23,8 @@ var TreePanel = React.createClass({
           error: this.getStore(TreeStore).getError(),
           nodes: this.getStore(TreeStore).getNodes(),
           selector: this.getStore(TreeStore).getSelector(),
-          dragging: this.getStore(TreeStore).getDragging()
+          dragging: this.getStore(TreeStore).getDragging(),
+          allowDrop: this.getStore(TreeStore).getAllowDrop()
       };
     },
     _onChange: function() {
@@ -93,6 +94,7 @@ var TreePanel = React.createClass({
                             isOpened={true} 
                             context={this.props.context}
                             ref={'deck'+this.state.nodes.id}
+                            allowDrop={this.state.allowDrop}
                 />
               </div>
             </div>

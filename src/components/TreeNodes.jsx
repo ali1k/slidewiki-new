@@ -54,6 +54,7 @@ var TreeNodes = React.createClass({
                         ref={node.type + node.id}
                         selector={self.props.selector}
                         dragging={self.props.dragging}
+                        allowDrop={self.props.allowDrop}
                         context={self.props.context} 
                         className={index==(childNumber-1)?'last-child':''}
 
@@ -65,7 +66,7 @@ var TreeNodes = React.createClass({
         
         return (
                 <div className="sw-tree-view">
-                    <div draggable = {isDraggable} onDragEnter={this._onDragEnter} onDragStart = {this._onDragStart} onDrag = {this._onDrag} onDragEnd = {this._onDragEnd} onDrop = {this._onDrop}>
+                    <div draggable = {isDraggable} onDragOver={this._onDragOver} onDragEnter={this._onDragEnter} onDragStart = {this._onDragStart} onDrag = {this._onDrag} onDragEnd = {this._onDragEnd} onDrop = {this._onDrop}>
                         
                         <a ref="treeNode" 
                             href={path} 
@@ -98,6 +99,11 @@ var TreeNodes = React.createClass({
         var dropCandidate = {parentID : this.props.item.parentID, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.f_index};
         this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
     },
+    _onDragOver: function(e){
+        if (this.props.allowDrop){
+            e.preventDefault();
+        }
+    },
     _onDragStart : function(e) {
         var draggingItem = {f_index : this.props.item.f_index, type : this.props.item.type};
         this.props.context.executeAction(treeActions._onDragStart, draggingItem);
@@ -111,11 +117,7 @@ var TreeNodes = React.createClass({
         //e.dataTransfer.setData("Text", e.target.id);
         //e.preventDefault();
     },
-    _onDrag: function(e) {
-        e.preventDefault();
-
-        
-    },
+          
     _getPath: function() {
         return '/deck/'+this.props.rootID+'/'+this.props.item.type + '/' + this.props.item.id;
     },

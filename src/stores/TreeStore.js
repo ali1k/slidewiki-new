@@ -15,7 +15,8 @@ module.exports = createStore({
         'SHOW_DECK_TREE_SUCCESS': '_showDeckTreeSuccess',
         'UPDATE_TREE_NODE_SELECTOR': '_updateSelector',
         'ON_DRAG_START': '_onDragStart',
-        'CHECK_DROP_POSSIBLE' : '_checkDropPossible'
+        'CHECK_DROP_POSSIBLE' : '_checkDropPossible',
+        
     },
     initialize: function () {
         //tree nodes
@@ -27,6 +28,7 @@ module.exports = createStore({
         //holds a dragging item
         this.dragging = {};
         this.opened = [];
+        this.allowDrop = false;
     },
     //::    [{}] * [] * fn => fn({})
     _getElementByIndex : function(nodes, indexes_array, done){
@@ -62,13 +64,14 @@ module.exports = createStore({
         }
         return done(false); //the moving does not cause loop
     },
-    //::     {f_index : f_index} * this.dragging => console.log(bool)
-    _checkDropPossible : function(payload){ 
+    //::     {f_index : f_index} * this.dragging * fn => fn(bool)
+    _checkDropPossible : function(payload, done){ 
         var self = this;
         if (this.dragging){
            
             if (this.dragging.type === 'slide'){
-                console.log(true);
+                self.allowDrop = true;
+                self.emitChange();
             }else{
                 
                 var myImmutable = Immutable.List(payload.f_index.split(':')); //array of indexes, must not be mutated
@@ -77,20 +80,20 @@ module.exports = createStore({
                     if (node.type === 'slide'){
                         self._getParentOfItem(payload, function(parent){ //get a parentdeck of drop target
                             self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){ 
-                                console.log(!res);
+                                self.allowDrop = !res;
+                                self.emitChange();
                             });
                         });                    
                     }else{ //dropping target is a deck
                         self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
-                            console.log(!res);
+                            self.allowDrop = !res;
+                            self.emitChange();
                         });
                     }
                 });
             }
             
-        }else{ //this must not happen however...
-            console.log(false);
-        };
+        }
     },
     //::    {f_index : f_index} * fn * this.nodes => fn(this.node)
     _getParentOfItem : function(payload, callback){ 
@@ -237,13 +240,17 @@ module.exports = createStore({
     getSelector: function () {
         return this.selector;
     },
+    getAllowDrop: function() {
+        return this.allowDrop;
+    },
     getState: function () {
         return {
             nodes: this.nodes,
             selector: this.selector,
             breadcrumb: this.breadcrumb,
             isOpened: this.isOpened,
-            dragging: this.dragging
+            dragging: this.dragging,
+            allowDrop: this.allowDrop
         };
     },
     dehydrate: function () {
@@ -252,7 +259,8 @@ module.exports = createStore({
             selector: this.selector,
             breadcrumb: this.breadcrumb,
             isOpened: this.isOpened,
-            dragging: this.dragging
+            dragging: this.dragging,
+            allowDrop: this.allowDrop
         };
     },
     rehydrate: function (state) {
@@ -261,5 +269,6 @@ module.exports = createStore({
         this.breadcrumb = state.breadcrumb;
         this.isOpened = state.isOpened;
         this.dragging = state.dragging;
+        this.allowDrop = state.allowDrop;
     }
 });

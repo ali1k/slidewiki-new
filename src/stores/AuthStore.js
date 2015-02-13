@@ -75,8 +75,8 @@ var AuthStore = createStore({
                         self.error = internal;
                         return self.emitChange();
                     }else{
-                        console.log(res.body.error);
-                        switch (res.body.error) {
+                        debug(res.body.error[0]);
+                        switch (res.body.error[0]) {
                             case 'INTERNAL' :
                                 self.error = internal;
                                 self.isLoggingIn = false;
@@ -128,7 +128,7 @@ var AuthStore = createStore({
                     self.error = internal;
                     return self.emitChange();
                 }else{
-                    switch (res.body.error) {
+                    switch (res.body.error[0]) {
                         case 'INTERNAL' :
                             self.error = internal;
                             self.isLoggingIn = false;
