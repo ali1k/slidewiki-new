@@ -85,8 +85,7 @@ var TreePanel = React.createClass({
                 <TreeNodes 
                             key={'deck'+this.state.nodes.id}
                             item={this.state.nodes}
-                            position={1} 
-                            f_index={''}
+                            position={1}
                             parentID={0}
                             rootID={this.state.nodes.id}
                             selector={this.state.selector} 

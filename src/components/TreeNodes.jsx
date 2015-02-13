@@ -6,7 +6,7 @@ var navigateAction = require('flux-router-component/actions/navigate');
 var treeActions = require('../actions/TreeActions');
 
 function shorten(title){
-    return title.length > 20 ? title.substring(0, 17) + '...' : title
+    return title.length > 20 ? title.substring(0, 17) + '...' : title;
 }
 
 var TreeNodes = React.createClass({
@@ -48,7 +48,6 @@ var TreeNodes = React.createClass({
                     <TreeNodes
                         item = {node}
                         position={index + 1}
-                        f_index={node.f_index}
                         parentID={self.props.item.id}
                         rootID={self.props.rootID}
                         ref={node.type + node.id}
@@ -65,20 +64,51 @@ var TreeNodes = React.createClass({
         //var nodeIcon = this.props.item.type==="deck" && this.state.isOpened ? <i className="icon caret down"></i> : <i className="icon caret right"></i>;
         
         return (
+                
                 <div className="sw-tree-view">
-                    <div draggable = {isDraggable} onDragOver={this._onDragOver} onDragEnter={this._onDragEnter} onDragStart = {this._onDragStart} onDrag = {this._onDrag} onDragEnd = {this._onDragEnd} onDrop = {this._onDrop}>
-                        
-                        <a ref="treeNode" 
-                            href={path} 
-                            context={this.props.context} 
-                            className={nodeClasses} 
-                            onClick={this._onClick} 
-                            onMouseOver={this._onMouseOver}
-                            onMouseOut={this._onMouseOut} 
-                        >
-                            {shorten(this.props.item.title)}
-                        </a>
-                       
+                    <div style = {{outline : isDragging ? "dotted 1px" : "none"}}>
+                        <div style ={{
+                            position : "relative",
+                            zIndex : 1,                            
+                            opacity : isDragging ? 0 : 1
+                        }}
+                        >   
+                          
+                            <a ref="treeNode" 
+                                href={path} 
+                                context={this.props.context} 
+                                className={nodeClasses} 
+                                onClick={this._onClick} 
+                                onMouseOver={this._onMouseOver}
+                                onMouseOut={this._onMouseOut} 
+                            >
+                              {shorten(this.props.item.title)}
+                            </a>
+                            <div draggable = {isDraggable}
+                                onDragEnter={this._onDragEnter} 
+                                onDragStart = {this._onDragStart}
+                                onDrop = {this._onDrop}
+                                style = {{
+                                        position : "absolute", 
+                                        top : "0", bottom : "0", 
+                                        zIndex : 1000,
+                                        opacity : isDragging ? 1 : 0,
+                                        width : "100%"
+                                }}>
+                            >
+
+                                <a ref="treeNode" 
+                                    href={path} 
+                                    context={this.props.context} 
+                                    className={nodeClasses} 
+                                    onClick={this._onClick} 
+                                    onMouseOver={this._onMouseOver}
+                                    onMouseOut={this._onMouseOut} 
+                                >
+                                    {shorten(this.props.item.title)}
+                                </a>
+                            </div>
+                        </div>
                         <span ref="actionBar" className="sw-hidden">
                           <i className="small ellipsis vertical icon"></i>
                           {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
@@ -95,29 +125,21 @@ var TreeNodes = React.createClass({
         this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
         e.preventDefault();
     },
-    _onDragEnter : function(e) {
-        var dropCandidate = {parentID : this.props.item.parentID, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.f_index};
-        this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-    },
-    _onDragOver: function(e){
-        if (this.props.allowDrop){
-            e.preventDefault();
-        }
-    },
     _onDragStart : function(e) {
-        var draggingItem = {f_index : this.props.item.f_index, type : this.props.item.type};
+        
+        var draggingItem = {f_index : this.props.item.f_index, type : this.props.item.type, id : this.props.item.id};
         this.props.context.executeAction(treeActions._onDragStart, draggingItem);
     },
-    _onDragEnd : function(e) {
-        //e.dataTransfer.setData("Text", e.target.id);
-        //e.preventDefault();
-    },
+    _onDragEnter: function(e){
+        
+            var dropCandidate = {id : this.props.item.id, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
+            this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
+        
+    },   
     _onDrop : function(e) {
-        var data = event.dataTransfer.getData("Text");
-        //e.dataTransfer.setData("Text", e.target.id);
-        //e.preventDefault();
-    },
-          
+        this.props.context.executeAction(treeActions._onDrop)
+        
+    },  
     _getPath: function() {
         return '/deck/'+this.props.rootID+'/'+this.props.item.type + '/' + this.props.item.id;
     },
