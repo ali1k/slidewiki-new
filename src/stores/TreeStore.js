@@ -215,10 +215,7 @@ module.exports = createStore({
     },
     //:: {f_index : f_index} * this.dragging * this.nodes => fn()
 move_item : function(payload){
-        console.log('Moving item');
-        console.log('====================');
-        if (this.allowDrop){    
-            console.log('Drop is allowed for source ' + this.dragging.id + 'and target ' + payload.id);
+        if (this.allowDrop){ 
             var self = this;           
             this.processing = true;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
@@ -227,48 +224,27 @@ move_item : function(payload){
             var promiseTarget = new Promise(function(resolve, reject) {
                 self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node 
                     if (!node) {node = self.nodes;}
-                    console.log('Found target element');
-                    console.log(node);
-                    
                     if (node) {
-                        console.log('succeedtarget');
                         resolve(node);
-                    }else {
-                        reject(Error("It broke"));
                     }
                 });
             });
-            var self = this;
             var new_myImmutable = Immutable.List(self._transformIndexToArray(self.dragging.f_index)); //array of indexes, must not be mutated
             var new_indexes_array = new_myImmutable; //mutable copy
             var promiseDragging = new Promise(function(resolve, reject){             
                 self._getElementByIndex(self.nodes, new_indexes_array, function(dragging_node){ //dragging node
-                    console.log('Found dragging element');
-                    console.log(dragging_node);
                     if (dragging_node){
-                        console.log('succedfragging');
                         resolve(dragging_node);
-                    }else{
-                        reject(Error('it broke'));
                     }
                 });                
             });            
-//            promiseTarget.then(function(result) {
-//                console.log(result); // "Stuff worked!"
-//            }, function(err) {
-//                console.log(err); // Error: "It broke"
-//            });
-//            
-
-            
             Promise.all([promiseTarget, promiseDragging]).then(function(result) {
                 var node = result[0];
                 var dragging_node = result[1];
                 if (node.type === 'slide'){ //add item after the slide
                     var after_index = myImmutable.last();
                     var futureF_index_ar = myImmutable.set(-1, after_index);
-                    var futureF_index = futureF_index_ar.join(':');
-                    
+                    var futureF_index = futureF_index_ar.join(':');                    
                     self.removeFrom({f_index : self.dragging.f_index}, function(){
                         self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
                         self.nodes = self._setIndexes(self.nodes);
@@ -291,14 +267,6 @@ move_item : function(payload){
             
         };
     },
-            
-                
-            
-                
-                
-//                
-            
-  
     _openCloseTree: function () {
         this.isOpened = !this.isOpened;
         this.emitChange();
