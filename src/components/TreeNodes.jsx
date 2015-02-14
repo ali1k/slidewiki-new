@@ -11,6 +11,7 @@ function shorten(title){
 
 var TreeNodes = React.createClass({
     
+    
     render : function() {      
         var self = this;
         //it has a fixed value
@@ -36,14 +37,16 @@ var TreeNodes = React.createClass({
             'sw-tree-view-slide': this.props.item.type=='slide'
         });
         var path=this._getPath();
-
+        
+       
         //handling child nodes
         var childNodes, childNumber = 0;
         if(this.props.item.children) {
-            childNumber=this.props.item.children.length;            
+            childNumber=this.props.item.children.length; 
+             
             var output = 
-                this.props.item.children.map(function(node, index) {
-                return (
+                this.props.item.children.map(function(node, index) {                  
+               return (
                    <li key={node.type + node.id}>
                     <TreeNodes
                         item = {node}
@@ -67,14 +70,14 @@ var TreeNodes = React.createClass({
                 
                 <div className="sw-tree-view">
                     <div style = {{outline : isDragging ? "dotted 1px" : "none"}}>
-                        <div style ={{
+                        <div ref="forTransparency" style ={{
                             position : "relative",
                             zIndex : 1,                            
                             opacity : isDragging ? 0 : 1
-                        }}
+                        }} onDrop = {this._onDrop}
                         >   
                           
-                            <a ref="treeNode" 
+                            <a ref="treeNodeVisible" 
                                 href={path} 
                                 context={this.props.context} 
                                 className={nodeClasses} 
@@ -87,6 +90,8 @@ var TreeNodes = React.createClass({
                             <div draggable = {isDraggable}
                                 onDragEnter={this._onDragEnter} 
                                 onDragStart = {this._onDragStart}
+                                onDragEnd = {this._onDragEnd}
+                                
                                 onDrop = {this._onDrop}
                                 style = {{
                                         position : "absolute", 
@@ -97,7 +102,7 @@ var TreeNodes = React.createClass({
                                 }}>
                             >
 
-                                <a ref="treeNode" 
+                                <a ref="treeNodeTrue" 
                                     href={path} 
                                     context={this.props.context} 
                                     className={nodeClasses} 
@@ -131,27 +136,32 @@ var TreeNodes = React.createClass({
         this.props.context.executeAction(treeActions._onDragStart, draggingItem);
     },
     _onDragEnter: function(e){
-        
-            var dropCandidate = {id : this.props.item.id, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
+        if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
+             var dropCandidate = {id : this.props.item.id, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
             this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-        
+        }      
     },   
-    _onDrop : function(e) {
-        this.props.context.executeAction(treeActions._onDrop)
-        
-    },  
+    _onDragEnd : function(e) {
+        this.props.context.executeAction(treeActions._onDrop, {});
+    }, 
+    _onDrop : function(e){
+        e.preventDefault();
+        this.props.context.executeAction(treeActions._onDrop, {});
+        var current = this.refs.forTransparency.getDOMNode();
+        current.style = {opacity : 1};
+    },
     _getPath: function() {
         return '/deck/'+this.props.rootID+'/'+this.props.item.type + '/' + this.props.item.id;
     },
     //ToDo: add states for onMouseOver and onMouseOut events if needed
     _onMouseOver: function(e) {
-        var current = this.refs.treeNode.getDOMNode();
+        var current = this.refs.treeNodeVisible.getDOMNode();
         current.className += " sw-tree-view-over"
         var actionBar = this.refs.actionBar.getDOMNode();
         actionBar.className ="";
     },
     _onMouseOut: function(e) {
-        var current = this.refs.treeNode.getDOMNode();
+        var current = this.refs.treeNodeVisible.getDOMNode();
         var re = / sw-tree-view-over/gi;
         var newClasses=current.className.replace(re, "");
         current.className=newClasses

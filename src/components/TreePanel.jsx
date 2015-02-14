@@ -30,37 +30,7 @@ var TreePanel = React.createClass({
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
-    moveNode : function(item, targetDeck, frontAfterId) {
-        var frontId = item.frontId;
-        //set moving state for opacity
-        
-        var parentDeck = item.parentDeck;
-        var parentState = item.parentDeck.state;
-        var targetState = targetDeck.state;
-        //search a moving node
-        var node = parentState.item.children.filter(function(i){return i.frontId===frontId})[0];  
-        //search a current place for dropping
-        var afterNode = targetState.item.children.filter(function(i){return i.frontId===frontAfterId})[0];   
-        var nodeIndex = parentState.item.children.indexOf(node);
-        var afterIndex = targetState.item.children.indexOf(afterNode);
-        //remove moving node
-        parentState.item.children.splice(nodeIndex, 1);
-        //insert moving node to a new place
-        targetState.item.children.splice(afterIndex, 0, node);
-        //update current deck
-        item.parentDeck = targetDeck;
-        //update both source and target decks
-        if(targetDeck.refs[item.frontId]){
-            
-            targetDeck.refs[item.frontId].setState({isDragging : true});
-            console.log(targetDeck.refs[item.frontId]);
-        }
-        //parentDeck.setState(parentState);
-        //targetDeck.setState(targetState);
-        //update moving item
-        item.targetDeck = targetDeck;
-        
-    },
+    
     
     render: function() {
 

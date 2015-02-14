@@ -4,6 +4,7 @@ var _ = require('lodash');
 var t = require('t');
 var debug = require('debug');
 var Immutable = require('immutable');
+var async = require('async');
 
 
 
@@ -17,7 +18,8 @@ module.exports = createStore({
         'ON_DRAG_START': '_onDragStart',
         'CHECK_DROP_POSSIBLE' : '_checkDropPossible',
         'MOVE_ITEM' : 'move_item',
-        UPDATE_INDEXES : 'update_indexes'
+        UPDATE_INDEXES : 'update_indexes',
+        'ON_DROP' : '_onDrop'
         
     },
     initialize: function () {
@@ -28,19 +30,20 @@ module.exports = createStore({
         //holds a breadcrumb based on the selector
         this.breadcrumb = [];
         //holds a dragging item
-        this.dragging = {};
+        this.dragging = null;
         this.opened = [];
         this.allowDrop = false;
+        this.processing = false;
     },
     //::    [{}] * [] * fn => fn({})
     _getElementByIndex : function(nodes, indexes_array, done){
         if (indexes_array.size){
             if (indexes_array.size === 1){ 
                 var first = indexes_array.first();
-                return done(nodes[first]);
+                return done(nodes[first - 1]);
             }else{
                 var first = indexes_array.first();
-                this._getElementByIndex(nodes[first].children, indexes_array.shift(), done); //shift array, go to next level
+                this._getElementByIndex(nodes[first - 1].children, indexes_array.shift(), done); //shift array, go to next level
             }
         }else{
             return done(null);
@@ -48,6 +51,12 @@ module.exports = createStore({
     },
     _onDragStart: function (payload) {
         this.dragging = payload;
+        this.emitChange();
+    },
+    _onDrop : function(payload){
+        this.processing = false;
+        this.allowDrop = false;
+        this.dragging = {};
         this.emitChange();
     },
     
@@ -79,25 +88,33 @@ module.exports = createStore({
             if (this.dragging.type === 'slide'){
                 self.allowDrop = true;
                 self.emitChange();
-            }else{
-                
+            }else{                
                 var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
                 var indexes_array = myImmutable; //mutable copy
                 self._getElementByIndex(self.nodes.children, indexes_array, function(node){ //the drop target node
-                    if (node.type === 'slide'){
+                    if (!node) {
+                        self.allowDrop = true; //we are in root
+                    } else{
+                       if (node.type === 'slide'){
                         self._getParentOfItem(payload, function(parent){ //get a parentdeck of drop target
-                            self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){ 
+                            if (!parent){
+                                self.allowDrop = true; //we are in root
+                                self.emitChange();
+                            }else{
+                                self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){ 
+                                    self.allowDrop = !res;
+                                    self.emitChange();
+                                });
+                            }
+                        });                    
+                        }else{ //dropping target is a deck
+                            self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
                                 self.allowDrop = !res;
                                 self.emitChange();
-                                
                             });
-                        });                    
-                    }else{ //dropping target is a deck
-                        self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
-                            self.allowDrop = !res;
-                            self.emitChange();
-                        });
+                        } 
                     }
+                    
                 });
             }
             
@@ -129,20 +146,23 @@ module.exports = createStore({
         this._getParentOfItem(payload, function(parent){
             if (!parent) parent = self.nodes;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var index_in_parent = myImmutable.last();
+            var index_in_parent = myImmutable.last() - 1;
             var new_node = payload.node;
             parent.children.splice(index_in_parent, 0, new_node);
             self.emitChange();
         });
     },
-    removeFrom : function(payload){
+    removeFrom : function(payload, callback){
         var self = this;
         this._getParentOfItem(payload, function(parent){
-             if (!parent) parent = self.nodes;
+            if (!parent) parent = self.nodes;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var index_in_parent = myImmutable.last();
+            var new_indexes_array = myImmutable; //mutable copy
+            if (!new_indexes_array.size) {new_indexes_array = myImmutable.push('0')};
+            var index_in_parent = new_indexes_array.last() - 1;
+            console.log(index_in_parent);
             parent.children.splice(index_in_parent, 1);
-            
+            return callback();
         });
     },
     _transformIndexToArray : function(f_index){
@@ -159,9 +179,9 @@ module.exports = createStore({
     },
     //:: {f_index : f_index} * this.dragging * this.nodes => fn()
     move_item : function(payload){
-        if (this.allowDrop){    
+        if (this.allowDrop && !this.processing){    
             var self = this;           
-            
+            this.processing = true;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
             var indexes_array = myImmutable; //mutable copy
             
@@ -169,20 +189,27 @@ module.exports = createStore({
                 if (!node) {node = self.nodes;}
                 var new_myImmutable = Immutable.List(self._transformIndexToArray(self.dragging.f_index)); //array of indexes, must not be mutated
                 var new_indexes_array = new_myImmutable; //mutable copy
+                if (!new_indexes_array.size) {new_indexes_array = new_myImmutable.push('0')};
                 self._getElementByIndex(self.nodes.children, new_indexes_array, function(dragging_node){ //dragging node
+                   
                     if (node.type === 'slide'){ //add item after the slide
                         var after_index = myImmutable.last();
                         var futureF_index_ar = myImmutable.set(-1, after_index);
                         var futureF_index = futureF_index_ar.join(':');
-                        self.removeFrom({f_index : self.dragging.f_index});
-                        self.insertInto({f_index : futureF_index, node : dragging_node}); //the last element of node.f_index + 1
-                        self.nodes = self._setIndexes(self.nodes);
-                        self.emitChange();
+                            self.removeFrom({f_index : self.dragging.f_index}, function(){
+                                self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
+                            });                        
+                            self.nodes = self._setIndexes(self.nodes);
+                            self.processing = false;
+                            self.emitChange();
                     }else{
-                        self.removeFrom({f_index : self.dragging.f_index});
-                        node.children.unshift(dragging_node);
-                        self.nodes = self._setIndexes(self.nodes);                       
-                        self.emitChange();
+                        
+                            self.removeFrom({f_index : self.dragging.f_index}, function(){
+                                node.children.unshift(dragging_node);
+                            });
+                            self.nodes = self._setIndexes(self.nodes);
+                            self.processing = false;
+                            self.emitChange();
                     }
                 });                
             });
@@ -206,10 +233,11 @@ module.exports = createStore({
         
         var mutated_notes = nodes.children.map(function(node, index){
             node = nodes.children[index];
-            if (nodes.f_index){
-                node.f_index = nodes.f_index + ':' + index;
+            var new_index = index - 0 + 1;
+            if (nodes.f_index){                
+                node.f_index = nodes.f_index + ':' + new_index;
             }else{
-                node.f_index = index;
+                node.f_index = new_index;
             }
             if (self.dragging){
                 if (node.id === self.dragging.id && node.type === self.dragging.type){
@@ -228,6 +256,7 @@ module.exports = createStore({
     _showDeckTreeSuccess: function (res) {
         debug('Success in loading deck tree!');
         this.nodes = this._setIndexes(res.nodes);
+        this.nodes.type = 'deck';
         this.selector = res.selector;
         //console.log('change emitted by Tree store!');
         this.emitChange();
