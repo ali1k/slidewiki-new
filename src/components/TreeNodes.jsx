@@ -10,7 +10,15 @@ function shorten(title){
 }
 
 var TreeNodes = React.createClass({
-    
+    getInitialState: function(){
+        return {
+            isOpened : this.props.isOpened || false
+        }
+    },
+    switchOpened : function(){
+        var newState = this.state.isOpened;
+        this.setState({isOpened : !newState});
+    },
     
     render : function() {      
         var self = this;
@@ -47,11 +55,13 @@ var TreeNodes = React.createClass({
             var output = 
                 this.props.item.children.map(function(node, index) {                  
                return (
-                   <li key={node.type + node.id}>
+                   <li key={self.props.item.id + node.type + node.position + node.id} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
                     <TreeNodes
                         item = {node}
                         position={index + 1}
                         parentID={self.props.item.id}
+                        parent = {self}
+                        parentRef={self.props.ref}
                         rootID={self.props.rootID}
                         ref={node.type + node.id}
                         selector={self.props.selector}
@@ -63,8 +73,11 @@ var TreeNodes = React.createClass({
                     /></li>
                 );
             })
-        }
-        //var nodeIcon = this.props.item.type==="deck" && this.state.isOpened ? <i className="icon caret down"></i> : <i className="icon caret right"></i>;
+        };
+        var nodeIcon;
+                if (this.props.item.type==="deck"){
+                    nodeIcon = this.state.isOpened ? <i className="icon caret down" onClick={self.switchOpened}></i> : <i className="icon caret right" onClick={self.switchOpened}></i>;
+                }
         
         return (
                 
@@ -74,7 +87,7 @@ var TreeNodes = React.createClass({
                             position : "relative",
                             zIndex : 1,                            
                             opacity : isDragging ? 0 : 1
-                        }} onDrop = {this._onDrop}
+                        }} 
                         >   
                           
                             <a ref="treeNodeVisible" 
@@ -84,14 +97,15 @@ var TreeNodes = React.createClass({
                                 onClick={this._onClick} 
                                 onMouseOver={this._onMouseOver}
                                 onMouseOut={this._onMouseOut} 
+                                onDrop = {this.props._onDrop}
                             >
-                              {shorten(this.props.item.title)}
+                            {nodeIcon}{shorten(this.props.item.title)}
                             </a>
                             <div draggable = {isDraggable}
                                 onDragEnter={this._onDragEnter} 
                                 onDragStart = {this._onDragStart}
                                 onDragEnd = {this._onDragEnd}
-                                
+                                onDragOver = {this._onDragOver}
                                 onDrop = {this._onDrop}
                                 style = {{
                                         position : "absolute", 
@@ -125,31 +139,57 @@ var TreeNodes = React.createClass({
                 </div>
         );
     },
+
     _onClick: function(e) {
-        
         this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
         e.preventDefault();
     },
     _onDragStart : function(e) {
-        
-        var draggingItem = {f_index : this.props.item.f_index, type : this.props.item.type, id : this.props.item.id};
+        e.stopPropagation();
+        var draggingItem = {
+            f_index : this.props.item.f_index,
+            type : this.props.item.type, 
+            id : this.props.item.id, 
+            parentID: this.props.parentID, 
+            position: this.props.position,
+            ref: this.props.ref,
+            parentRef : this.props.parentRef};
+        this.setState({isOpened : false});
         this.props.context.executeAction(treeActions._onDragStart, draggingItem);
+        
     },
     _onDragEnter: function(e){
+        e.preventDefault(); // Necessary. Allows us to drop.
+        e.stopPropagation();
+        window.event.returnValue=false; 
         if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
-             var dropCandidate = {id : this.props.item.id, type: this.props.item.type, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
-            this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-        }      
-    },   
-    _onDragEnd : function(e) {
-        this.props.context.executeAction(treeActions._onDrop, {});
-    }, 
-    _onDrop : function(e){
-        e.preventDefault();
-        this.props.context.executeAction(treeActions._onDrop, {});
-        var current = this.refs.forTransparency.getDOMNode();
-        current.style = {opacity : 1};
+            if (this.props.item.type == 'deck'){
+                this.setState({isOpened : true});
+            }else{
+                var dropCandidate = {id : this.props.item.id, type: this.props.item.type, parent: this.props.parentID, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
+                var self = this;
+                this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
+            }
+        }
+
     },
+    _onDragLeave: function(e){
+        if (this.props.item.type === 'deck'){
+            this.setState({'isOpened' : false});
+        }
+    },        
+    _onDragOver: function(e){
+        e.preventDefault(); // Necessary. Allows us to drop.
+        e.stopPropagation();
+        window.event.returnValue=false;
+    },
+    _onDrop : function(e) {
+        e.preventDefault();
+        e.stopPropagation()
+        var dropPlace= {id : this.props.item.id, type: this.props.item.type, position : this.props.position, parentID: this.props.parentID, ref : this.props.ref, f_index : this.props.item.f_index};
+        this.props.context.executeAction(treeActions._onDrop, dropPlace);
+    }, 
+    
     _getPath: function() {
         return '/deck/'+this.props.rootID+'/'+this.props.item.type + '/' + this.props.item.id;
     },

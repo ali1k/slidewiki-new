@@ -4,6 +4,7 @@ var StoreMixin = require('fluxible').Mixin;
 
 var TreeStore = require('../stores/TreeStore');
 var deckActions = require('../actions/DeckActions');
+var treeActions = require('../actions/TreeActions');
 var TreeNodes = require('./TreeNodes.jsx');
 
 
@@ -24,14 +25,27 @@ var TreePanel = React.createClass({
           nodes: this.getStore(TreeStore).getNodes(),
           selector: this.getStore(TreeStore).getSelector(),
           dragging: this.getStore(TreeStore).getDragging(),
-          allowDrop: this.getStore(TreeStore).getAllowDrop()
+          allowDrop: this.getStore(TreeStore).getAllowDrop(),
+          selected: this.getStore(TreeStore).getSelected()
       };
     },
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
-    
-    
+
+    deleteFrom : function(){
+        var payload = this.state.selected;
+        this.props.context.executeAction(treeActions.deleteFrom, payload);
+    },
+    addEmptySlide : function(){
+        var payload = {title: 'New Slide', 
+                       user_id: 3, 
+                       body : '', 
+                       language: 'en', 
+                       position : null };
+        this.props.context.executeAction(treeActions.addEmptySlide, payload);
+    },
+
     render: function() {
 
         var tree
@@ -40,20 +54,20 @@ var TreePanel = React.createClass({
           tree = <div className="sw-tree-panel">
             <div className="panel">
               <div className="3 fluid ui attached small icon buttons">
-                <div className="ui button">
+                <div className="ui button" onClick = {this.addEmptySlide}>
                   {addButton}
                 </div>
                 <div className="ui button">
                   <i className="teal edit icon"></i>
                 </div>
-                <div className="ui button">
+                <div className="ui button" onClick = {this.deleteFrom}>
                   <i className="red remove icon"></i>
                 </div>
               </div>
               
               <div className="ui bottom attached segment sw-tree-container">
                 <TreeNodes 
-                            key={'deck'+this.state.nodes.id}
+                            key={'deck'+this.state.nodes.position+this.state.nodes.id}
                             item={this.state.nodes}
                             position={1}
                             parentID={0}
@@ -63,7 +77,9 @@ var TreePanel = React.createClass({
                             isOpened={true} 
                             context={this.props.context}
                             ref={'deck'+this.state.nodes.id}
+                            parentRef={'0'}
                             allowDrop={this.state.allowDrop}
+                            parent = {this}
                 />
               </div>
             </div>

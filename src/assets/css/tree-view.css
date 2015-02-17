@@ -55,7 +55,7 @@
     position:relative;
 }
 .sw-tree-view .icon.caret {
-    margin : 0 0 0 0px !important;
+    margin : 0 0 0 -15px !important;
     z-index: 1000;
 }
 
@@ -77,5 +77,7 @@
   top:1em; /* (line-height/2) */
   bottom:0;
 }
+
+
 
 

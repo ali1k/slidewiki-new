@@ -5,6 +5,10 @@ var t = require('t');
 var debug = require('debug');
 var Immutable = require('immutable');
 var async = require('async');
+var agent = require('superagent');
+var api = require('../configs/config').api;
+//error messages: 
+var internal =  {message : 'An internal error occured, please try one more time'};
 
 
 
@@ -19,7 +23,9 @@ module.exports = createStore({
         'CHECK_DROP_POSSIBLE' : '_checkDropPossible',
         'MOVE_ITEM' : 'move_item',
         UPDATE_INDEXES : 'update_indexes',
-        'ON_DROP' : '_onDrop'
+        'ON_DROP' : '_onDrop',
+        'DELETE_FROM' : 'delete_from',
+        'ADD_EMPTY_SLIDE' : 'addEmptySlide'
         
     },
     initialize: function () {
@@ -27,24 +33,33 @@ module.exports = createStore({
         this.nodes = {};
         //current node which is selected
         this.selector = {};
+        this.selected = {};
         //holds a breadcrumb based on the selector
         this.breadcrumb = [];
         //holds a dragging item
         this.dragging = null;
         this.opened = [];
         this.allowDrop = false;
-        this.processing = false;
+
+        this.targetDeck = null;
     },
     //::    [{}] * [] * fn => fn({})
     _getElementByIndex : function(nodes, indexes_array, done){
-        this.processing = true;
         if (indexes_array.size){
             if (indexes_array.size === 1){ 
                 var first = indexes_array.first();
-                return done(nodes.children[first - 1]);
+                if (nodes.children[first - 1]){
+                    return done(nodes.children[first-1]);
+                }else{
+                    return done(null);
+                }
             }else{
                 var first = indexes_array.first();
-                this._getElementByIndex(nodes.children[first - 1], indexes_array.shift(), done); //shift array, go to next level
+                if (nodes.children){
+                    this._getElementByIndex(nodes.children[first - 1], indexes_array.shift(), done); //shift array, go to next level
+                }else{
+                    
+                }
             }
         }else{
             return done(null);
@@ -53,40 +68,180 @@ module.exports = createStore({
     _onDragStart: function (payload) {
         this.dragging = payload;
         this.emitChange();
+    },    
+    delete_from : function(payload){
+        var self = this;
+        agent
+            .get(api.path + '/deleteFrom/'+self.selected.parentID+'/'+self.selected.type+'/'+self.selected.id)
+            .end(function(err, res){
+                if (err){
+                    self.error = internal;
+                    return self.emitChange();
+                }
+                else{
+                    self._getParentOfItem({f_index: self.selected.f_index}, function(parent){
+                        if (!parent) {
+                                parent = self.nodes;
+                                parent.type = 'deck';
+                            }
+                        self.removeFrom({f_index: self.selected.f_index}, function(){                            
+                            var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index)); 
+                            var indexes_array = myImmutable; //mutable copy
+                            var new_last = indexes_array.last();
+                            var new_indexes_array = Immutable.List([new_last]);
+                            self._getElementByIndex(parent, new_indexes_array, function(new_selected){ //try to select the next item in the parent
+                                if (new_selected){
+                                    console.log('found new selected');
+                                    console.log(new_selected);
+                                    var new_nodes = self._setIndexes(self.nodes);
+                                    self.nodes = new_nodes;
+                                    new_selected.parentID = parent.id;
+                                    self.selected = new_selected;                                    
+                                    self.selector = {type: new_selected.type, id: new_selected.id};
+                                    return self.emitChange(); 
+                                }else{
+                                    self.nodes = self._setIndexes(self.nodes);
+                                    self.selected = parent;
+                                    self.selector = {type: 'deck', id : parent.id};
+                                    return self.emitChange(); 
+                                }
+                            });
+                        });
+                        self.emitChange();
+                    });
+                }
+            });
     },
+    
+    addEmptySlide : function(payload){
+        //todo for now the user-id '3' is used - change it in treepanel
+        //todo parent_deck_id should be different if slide is selected
+        var self = this;
+        if (self.selected.type === 'deck'){
+            agent
+                .post(api.path + '/slide/new')
+                .type('form')
+                .send({ title: payload.title, 
+                        user_id: payload.user_id, 
+                        body : payload.body, 
+                        language: payload.language, 
+                        position : payload.position, 
+                        parent_deck_id: self.selected.id 
+                    })
+                    .end(function(err, res){
+                        if (err){
+                            self.error = internal;
+                            return self.emitChange();
+                        }
+                        else{
+                            var new_slide = payload;
+                            new_slide.id = res.body.id;
+                            var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index));
+                            var index_in_parent = self.selected.children.length + 1;
+                            var futureF_index_array = myImmutable.push(index_in_parent); //futureIndex
+                            var futureF_index = futureF_index_array.join(':');
+                            new_slide.parentID = self.selected.id;
+                            new_slide.position = index_in_parent;
+                            new_slide.type = 'slide';
+                            new_slide.f_index  = futureF_index;
+                            self.insertInto({f_index : futureF_index, node : new_slide}); 
+                            var new_nodes = self._setIndexes(self.nodes);
+                            self.nodes = new_nodes;
+                            self.selected = new_slide;
+                            self.selector  = {type: 'slide', id: new_slide.id.toString()};
+                            self.emitChange();
+                        }
+                    });
+
+        }else{
+            
+            self._getParentOfItem({f_index : self.selected.f_index}, function(parent){
+                if (!parent) parent = self.nodes;
+                var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index)); //selected slide
+                var after_index = myImmutable.last() - 0 + 1; //new position
+
+                agent
+                .post(api.path + '/slide/new')
+                .type('form')
+                .send({ title: payload.title, 
+                        user_id: payload.user_id, 
+                        body : payload.body, 
+                        language: payload.language, 
+                        position : after_index, 
+                        parent_deck_id: parent.id 
+                    })
+                    .end(function(err, res){
+                        if (err){
+                            self.error = internal;
+                            return self.emitChange();
+                        }
+                        else{
+                            var new_slide = payload;
+                            new_slide.id = res.body.id;
+                            var parent_index = Immutable.List(self._transformIndexToArray(parent.f_index)); //parent f_index
+                            var new_index = parent_index.push(after_index); //new f_index_array;
+                            var futureF_index = new_index.join(':'); 
+                            new_slide.parentID = parent.id;
+                            new_slide.position = after_index;
+                            new_slide.type = 'slide';
+                            self.insertInto({f_index : futureF_index, node : new_slide}); 
+                            var new_nodes = self._setIndexes(self.nodes);
+                            self.nodes = new_nodes;
+                            self.selected = new_slide;
+                            self.selector  = {type: 'slide', id: new_slide.id.toString()};
+                            self.emitChange();
+                        };
+                    });
+            
+            });
+        }
+    },
+    
     _onDrop : function(payload){
-        this.processing = false;
+        console.log('_onDrop');
         this.allowDrop = false;
-        this.dragging = {};
-        this.emitChange();
+        var self = this; 
+        var query = {};
+       
+        query.target = payload.parentID;
+        query.target_position = payload.position;
+        console.log('query: ' + query);
+        agent
+                .get(api.path + '/moveItem/' + self.dragging.parentID + "/" + self.dragging.position + "/" + query.target + "/" + query.target_position) 
+                .end(function(err, res){
+                    if (err){
+                        self.error = internal;
+                        return self.emitChange();
+                    }else{
+                        if (res.body.error){
+                            console.log(res.body.error[0]);
+                        }else{
+                            console.log('_onDrop done');
+                            self.dragging = {};
+                            self.emitChange();
+                        }
+                    }
+                });
+        
     },
     
     //::    {{source_deck : {f_index : f_index, id : id, type : type}, {target_deck : {f_index : f_incex, id : id}} * fn => fb(bool)
     _isCausingLoop: function(payload, done){
-        this.processing = true;
-        console.log(payload);
-        console.log('in isCausingLoop');
+        console.log('_isCausing loop');
         var deckId = payload.target_deck.id;
         var itemId = payload.source_deck.id;
         var targetDeck = payload.target_deck;
-        console.log('target deck is:');
-        console.log(targetDeck);
-        console.log('checking targetDeck ' + deckId + ' sourcedeck ' +itemId);
         var self = this;
         var i = 0;
         while (deckId > 0) {
             i++;
-            console.log('iteration ' + i);
             if (itemId === deckId) {
-                console.log('Causing loop: ' + itemId + ' ' + deckId);
                 return done(true); //the moving causing loop
             } else {
-                console.log('searching parent of ');
-                console.log(targetDeck);
                 self._getParentOfItem(targetDeck, function(new_parent){
                    
                     if (new_parent){ 
-                         console.log('parentOfTarget: ' + new_parent.id);
+                        
                         deckId = new_parent.id; 
                         targetDeck = new_parent;
                     }else{
@@ -96,84 +251,81 @@ module.exports = createStore({
                 });
             }
         }
+        console.log('is causing loop done');
         return done(false); //the moving does not cause loop
     },
     //::     {f_index : f_index} * this.dragging * fn => fn(bool)
     _checkDropPossible : function(payload, done){ 
+        console.log('check_dropPossible');
         var self = this;
-        if (!self.processing && this.dragging){
-            self.processing = true;
-            console.log('dragging: ' + self.dragging.id);
-            console.log('target: ' + payload.id);
+        if (this.dragging){
+
             if (this.dragging.type === 'slide'){
-                console.log('slide: true');
                 self.allowDrop = true;
                 self.emitChange();
-                self.processing = false;
+
             }else{                
                 var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
                 var indexes_array = myImmutable; //mutable copy
                 self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node
-                    console.log('========================');
-                    console.log(node);
                     if (!node) {
                         self.allowDrop = true; //we are in root
+                        console.log('checkdrposs done');
+                        self.emitChange();
                     } else{
                        if (node.type === 'slide'){
                         self._getParentOfItem(payload, function(parent){ //get a parentdeck of drop target
                             if (!parent){
-                                console.log('no_parent: true');
                                 self.allowDrop = true; //we are in root
-                                self.processing = false;
+                                console.log('checkdrposs done');
                                 self.emitChange();
                             }else{
-                                console.log('parent:');
-                                console.log(parent);
                                 self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){
-                                    console.log('ontoslide: ' + !res);
                                     self.allowDrop = !res;
-                                    self.processing = false;
+                                    console.log('checkdrposs done');
                                     self.emitChange();
                                 });
                             }
                         });                    
                         }else{ //dropping target is a deck
-                            self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
-                                console.log('ontodeck: ' + !res);
-                                self.allowDrop = !res;
-                                self.processing = false;
-                                self.emitChange();
-                            });
+                            //self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
+                            //    self.allowDrop = !res;
+                            //    self.processing = false;
+                            //    self.emitChange();
+                            //});
+                            self.allowDrop = false;
+                            console.log('checkdrposs done');
+                            self.emitChange();
                         } 
                     }
                     
                 });
             }
-            
-       
         }else{
+            console.log('checkdrposs done');
             self.sllowDrop = false;
+            self.emitChange();
         }
         
     },
     //::    {f_index : f_index} * fn * this.nodes => fn(this.node)
-    _getParentOfItem : function(payload, callback){ 
+    _getParentOfItem : function(payload, callback){         
         if (payload.f_index.length){
             var self = this;
-           
+            
             var myImmutable_new = Immutable.List(self._transformIndexToArray(payload.f_index)); //Immutable array of indexes
             
             var indexes_array = myImmutable_new; //mutable copy
             var parent_index = indexes_array.pop();
             if (parent_index) { //parent is NOT a root
                 self._getElementByIndex(self.nodes, parent_index, function(parent){ //parent
-                    return callback(parent);
+                    callback(parent);
                 });
             } else { //parent is a root deck
-                return callback(self.nodes);
+                callback(self.nodes);
             } 
         }else{
-            return callback(null);
+            callback(null);
         }
         
     },
@@ -190,13 +342,11 @@ module.exports = createStore({
     },
     removeFrom : function(payload, callback){
         var self = this;
-        this._getParentOfItem(payload, function(parent){
+        this._getParentOfItem(payload, function(parent){            
             if (!parent) parent = self.nodes;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var new_indexes_array = myImmutable; //mutable copy
-            if (!new_indexes_array.size) {new_indexes_array = myImmutable.push('0')};
+            var new_indexes_array = myImmutable; //mutable copy            
             var index_in_parent = new_indexes_array.last() - 1;
-            console.log(index_in_parent);
             parent.children.splice(index_in_parent, 1);
             return callback();
         });
@@ -214,10 +364,9 @@ module.exports = createStore({
         }
     },
     //:: {f_index : f_index} * this.dragging * this.nodes => fn()
-move_item : function(payload){
+    move_item : function(payload){
         if (this.allowDrop){ 
-            var self = this;           
-            this.processing = true;
+            var self = this;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
             var indexes_array = myImmutable; //mutable copy
             
@@ -248,19 +397,17 @@ move_item : function(payload){
                     self.removeFrom({f_index : self.dragging.f_index}, function(){
                         self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
                         self.nodes = self._setIndexes(self.nodes);
-                        self.processing = false;
                         self.emitChange();
                     });                        
                     
                 }
-                else{
-                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-                        node.children.unshift(dragging_node);
-                    });
-                    self.nodes = self._setIndexes(self.nodes);
-                    self.processing = false;
-                    self.emitChange();
-                }
+//                else{
+//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
+//                        node.children.unshift(dragging_node);
+//                    });
+//                    self.nodes = self._setIndexes(self.nodes);
+//                    self.emitChange();
+//                }
             }, function() {
                 console.log('error');
             });
@@ -307,20 +454,58 @@ move_item : function(payload){
     },
     _showDeckTreeSuccess: function (res) {
         debug('Success in loading deck tree!');
+        var self = this;
         this.nodes = this._setIndexes(res.nodes);
         this.nodes.type = 'deck';
+        this.nodes.id = res.selector.id;
         this.selector = res.selector;
+        this.findSelected(res.nodes, function(selected){
+            self.selected = selected;
+        });
         //console.log('change emitted by Tree store!');
         this.emitChange();
-        var self = this;
+        
         
         this._createBreadcrumb(function (path) {
             self.breadcrumb = path;
             self.emitChange();
         });
     },
+    findSelected: function(nodes, callback){
+        var self = this;
+        var node = [];
+        if (self.selector.type === 'deck' && self.selector.id === nodes.id){ //root deck is selected
+            return callback(nodes);
+        }else{
+            var node = nodes.children.filter(function(item){
+                return item.type === self.selector.type && item.id.toString() === self.selector.id;
+            });
+            if (node.length){
+                node[0].parentID = nodes.id;
+                callback(node[0]);
+            }else{
+                nodes.children.map(function(node){
+                    if (node.children){
+                        self.findSelected(node, function(node_child){
+                            if (node_child){
+                                return callback(node_child);
+                            }
+                        });
+                    }
+                });
+            }
+            }
+        
+        
+    },
+   
     _updateSelector: function (res) {
         this.selector = res.selector;
+        var self = this;
+        this.findSelected(this.nodes, function(selected){
+            self.selected = selected;
+        });
+        console.log(this.selected);
         var self = this;
         this._createBreadcrumb(function (path) {
             self.breadcrumb = path;
@@ -377,6 +562,9 @@ move_item : function(payload){
     getError: function () {
         return this.error;
     },
+    getSelected: function(){
+       return this.selected; 
+    },
     //this method checks if we already received the complete tree
     //it is used for preventing rendering/API calls on each request
     //todo: we can change this on update actions to reload tree
@@ -410,7 +598,8 @@ move_item : function(payload){
             breadcrumb: this.breadcrumb,
             isOpened: this.isOpened,
             dragging: this.dragging,
-            allowDrop: this.allowDrop
+            allowDrop: this.allowDrop,
+            selected: this.selected,
         };
     },
     dehydrate: function () {
@@ -420,7 +609,8 @@ move_item : function(payload){
             breadcrumb: this.breadcrumb,
             isOpened: this.isOpened,
             dragging: this.dragging,
-            allowDrop: this.allowDrop
+            allowDrop: this.allowDrop,
+            selected: this.selected,
         };
     },
     rehydrate: function (state) {
@@ -430,5 +620,6 @@ move_item : function(payload){
         this.isOpened = state.isOpened;
         this.dragging = state.dragging;
         this.allowDrop = state.allowDrop;
+        this.selected = state.selected;
     }
 });
