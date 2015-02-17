@@ -256,7 +256,6 @@ module.exports = createStore({
     },
     //::     {f_index : f_index} * this.dragging * fn => fn(bool)
     _checkDropPossible : function(payload, done){ 
-        console.log('check_dropPossible');
         var self = this;
         if (this.dragging){
 
@@ -288,12 +287,12 @@ module.exports = createStore({
                             }
                         });                    
                         }else{ //dropping target is a deck
-                            //self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
-                            //    self.allowDrop = !res;
-                            //    self.processing = false;
-                            //    self.emitChange();
-                            //});
-                            self.allowDrop = false;
+                            self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
+                                self.allowDrop = !res;
+                                self.processing = false;
+                                self.emitChange();
+                            });
+                            //self.allowDrop = false;
                             console.log('checkdrposs done');
                             self.emitChange();
                         } 
@@ -401,13 +400,14 @@ module.exports = createStore({
                     });                        
                     
                 }
-//                else{
-//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-//                        node.children.unshift(dragging_node);
-//                    });
-//                    self.nodes = self._setIndexes(self.nodes);
-//                    self.emitChange();
-//                }
+                else{
+                    self.removeFrom({f_index : self.dragging.f_index}, function(){
+                        node.children.unshift(dragging_node);
+                        self.nodes = self._setIndexes(self.nodes);
+                        self.emitChange();
+                    });
+                    
+                }
             }, function() {
                 console.log('error');
             });

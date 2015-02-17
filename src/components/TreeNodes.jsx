@@ -165,11 +165,11 @@ var TreeNodes = React.createClass({
         if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
             if (this.props.item.type == 'deck'){
                 this.setState({isOpened : true});
-            }else{
+            }
                 var dropCandidate = {id : this.props.item.id, type: this.props.item.type, parent: this.props.parentID, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
                 var self = this;
                 this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-            }
+            
         }
 
     },
