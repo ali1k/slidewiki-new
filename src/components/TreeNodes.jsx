@@ -12,7 +12,8 @@ function shorten(title){
 var TreeNodes = React.createClass({
     getInitialState: function(){
         return {
-            isOpened : this.props.isOpened || false
+            isOpened : this.props.isOpened || false,
+            isOvered : false
         }
     },
     switchOpened : function(){
@@ -35,6 +36,7 @@ var TreeNodes = React.createClass({
         } else {
             isDragging = false;
         };
+        var isOvered = this.state.isOvered;
         var isDraggable= (!(this.props.item.type=="deck" && this.props.item.id==this.props.rootID));
 
         //cx is used to handle adding classes by condition
@@ -89,9 +91,8 @@ var TreeNodes = React.createClass({
                             opacity : isDragging ? 0 : 1
                         }} 
                         >   
-                          
+                            
                             <a ref="treeNodeVisible" 
-                                href={path} 
                                 context={this.props.context} 
                                 className={nodeClasses} 
                                 onClick={this._onClick} 
@@ -101,12 +102,14 @@ var TreeNodes = React.createClass({
                             >
                             {nodeIcon}{shorten(this.props.item.title)}
                             </a>
+                            <div style={{width : '100%', height:'3px', backgroundColor:'yellow', display: isOvered ? 'block' : 'none'}}></div>
                             <div draggable = {isDraggable}
                                 onDragEnter={this._onDragEnter} 
                                 onDragStart = {this._onDragStart}
                                 onDragEnd = {this._onDragEnd}
                                 onDragOver = {this._onDragOver}
                                 onDrop = {this._onDrop}
+                                onDragLeave = {this._onDragLeave}
                                 style = {{
                                         position : "absolute", 
                                         top : "0", bottom : "0", 
@@ -116,8 +119,7 @@ var TreeNodes = React.createClass({
                                 }}>
                             >
 
-                                <a ref="treeNodeTrue" 
-                                    href={path} 
+                                <a ref="treeNodeTrue"
                                     context={this.props.context} 
                                     className={nodeClasses} 
                                     onClick={this._onClick} 
@@ -126,6 +128,7 @@ var TreeNodes = React.createClass({
                                 >
                                     {shorten(this.props.item.title)}
                                 </a>
+                         
                             </div>
                         </div>
                         <span ref="actionBar" className="sw-hidden">
@@ -141,8 +144,10 @@ var TreeNodes = React.createClass({
     },
 
     _onClick: function(e) {
-        this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
+        //this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
         e.preventDefault();
+        this.props.context.executeAction(treeActions._updateSelector, {selector : {type : this.props.item.type, id: this.props.item.id }});
+        
     },
     _onDragStart : function(e) {
         e.stopPropagation();
@@ -159,23 +164,41 @@ var TreeNodes = React.createClass({
         
     },
     _onDragEnter: function(e){
-        e.preventDefault(); // Necessary. Allows us to drop.
-        e.stopPropagation();
-        window.event.returnValue=false; 
-        if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
-            if (this.props.item.type == 'deck'){
-                this.setState({isOpened : true});
+        
+        var dropCandidate = {id : this.props.item.id, type: this.props.item.type, parent: this.props.parentID, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
+        this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
+        if (this.props.allowDrop){
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (this.props.item.type === 'deck'){
+                this.setState({isOpened : true, isOvered : true});
+            }else{
+                this.setState({isOvered : true});
             }
-                var dropCandidate = {id : this.props.item.id, type: this.props.item.type, parent: this.props.parentID, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
-                var self = this;
-                this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-            
-        }
+       }
+        
+        
+
+//        window.event.returnValue=false; 
+//        if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
+//            if (this.props.item.type === 'deck'){
+//                this.setState({isOpened : true});
+//            }
+//                
+//                var self = this;
+//                
+//            
+//        }
 
     },
     _onDragLeave: function(e){
+        e.preventDefault();
+        e.stopPropagation();
         if (this.props.item.type === 'deck'){
-            this.setState({'isOpened' : false});
+            this.setState({isOvered : false});
+        }else{
+            this.setState({isOvered : false});
         }
     },        
     _onDragOver: function(e){
@@ -184,10 +207,13 @@ var TreeNodes = React.createClass({
         window.event.returnValue=false;
     },
     _onDrop : function(e) {
-        e.preventDefault();
-        e.stopPropagation()
-        var dropPlace= {id : this.props.item.id, type: this.props.item.type, position : this.props.position, parentID: this.props.parentID, ref : this.props.ref, f_index : this.props.item.f_index};
-        this.props.context.executeAction(treeActions._onDrop, dropPlace);
+        if (this.props.allowDrop){
+            e.preventDefault();
+            e.stopPropagation();
+            var dropPlace= {id : this.props.item.id, type: this.props.item.type, position : this.props.position, parentID: this.props.parentID, ref : this.props.ref, f_index : this.props.item.f_index};
+            this.props.context.executeAction(treeActions._onDrop, dropPlace);
+            this.setState({isOvered : false});
+        }
     }, 
     
     _getPath: function() {

@@ -9,7 +9,8 @@ exports.deleteFrom = function(context, payload, done){
 
 exports.addEmptySlide = function(context, payload, done){
     context.dispatch('ADD_EMPTY_SLIDE', payload);
-    done();
+    
+    setTimeout(done(), 300);
 };
 
 exports._onDragStart = function(context, payload, done){
@@ -19,12 +20,17 @@ exports._onDragStart = function(context, payload, done){
 
 exports.checkDropPossible = function(context, payload, done){
     context.dispatch('CHECK_DROP_POSSIBLE', payload);
-    context.dispatch('MOVE_ITEM', payload);
+    //context.dispatch('MOVE_ITEM', payload);
     done();
 };
 
 exports._onDrop = function(context, payload, done){
     context.dispatch('ON_DROP', payload);
+    done();
+};
+
+exports._updateSelector = function(context, payload, done){
+    context.dispatch('UPDATE_TREE_NODE_SELECTOR', payload);
     done();
 };
         

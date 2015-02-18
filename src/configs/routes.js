@@ -31,7 +31,7 @@ module.exports = {
         }
     },
     deck: {
-        path: '/deck/:id/:stype?/:sid?/:mode?',
+        path: '/deck/:id/:mode?',
         method: 'get',
         page: 'deck',
         group: 'deck-app',
@@ -40,24 +40,24 @@ module.exports = {
             
             var selector = {};
 //            //mode: view, edit, questions, history, usage, comments, etc.
-            var mode = '';
+//            var mode = '';
             if (payload.params.mode) {
                 //ToDo: restrict modes to a set of predefined modes and give errors on unknown modes
                 mode = payload.params.mode;
             } else {
                 mode = 'view';
             }
-            if (payload.params.stype && payload.params.sid) {
-                selector = {
-                    type: payload.params.stype,
-                    id: payload.params.sid
-                };
-            } else {
+//            if (payload.params.stype && payload.params.sid) {
+//                selector = {
+//                    type: payload.params.stype,
+//                    id: payload.params.sid
+//                };
+//            } else {
                 selector = {
                     type: 'deck',
                     id: payload.params.id
                 };
-            }
+//            }
             
             context.dispatch('UPDATE_PAGE_TITLE', {
                 pageTitle: 'SlideWiki -- Deck ' + payload.params.id + ' > ' +
