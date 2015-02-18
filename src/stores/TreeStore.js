@@ -459,16 +459,15 @@ module.exports = createStore({
         this.nodes.type = 'deck';
         this.nodes.id = res.selector.id;
         this.selector = res.selector;
-        this.findSelected(res.nodes, function(selected){
+        var nodes = this._setIndexes(self.nodes);
+        this.findSelected(nodes, function(selected){
             self.selected = selected;
-        });
-        //console.log('change emitted by Tree store!');
-        this.emitChange();
-        
-        
-        this._createBreadcrumb(function (path) {
-            self.breadcrumb = path;
-            self.emitChange();
+            var f_index = selected.f_index;
+            var f_index_arr = new Immutable.List(self._transformIndexToArray(f_index));
+            self._createBreadcrumb(nodes, f_index_arr, [], function (path) {
+                self.breadcrumb = path;
+                self.emitChange();
+            });
         });
     },
     findSelected: function(nodes, callback){
@@ -502,18 +501,38 @@ module.exports = createStore({
     _updateSelector: function (res) {
         this.selector = res.selector;
         var self = this;
-        this.findSelected(this.nodes, function(selected){
+        this.findSelected(self.nodes, function(selected){
             self.selected = selected;
+            var f_index = self.selected.f_index;
+            
+            var f_index_arr = new Immutable.List(self._transformIndexToArray(f_index));
+            self._createBreadcrumb(self.nodes, f_index_arr, [], function (path) {
+                self.breadcrumb = path;
+                self.emitChange();
+            });
         });
-        console.log(this.selected);
-        var self = this;
-        this._createBreadcrumb(function (path) {
-            self.breadcrumb = path;
-            self.emitChange();
-        })
+        
     },
     //fn callback function
-    _createBreadcrumb: function (fn) {
+    
+    _createBreadcrumb : function(nodes, f_index_array, path_acc, callback){
+        var self = this;
+        path_acc.push({id : nodes.id, title: nodes.title});
+        if (f_index_array){
+                if (f_index_array.size){
+                var first = f_index_array.first();
+                var new_array = f_index_array.splice(0,1);
+                setTimeout(self._createBreadcrumb(nodes.children[first - 1], new_array, path_acc, callback), 0); //shift array, go to next level
+            }else{
+                return callback(path_acc);
+            }
+        }else{
+            return callback(path_acc);
+        }
+        
+    },
+    
+    _createBreadcrumb2: function (fn) {
         var found = 0;
         var self = this;
         //collect first level nodes for DFS
