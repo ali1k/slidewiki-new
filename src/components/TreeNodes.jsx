@@ -162,10 +162,15 @@ var TreeNodes = React.createClass({
         e.preventDefault();
     },
     _onDragStart : function(e) {
-        e.stopPropagation();        
-        var draggingItem = this;
-        this.setState({isOpened : false});
-        this.props.context.executeAction(treeActions._onDragStart, draggingItem);
+        if (this.state.item.id !== this.props.rootID){
+            e.stopPropagation();        
+            var draggingItem = this;
+            this.setState({isOpened : false});
+            this.props.context.executeAction(treeActions._onDragStart, draggingItem);
+        }else{
+            e.preventDefault();
+        }
+        
         
     },
     _onDragEnter: function(e){
