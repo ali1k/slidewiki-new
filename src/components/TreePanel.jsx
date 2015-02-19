@@ -6,7 +6,7 @@ var TreeStore = require('../stores/TreeStore');
 var deckActions = require('../actions/DeckActions');
 var treeActions = require('../actions/TreeActions');
 var TreeNodes = require('./TreeNodes.jsx');
-
+var updateSliderControl = require('../actions/updateSliderControl');
 
 
 var TreePanel = React.createClass({
@@ -38,12 +38,15 @@ var TreePanel = React.createClass({
         this.props.context.executeAction(treeActions.deleteFrom, payload);
     },
     addEmptySlide : function(){
+        var self = this;
         var payload = {title: 'New Slide', 
                        user_id: 3, 
                        body : '', 
                        language: 'en', 
                        position : null };
-        this.props.context.executeAction(treeActions.addEmptySlide, payload);
+        this.props.context.executeAction(treeActions.addEmptySlide, payload, function(){
+            this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/'+this.state.nodes.id+'/slide/' + this.state.selector.id});
+        });
     },
 
     render: function() {
