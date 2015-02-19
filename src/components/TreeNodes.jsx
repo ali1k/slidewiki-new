@@ -141,11 +141,7 @@ var TreeNodes = React.createClass({
     },
 
     _onClick: function(e) {
-<<<<<<< HEAD
-        this.props.context.executeAction(treeActions._updateSelector, {selector : {type: this.props.item.type, id: this.props.item.id}});
-=======
-        this.props.context.executeAction(navigateAction, {type: 'click', url: this._getPath()});
->>>>>>> parent of 954a979... looks like working tree (simple)
+
         e.preventDefault();
     },
     _onDragStart : function(e) {
