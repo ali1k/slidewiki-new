@@ -44,27 +44,27 @@ module.exports = createStore({
         this.targetDeck = null;
     },
     //::    [{}] * [] * fn => fn({})
-    _getElementByIndex : function(nodes, indexes_array, done){
-        if (indexes_array.size){
-            if (indexes_array.size === 1){ 
-                var first = indexes_array.first();
-                if (nodes.children[first - 1]){
-                    return done(nodes.children[first-1]);
-                }else{
-                    return done(null);
-                }
-            }else{
-                var first = indexes_array.first();
-                if (nodes.children){
-                    this._getElementByIndex(nodes.children[first - 1], indexes_array.shift(), done); //shift array, go to next level
-                }else{
-                    
-                }
-            }
-        }else{
-            return done(null);
-        }
-    },
+//    _getElementByIndex : function(nodes, indexes_array, done){
+//        if (indexes_array.size){
+//            if (indexes_array.size === 1){ 
+//                var first = indexes_array.first();
+//                if (nodes.children[first - 1]){
+//                    return done(nodes.children[first-1]);
+//                }else{
+//                    return done(null);
+//                }
+//            }else{
+//                var first = indexes_array.first();
+//                if (nodes.children){
+//                    this._getElementByIndex(nodes.children[first - 1], indexes_array.shift(), done); //shift array, go to next level
+//                }else{
+//                    
+//                }
+//            }
+//        }else{
+//            return done(null);
+//        }
+//    },
     _onDragStart: function (payload) {
         this.dragging = payload;
         this.emitChange();
@@ -198,16 +198,17 @@ module.exports = createStore({
     },
     
     _onDrop : function(payload){
-        console.log('_onDrop');
         this.allowDrop = false;
         var self = this; 
         var query = {};
-       
-        query.target = payload.parentID;
-        query.target_position = payload.position;
-        console.log('query: ' + query);
+        var source_index = payload.source_index + 1;
+        var target_index = payload.target_index + 1;
+        var source = payload.source_parent.id;
+        var target = payload.target_parent.id;
+        console.log(source);
+        console.log(target);
         agent
-                .get(api.path + '/moveItem/' + self.dragging.parentID + "/" + self.dragging.position + "/" + query.target + "/" + query.target_position) 
+                .get(api.path + '/moveItem/' + source + "/" + source_index + "/" + target + "/" + target_index) 
                 .end(function(err, res){
                     if (err){
                         self.error = internal;
@@ -228,192 +229,180 @@ module.exports = createStore({
     //::    {{source_deck : {f_index : f_index, id : id, type : type}, {target_deck : {f_index : f_incex, id : id}} * fn => fb(bool)
     _isCausingLoop: function(payload, done){
         console.log('_isCausing loop');
-        var deckId = payload.target_deck.id;
-        var itemId = payload.source_deck.id;
+        var deckId = payload.target_deck.state.item.id;
+        var itemId = payload.source_deck.state.item.id;
         var targetDeck = payload.target_deck;
-        var self = this;
         var i = 0;
         while (deckId > 0) {
             i++;
             if (itemId === deckId) {
                 return done(true); //the moving causing loop
             } else {
-                self._getParentOfItem(targetDeck, function(new_parent){
-                   
-                    if (new_parent){ 
-                        
-                        deckId = new_parent.id; 
-                        targetDeck = new_parent;
-                    }else{
-                        console.log('no parent for target ' + targetDeck.id);
-                        deckId = -1;
-                    }
-                });
+                var new_parent = targetDeck.props.parent;
+                if (new_parent){    
+                    deckId = new_parent.state.item.id; 
+                    targetDeck = new_parent;
+                }else{                    
+                    deckId = -1;
+                }
+               
             }
         }
-        console.log('is causing loop done');
+        
         return done(false); //the moving does not cause loop
     },
     //::     {f_index : f_index} * this.dragging * fn => fn(bool)
     _checkDropPossible : function(payload, done){ 
         var self = this;
         if (this.dragging){
-
-            if (this.dragging.type === 'slide'){
+            
+            if (this.dragging.state.item.type === 'slide'){
                 self.allowDrop = true;
+                console.log('checkdrposs slide done');
+                console.log(self.allowDrop);
                 self.emitChange();
 
-            }else{                
-                var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-                var indexes_array = myImmutable; //mutable copy
-                self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node
-                    if (!node) {
-                        self.allowDrop = true; //we are in root
-                        console.log('checkdrposs done');
+            }else{
+                var target_item = payload.state.item;
+                if (target_item.type ==='slide'){
+                    var parent = payload.props.parent;
+                    if (parent.state.item.id === self.nodes.id){ //we are dropping in the root deck
+                        self.allowDrop = true;
                         self.emitChange();
-                    } else{
-                       if (node.type === 'slide'){
-                        self._getParentOfItem(payload, function(parent){ //get a parentdeck of drop target
-                            if (!parent){
-                                self.allowDrop = true; //we are in root
-                                console.log('checkdrposs done');
-                                self.emitChange();
-                            }else{
-                                self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){
-                                    self.allowDrop = !res;
-                                    console.log('checkdrposs done');
-                                    self.emitChange();
-                                });
-                            }
-                        });                    
-                        }else{ //dropping target is a deck
-                            self._isCausingLoop({source_deck : self.dragging, target_deck : node}, function(res){
-                                self.allowDrop = !res;
-                                self.processing = false;
-                                self.emitChange();
-                            });
-                            //self.allowDrop = false;
-                            console.log('checkdrposs done');
+                    }else{
+                        self._isCausingLoop({source_deck : self.dragging , target_deck : parent}, function(res){
+                            self.allowDrop = !res;
+                            console.log('checkdrposs deck-slide done');
+                            console.log(self.allowDrop);
                             self.emitChange();
-                        } 
+                        });
                     }
+                }else{ //dropping target is a deck
+                    self._isCausingLoop({source_deck : self.dragging, target_deck : payload}, function(res){
+                        self.allowDrop = !res;
+                        self.processing = false;
+                        console.log('checkdrposs deck-deck done');
+                        console.log(self.allowDrop);
+                        self.emitChange();
+                    });
                     
-                });
+                }
             }
         }else{
             console.log('checkdrposs done');
             self.sllowDrop = false;
+            console.log(self.allowDrop);
             self.emitChange();
         }
         
     },
     //::    {f_index : f_index} * fn * this.nodes => fn(this.node)
-    _getParentOfItem : function(payload, callback){         
-        if (payload.f_index.length){
-            var self = this;
-            
-            var myImmutable_new = Immutable.List(self._transformIndexToArray(payload.f_index)); //Immutable array of indexes
-            
-            var indexes_array = myImmutable_new; //mutable copy
-            var parent_index = indexes_array.pop();
-            if (parent_index) { //parent is NOT a root
-                self._getElementByIndex(self.nodes, parent_index, function(parent){ //parent
-                    callback(parent);
-                });
-            } else { //parent is a root deck
-                callback(self.nodes);
-            } 
-        }else{
-            callback(null);
-        }
-        
-    },
-    insertInto : function(payload){
-        var self = this;
-        this._getParentOfItem(payload, function(parent){
-            if (!parent) parent = self.nodes;
-            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var index_in_parent = myImmutable.last() - 1;
-            var new_node = payload.node;
-            parent.children.splice(index_in_parent, 0, new_node);
-            self.emitChange();
-        });
-    },
-    removeFrom : function(payload, callback){
-        var self = this;
-        this._getParentOfItem(payload, function(parent){            
-            if (!parent) parent = self.nodes;
-            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var new_indexes_array = myImmutable; //mutable copy            
-            var index_in_parent = new_indexes_array.last() - 1;
-            parent.children.splice(index_in_parent, 1);
-            return callback();
-        });
-    },
-    _transformIndexToArray : function(f_index){
-        if (f_index){
-            f_index += '';
-            if (f_index.indexOf(':') !== -1){
-                return (f_index.split(':'));
-            }else{
-                return ([f_index]);
-            }
-        }else{
-            return null;
-        }
-    },
-    //:: {f_index : f_index} * this.dragging * this.nodes => fn()
-    move_item : function(payload){
-        if (this.allowDrop){ 
-            var self = this;
-            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-            var indexes_array = myImmutable; //mutable copy
-            
-            var promiseTarget = new Promise(function(resolve, reject) {
-                self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node 
-                    if (!node) {node = self.nodes;}
-                    if (node) {
-                        resolve(node);
-                    }
-                });
-            });
-            var new_myImmutable = Immutable.List(self._transformIndexToArray(self.dragging.f_index)); //array of indexes, must not be mutated
-            var new_indexes_array = new_myImmutable; //mutable copy
-            var promiseDragging = new Promise(function(resolve, reject){             
-                self._getElementByIndex(self.nodes, new_indexes_array, function(dragging_node){ //dragging node
-                    if (dragging_node){
-                        resolve(dragging_node);
-                    }
-                });                
-            });            
-            Promise.all([promiseTarget, promiseDragging]).then(function(result) {
-                var node = result[0];
-                var dragging_node = result[1];
-                if (node.type === 'slide'){ //add item after the slide
-                    var after_index = myImmutable.last();
-                    var futureF_index_ar = myImmutable.set(-1, after_index);
-                    var futureF_index = futureF_index_ar.join(':');                    
-                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-                        self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
-                        self.nodes = self._setIndexes(self.nodes);
-                        self.emitChange();
-                    });                        
-                    
-                }
-                else{
-                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-                        node.children.unshift(dragging_node);
-                        self.nodes = self._setIndexes(self.nodes);
-                        self.emitChange();
-                    });
-                    
-                }
-            }, function() {
-                console.log('error');
-            });
-            
-        };
-    },
+//    _getParentOfItem : function(payload, callback){         
+//        if (payload.f_index.length){
+//            var self = this;
+//            
+//            var myImmutable_new = Immutable.List(self._transformIndexToArray(payload.f_index)); //Immutable array of indexes
+//            
+//            var indexes_array = myImmutable_new; //mutable copy
+//            var parent_index = indexes_array.pop();
+//            if (parent_index) { //parent is NOT a root
+//                self._getElementByIndex(self.nodes, parent_index, function(parent){ //parent
+//                    callback(parent);
+//                });
+//            } else { //parent is a root deck
+//                callback(self.nodes);
+//            } 
+//        }else{
+//            callback(null);
+//        }
+//        
+//    },
+//    insertInto : function(payload){
+//        var self = this;
+//        this._getParentOfItem(payload, function(parent){
+//            if (!parent) parent = self.nodes;
+//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
+//            var index_in_parent = myImmutable.last() - 1;
+//            var new_node = payload.node;
+//            parent.children.splice(index_in_parent, 0, new_node);
+//            self.emitChange();
+//        });
+//    },
+//    removeFrom : function(payload, callback){
+//        var self = this;
+//        this._getParentOfItem(payload, function(parent){            
+//            if (!parent) parent = self.nodes;
+//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
+//            var new_indexes_array = myImmutable; //mutable copy            
+//            var index_in_parent = new_indexes_array.last() - 1;
+//            parent.children.splice(index_in_parent, 1);
+//            return callback();
+//        });
+//    },
+//    _transformIndexToArray : function(f_index){
+//        if (f_index){
+//            f_index += '';
+//            if (f_index.indexOf(':') !== -1){
+//                return (f_index.split(':'));
+//            }else{
+//                return ([f_index]);
+//            }
+//        }else{
+//            return null;
+//        }
+//    },
+//    //:: {f_index : f_index} * this.dragging * this.nodes => fn()
+//    move_item : function(payload){
+//        if (this.allowDrop){ 
+//            var self = this;
+//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
+//            var indexes_array = myImmutable; //mutable copy
+//            
+//            var promiseTarget = new Promise(function(resolve, reject) {
+//                self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node 
+//                    if (!node) {node = self.nodes;}
+//                    if (node) {
+//                        resolve(node);
+//                    }
+//                });
+//            });
+//            var new_myImmutable = Immutable.List(self._transformIndexToArray(self.dragging.f_index)); //array of indexes, must not be mutated
+//            var new_indexes_array = new_myImmutable; //mutable copy
+//            var promiseDragging = new Promise(function(resolve, reject){             
+//                self._getElementByIndex(self.nodes, new_indexes_array, function(dragging_node){ //dragging node
+//                    if (dragging_node){
+//                        resolve(dragging_node);
+//                    }
+//                });                
+//            });            
+//            Promise.all([promiseTarget, promiseDragging]).then(function(result) {
+//                var node = result[0];
+//                var dragging_node = result[1];
+//                if (node.type === 'slide'){ //add item after the slide
+//                    var after_index = myImmutable.last();
+//                    var futureF_index_ar = myImmutable.set(-1, after_index);
+//                    var futureF_index = futureF_index_ar.join(':');                    
+//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
+//                        self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
+//                        self.nodes = self._setIndexes(self.nodes);
+//                        self.emitChange();
+//                    });                        
+//                    
+//                }
+//                else{
+//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
+//                        node.children.unshift(dragging_node);
+//                        self.nodes = self._setIndexes(self.nodes);
+//                        self.emitChange();
+//                    });
+//                    
+//                }
+//            }, function() {
+//                console.log('error');
+//            });
+//            
+//        };
+//    },
     _openCloseTree: function () {
         this.isOpened = !this.isOpened;
         this.emitChange();
@@ -427,7 +416,7 @@ module.exports = createStore({
         this.error = true;
         self.emitChange();
     },
-    _setIndexes : function(nodes){
+    _setIndexes : function(nodes){ //to be able to produce keys for nodes
         var self = this;
         
         var mutated_notes = nodes.children.map(function(node, index){
@@ -493,9 +482,7 @@ module.exports = createStore({
                     }
                 });
             }
-            }
-        
-        
+        }
     },
    
     _updateSelector: function (res) {

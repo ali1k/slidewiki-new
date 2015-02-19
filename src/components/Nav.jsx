@@ -34,11 +34,13 @@ var Nav = React.createClass({
             });
             
         return (
-          <div>
-          <nav id="main_navbar" className="ui menu inverted navbar page grid">
-            <a href="/" className="brand item">SlideWiki</a>
-            {linkHTML}
-            <UserMenu context={context} />
+          <div className="twelve wide ui centered">
+          <nav id="main_navbar"  className="menu inverted navbar ui twelve wide centered left aligned">
+            
+                <a href="/" className="brand item">SlideWiki</a>
+                {linkHTML}
+                <UserMenu context={context} />
+          
           </nav>
         </div> 
         );

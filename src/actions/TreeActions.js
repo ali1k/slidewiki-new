@@ -19,7 +19,7 @@ exports._onDragStart = function(context, payload, done){
 
 exports.checkDropPossible = function(context, payload, done){
     context.dispatch('CHECK_DROP_POSSIBLE', payload);
-    context.dispatch('MOVE_ITEM', payload);
+    //context.dispatch('MOVE_ITEM', payload);
     done();
 };
 

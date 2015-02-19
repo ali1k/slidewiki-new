@@ -7,6 +7,7 @@ var deckActions = require('../actions/DeckActions');
 var treeActions = require('../actions/TreeActions');
 var TreeNodes = require('./TreeNodes.jsx');
 var updateSliderControl = require('../actions/updateSliderControl');
+var update = require('react/lib/update');
 
 
 var TreePanel = React.createClass({
@@ -48,7 +49,62 @@ var TreePanel = React.createClass({
             this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/'+this.state.nodes.id+'/slide/' + this.state.selector.id});
         });
     },
+    moveItem: function(target){
+        
+        //if (this.state.dragging && this.state.allowDrop){
+//            console.log('==========');
+//            console.log(this.state);
+            var dragging = this.state.dragging.state.item;
+//            console.log('dragging');
+//            console.log(dragging);
+            var source_parent = this.state.dragging.props.parent.state.item;
+//            console.log('source parent');
+//            console.log(source_parent);
+//            console.log(target);
+            var target_parent;
+            var target_index;
+            var source_index = source_parent.children.indexOf(dragging);
+//            console.log('source index');
+//            console.log(source_index);
+            source_parent.children.splice(source_index, 1);
+//            console.log('-----------------');
+//            console.log(source_parent);
+            if (target.state.item.type === 'slide'){ //dropping after the target slide
+                target_parent = target.props.parent.state.item;
+                target_index = target_parent.children.indexOf(target.state.item) + 1;
+//                console.log('target parent');
+//                console.log(target_parent);
+//
+//                console.log('target index');
+//                console.log(target_index);
 
+                target_parent.children.splice(target_index, 0, dragging);
+//                console.log('+++++++++++++++');
+//                console.log(target_parent);
+                this.props.context.executeAction(treeActions._onDrop, {target_parent : target_parent, target_index: target_index, source_parent: source_parent, source_index: source_index});
+                target.props.parent.setState({item: target_parent});
+            }else{ //we are over a deck - dropping inside it on the 1st position
+                target_parent = target.state.item;
+                target_index = 0;
+//                console.log('target parent');
+//                console.log(target_parent);
+
+//                console.log('target index');
+//                console.log(target_index);
+
+                target_parent.children.splice(target_index, 0, dragging);
+//                console.log('+++++++++++++++');
+//                console.log(target_parent);
+                this.props.context.executeAction(treeActions._onDrop, {target_parent : target_parent, target_index: target_index, source_parent: source_parent, source_index: source_index});
+                target.setState({item : target_parent});
+            }
+            
+            
+            this.state.dragging.props.parent.setState({item: source_parent});
+            
+              
+        //}
+    },
     render: function() {
 
         var tree
@@ -70,7 +126,7 @@ var TreePanel = React.createClass({
               
               <div className="ui bottom attached segment sw-tree-container">
                 <TreeNodes 
-                            key={'deck'+this.state.nodes.position+this.state.nodes.id}
+                            key={'rootDeck' + this.state.nodes.id}
                             item={this.state.nodes}
                             position={1}
                             parentID={0}
@@ -79,10 +135,11 @@ var TreePanel = React.createClass({
                             dragging={this.state.dragging}
                             isOpened={true} 
                             context={this.props.context}
-                            ref={'deck'+this.state.nodes.id}
+                            ref={'rootDeck' + this.state.nodes.id}
                             parentRef={'0'}
                             allowDrop={this.state.allowDrop}
-                            parent = {this}
+                            parent = {false}
+                            moveItem = {this.moveItem}
                 />
               </div>
             </div>

@@ -40,7 +40,7 @@ var DeckPanel = React.createClass({
                             <div>{this.state.content.title}</div>
                         </div>
                         <div className="four wide column right floated right aligned">
-                            <div className="ui floating dropdown labeled search icon button mini yellow fluid">
+                            <div className="ui floating dropdown labeled search icon button tiny yellow fluid">
                                 <i className="world icon" onClick={this.languageButtonClick}></i>
                                 <span className="text">{this.state.content.language}</span>
                                 <div className="menu ui mini " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>

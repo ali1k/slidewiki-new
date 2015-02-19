@@ -13,7 +13,9 @@ function shorten(title){
 var TreeNodes = React.createClass({
     getInitialState: function(){
         return {
-            isOpened : this.props.isOpened || false
+            isOpened : this.props.isOpened || false,
+            isOvered : false,
+            item: this.props.item
         }
     },
     switchOpened : function(){
@@ -37,7 +39,7 @@ var TreeNodes = React.createClass({
             isDragging = false;
         };
         var isDraggable= (!(this.props.item.type=="deck" && this.props.item.id==this.props.rootID));
-
+        var isOvered = this.state.isOvered;
         //cx is used to handle adding classes by condition
         var nodeClasses = cx({
             'sw-tree-view-node': true,
@@ -54,23 +56,23 @@ var TreeNodes = React.createClass({
             childNumber=this.props.item.children.length; 
              
             var output = 
-                this.props.item.children.map(function(node, index) {                  
+                this.state.item.children.map(function(node, index) {                  
                return (
-                   <li key={self.props.item.id + node.type + node.position + node.id} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
+                   <li key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
                     <TreeNodes
                         item = {node}
                         position={index + 1}
-                        parentID={self.props.item.id}
+                        parentID={self.state.item.id}
                         parent = {self}
                         parentRef={self.props.ref}
                         rootID={self.props.rootID}
-                        ref={node.type + node.id}
+                        ref={node.f_index}
                         selector={self.props.selector}
                         dragging={self.props.dragging}
                         allowDrop={self.props.allowDrop}
                         context={self.props.context} 
                         className={index==(childNumber-1)?'last-child':''}
-
+                        moveItem = {self.props.moveItem}
                     /></li>
                 );
             })
@@ -99,15 +101,18 @@ var TreeNodes = React.createClass({
                                 onMouseOver={this._onMouseOver}
                                 onMouseOut={this._onMouseOut} 
                                 onDrop = {this.props._onDrop}
+                                
                             >
                             {nodeIcon}{shorten(this.props.item.title)}
                             </a>
+                            <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
                             <div draggable = {isDraggable}
                                 onDragEnter={this._onDragEnter} 
                                 onDragStart = {this._onDragStart}
                                 onDragEnd = {this._onDragEnd}
                                 onDragOver = {this._onDragOver}
                                 onDrop = {this._onDrop}
+                                onDragLeave={this._onDragLeave}
                                 style = {{
                                         position : "absolute", 
                                         top : "0", bottom : "0", 
@@ -148,38 +153,31 @@ var TreeNodes = React.createClass({
         e.preventDefault();
     },
     _onDragStart : function(e) {
-        e.stopPropagation();
-        var draggingItem = {
-            f_index : this.props.item.f_index,
-            type : this.props.item.type, 
-            id : this.props.item.id, 
-            parentID: this.props.parentID, 
-            position: this.props.position,
-            ref: this.props.ref,
-            parentRef : this.props.parentRef};
+        e.stopPropagation();        
+        var draggingItem = this;
         this.setState({isOpened : false});
         this.props.context.executeAction(treeActions._onDragStart, draggingItem);
         
     },
     _onDragEnter: function(e){
-        e.preventDefault(); // Necessary. Allows us to drop.
-        e.stopPropagation();
-        window.event.returnValue=false; 
-        if (this.props.dragging.type !== this.props.item.type || this.props.dragging.id !== this.props.item.id)  {
+        
+        if (this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id)  {
+            e.preventDefault(); // Necessary. Allows us to drop.
+            e.stopPropagation();
+            window.event.returnValue=false; 
             if (this.props.item.type == 'deck'){
-                this.setState({isOpened : true});
+                this.setState({isOpened : true, isOvered : true});
+            }else{
+                this.setState({isOvered : true});
             }
-                var dropCandidate = {id : this.props.item.id, type: this.props.item.type, parent: this.props.parentID, position : this.props.position, ref : this.props.ref, f_index : this.props.item.f_index};
-                var self = this;
-                this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
-            
+            var dropCandidate = {props: this.props, state: this.state};
+            var self = this;
+            this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate);
         }
-
     },
     _onDragLeave: function(e){
-        if (this.props.item.type === 'deck'){
-            this.setState({'isOpened' : false});
-        }
+        
+        this.setState({ 'isOvered' : false});
     },        
     _onDragOver: function(e){
         e.preventDefault(); // Necessary. Allows us to drop.
@@ -190,7 +188,11 @@ var TreeNodes = React.createClass({
         e.preventDefault();
         e.stopPropagation()
         var dropPlace= {id : this.props.item.id, type: this.props.item.type, position : this.props.position, parentID: this.props.parentID, ref : this.props.ref, f_index : this.props.item.f_index};
-        this.props.context.executeAction(treeActions._onDrop, dropPlace);
+        this.setState({'isOpened' : true, 'isOvered' : false});
+        if (this.props.allowDrop){
+            this.props.moveItem(this);
+            //this.props.context.executeAction(treeActions._onDrop, this);
+        }
     }, 
     
     _getPath: function() {
