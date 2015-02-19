@@ -9,14 +9,14 @@ var DeckActions = {
     updateDeckPage: function(context, payload, done) {
   async.parallel([
       //load deck tree or only highlight a node when tree is already rendered
-      function(callback) {
-       
-          //only highlight node
-          context.executeAction(module.exports.updateTreeNodeSelector, {
-            deck: payload.deck,
-            selector: payload.selector
-          }, callback);
-       },
+//      function(callback) {
+//       
+//          //only highlight node
+//          context.executeAction(module.exports.updateTreeNodeSelector, {
+//            deck: payload.deck,
+//            selector: payload.selector
+//          }, callback);
+//       },
       ////////////////////////////////////
       //load content for deck/slide
       function(callback) {
@@ -135,25 +135,24 @@ var DeckActions = {
    
     loadContainer: function(context, payload, done){
         //first need to prepare the right container for deck/slide/etc.
-//        context.executeAction(module.exports.prepareContentType, {
-//            selector: payload.selector,
-//            mode: payload.mode
-//        }, function(res) {
-//          //then run the corresponding action
-//            switch (payload.selector.type) {
-//                case 'deck':
-//                    context.executeAction(module.exports.showDeck, {
-//                        selector: payload.selector
-//                    }, done);
-//                    break;
-//                case 'slide':
-//                    context.executeAction(module.exports.showSlide, {
-//                        selector: payload.selector
-//                    }, done);
-//                    break;
-//            }
-//        });
-        console.log('xx');
+        context.executeAction(module.exports.prepareContentType, {
+            selector: payload.selector,
+            mode: payload.mode
+        }, function(res) {
+          //then run the corresponding action
+            switch (payload.selector.type) {
+                case 'deck':
+                    context.executeAction(module.exports.showDeck, {
+                        selector: payload.selector
+                    }, done);
+                    break;
+                case 'slide':
+                    context.executeAction(module.exports.showSlide, {
+                        selector: payload.selector
+                    }, done);
+                    break;
+            }
+        });
     },
     
     prepareContentType: function (context, payload, done) {

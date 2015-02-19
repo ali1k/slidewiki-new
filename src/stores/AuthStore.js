@@ -75,26 +75,30 @@ var AuthStore = createStore({
                         self.error = internal;
                         return self.emitChange();
                     }else{
-                        debug(res.body.error[0]);
-                        switch (res.body.error[0]) {
-                            case 'INTERNAL' :
-                                self.error = internal;
-                                self.isLoggingIn = false;
-                                return self.emitChange();
-                                break;
-                            case 'NO_USER' :
-                                self.error = no_user;
-                                self.isLoggingIn = false;
-                                return self.emitChange();
-                                break;
-                            case 'WRONG_PASS' :
-                                self.error = wrong_pass;
-                                self.isLoggingIn = false;
-                                return self.emitChange();
-                                break;
-                            default:
-                                return self._setLoggedIn(res.body);
+                        if (res.body.error){
+                            switch (res.body.error[0]) {
+                                case 'INTERNAL' :
+                                    self.error = internal;
+                                    self.isLoggingIn = false;
+                                    return self.emitChange();
+                                    break;
+                                case 'NO_USER' :
+                                    self.error = no_user;
+                                    self.isLoggingIn = false;
+                                    return self.emitChange();
+                                    break;
+                                case 'WRONG_PASS' :
+                                    self.error = wrong_pass;
+                                    self.isLoggingIn = false;
+                                    return self.emitChange();
+                                    break;
+                                default:
+                                    return self._setLoggedIn(res.body);
+                            }
+                        }else{
+                            return self._setLoggedIn(res.body);
                         }
+                        
                     }
             });
         }

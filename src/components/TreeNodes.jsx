@@ -4,6 +4,7 @@ var ItemTypes = require('../configs/ItemTypes');
 var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
 var treeActions = require('../actions/TreeActions');
+var deckActions = require('../actions/DeckActions');
 
 function shorten(title){
     return title.length > 20 ? title.substring(0, 17) + '...' : title;
@@ -141,7 +142,9 @@ var TreeNodes = React.createClass({
     },
 
     _onClick: function(e) {
-        this.props.context.executeAction(treeActions._updateSelector, {selector: {type: this.props.item.type, id: this.props.item.id}});
+        this.props.context.executeAction(treeActions._updateSelector, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'});
+        this.props.context.executeAction(deckActions.loadContainer, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
+        this.props.context.executeAction(deckActions.loadContributors, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
         e.preventDefault();
     },
     _onDragStart : function(e) {
