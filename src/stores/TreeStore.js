@@ -72,43 +72,29 @@ module.exports = createStore({
     delete_from : function(payload){
         var self = this;
         agent
-            .get(api.path + '/deleteFrom/'+self.selected.parentID+'/'+self.selected.type+'/'+self.selected.id)
+            .get(api.path + '/deleteFrom/'+payload.parent.id+'/'+payload.type+'/'+payload.id)
             .end(function(err, res){
                 if (err){
                     self.error = internal;
                     return self.emitChange();
                 }
                 else{
-                    self._getParentOfItem({f_index: self.selected.f_index}, function(parent){
-                        if (!parent) {
-                                parent = self.nodes;
-                                parent.type = 'deck';
-                            }
-                        self.removeFrom({f_index: self.selected.f_index}, function(){                            
-                            var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index)); 
-                            var indexes_array = myImmutable; //mutable copy
-                            var new_last = indexes_array.last();
-                            var new_indexes_array = Immutable.List([new_last]);
-                            self._getElementByIndex(parent, new_indexes_array, function(new_selected){ //try to select the next item in the parent
-                                if (new_selected){
-                                    console.log('found new selected');
-                                    console.log(new_selected);
-                                    var new_nodes = self._setIndexes(self.nodes);
-                                    self.nodes = new_nodes;
-                                    new_selected.parentID = parent.id;
-                                    self.selected = new_selected;                                    
-                                    self.selector = {type: new_selected.type, id: new_selected.id};
-                                    return self.emitChange(); 
-                                }else{
-                                    self.nodes = self._setIndexes(self.nodes);
-                                    self.selected = parent;
-                                    self.selector = {type: 'deck', id : parent.id};
-                                    return self.emitChange(); 
-                                }
-                            });
-                        });
-                        self.emitChange();
-                    });
+                    var next = payload.parent.children[payload.index];
+                    var selector, selected;
+                    if (next){
+                        selected = next;
+                        selector = {id: next.id, type: next.type, title: next.title, parent: self.selector.parent};
+                    }else{
+                        next = self.selector.parent.state.item;
+                        selector = {id: next.id, type: next.type, title: next.title, parent: self.selector.parent.props.parent};
+                        selected = next;
+                    }
+                    self._updateSelector({selector: selector, selected: selected});
+                    
+                    
+                    //self.selected = self.nodes;
+                    //self.selector = {id: self.nodes.id, type: 'deck'};
+                    return self.emitChange();
                 }
             });
     },
@@ -448,116 +434,38 @@ module.exports = createStore({
         this.nodes.type = 'deck';
         this.nodes.id = res.selector.id;
         this.selector = res.selector;
-        var nodes = this._setIndexes(self.nodes);
-        this.findSelected(nodes, function(selected){
-            self.selected = selected;
-            var f_index = selected.f_index;
-            var f_index_arr = new Immutable.List(self._transformIndexToArray(f_index));
-            self._createBreadcrumb(nodes, f_index_arr, [], function (path) {
-                self.breadcrumb = path;
-                self.emitChange();
-            });
+        self._createBreadcrumb(self.selector, [], function (path) {
+            console.log(path);
+            self.breadcrumb = path;
+            self.emitChange();
         });
-    },
-    findSelected: function(nodes, callback){
-        var self = this;
-        var node = [];
-        if (self.selector.type === 'deck' && self.selector.id === nodes.id){ //root deck is selected
-            return callback(nodes);
-        }else{
-            var node = nodes.children.filter(function(item){
-                return item.type === self.selector.type && item.id.toString() === self.selector.id.toString();
-            });
-            if (node.length){
-                node[0].parentID = nodes.id;
-                callback(node[0]);
-            }else{
-                nodes.children.map(function(node){
-                    if (node.children){
-                        self.findSelected(node, function(node_child){
-                            if (node_child){
-                                return callback(node_child);
-                            }
-                        });
-                    }
-                });
-            }
-        }
     },
    
-    _updateSelector: function (res) {
+    _updateSelector: function(res) {
         this.selector = res.selector;
-        var self = this;
-        this.findSelected(self.nodes, function(selected){
-            self.selected = selected;
-            var f_index = self.selected.f_index;
-            
-            var f_index_arr = new Immutable.List(self._transformIndexToArray(f_index));
-            self._createBreadcrumb(self.nodes, f_index_arr, [], function (path) {
-                self.breadcrumb = path;
-                self.emitChange();
-            });
-        });
-        
-    },
-    //fn callback function
-    
-    _createBreadcrumb : function(nodes, f_index_array, path_acc, callback){
-        var self = this;
-        path_acc.push({id : nodes.id, title: nodes.title});
-        if (f_index_array){
-                if (f_index_array.size){
-                var first = f_index_array.first();
-                var new_array = f_index_array.splice(0,1);
-                setTimeout(self._createBreadcrumb(nodes.children[first - 1], new_array, path_acc, callback), 0); //shift array, go to next level
-            }else{
-                return callback(path_acc);
-            }
+        if (res.selected){
+            this.selected = res.selected;
         }else{
-            return callback(path_acc);
+            this.selected = this.nodes;
         }
         
+        var self = this;
+        this._createBreadcrumb(self.selector, [], function(path){
+            self.breadcrumb = path;
+            self.emitChange();
+        });
     },
     
-    _createBreadcrumb2: function (fn) {
-        var found = 0;
+    _createBreadcrumb : function(selector, path_acc, callback){
         var self = this;
-        //collect first level nodes for DFS
-        var firstlevel = [];
-        _.forEach(self.nodes.children, function (node) {
-            if (node.type == 'deck') {
-                firstlevel.push(node.id);
-            }
-        });
-        var path = [];
-        t.dfs(self.nodes, [], function (node, par, ctrl) {
-            if (node.type == 'deck') {
-                if (_.indexOf(firstlevel, node.id) > 0) {
-                    path = [{
-                            id: self.nodes.id,
-                            title: self.nodes.title
-                        }];
-                }
-                if (!found) {
-                    path.push({
-                        id: node.id,
-                        title: node.title
-                    });
-                }
-            }
-            if (node.id == self.selector.id && node.type == self.selector.type) {
-                //prevent duplicate decks in path
-                if (node.type != 'deck') {
-                    path.push({
-                        id: node.id,
-                        title: node.title
-                    });
-                }
-                //id found
-                found = 1;
-                return fn(path);
-            }
-        })
+        if (selector.parent){ //not a root deck 
+            path_acc.unshift({id : selector.id, title: selector.title});
+            var selector = {id : selector.parent.state.item.id, title: selector.parent.state.item.title, parent: selector.parent.props.parent}
+            self._createBreadcrumb(selector, path_acc, callback); //shift array, go to next level
+        }else{ //root deck 
+            path_acc.unshift({id : self.nodes.id, title: self.nodes.title});
+            return callback(path_acc);
+        } 
     },
     getBreadcrumb: function () {
         return this.breadcrumb;

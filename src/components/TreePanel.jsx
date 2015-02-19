@@ -35,8 +35,20 @@ var TreePanel = React.createClass({
     },
 
     deleteFrom : function(){
-        var payload = this.state.selected;
-        this.props.context.executeAction(treeActions.deleteFrom, payload);
+        var selected = this.state.selected;
+        var selector = this.state.selector;
+        var parent = selector.parent;
+        //console.log(parent.state.item.title);
+        if (parent){ //we selected not a root deck
+            var index = parent.state.item.children.indexOf(selected);
+            
+            //console.log(parent.state.item.children);
+            
+            this.props.context.executeAction(treeActions.deleteFrom, {parent: parent.state.item, type: selected.type, id: selected.id, index :index});
+            parent.state.item.children.splice(index, 1);
+            parent.setState({item: parent.state.item});
+        }
+        
     },
     addEmptySlide : function(){
         var self = this;
@@ -52,49 +64,48 @@ var TreePanel = React.createClass({
     moveItem: function(target){
         
         //if (this.state.dragging && this.state.allowDrop){
-//            console.log('==========');
-//            console.log(this.state);
+            console.log('==========');
+            console.log(this.state);
             var dragging = this.state.dragging.state.item;
-//            console.log('dragging');
-//            console.log(dragging);
+            console.log('dragging');
+            console.log(dragging);
             var source_parent = this.state.dragging.props.parent.state.item;
-//            console.log('source parent');
-//            console.log(source_parent);
-//            console.log(target);
+            console.log('source parent');
+            console.log(source_parent);
+            console.log(target);
             var target_parent;
             var target_index;
             var source_index = source_parent.children.indexOf(dragging);
-//            console.log('source index');
-//            console.log(source_index);
+            console.log('source index');
+            console.log(source_index);
             source_parent.children.splice(source_index, 1);
-//            console.log('-----------------');
-//            console.log(source_parent);
+            console.log('-----------------');
+            console.log(source_parent);
             if (target.state.item.type === 'slide'){ //dropping after the target slide
                 target_parent = target.props.parent.state.item;
                 target_index = target_parent.children.indexOf(target.state.item) + 1;
-//                console.log('target parent');
-//                console.log(target_parent);
-//
-//                console.log('target index');
-//                console.log(target_index);
+                console.log('target parent');
+                console.log(target_parent);
+
+                console.log('target index');
+                console.log(target_index);
 
                 target_parent.children.splice(target_index, 0, dragging);
-//                console.log('+++++++++++++++');
-//                console.log(target_parent);
+                console.log('+++++++++++++++');
+                console.log(target_parent);
                 this.props.context.executeAction(treeActions._onDrop, {target_parent : target_parent, target_index: target_index, source_parent: source_parent, source_index: source_index});
                 target.props.parent.setState({item: target_parent});
             }else{ //we are over a deck - dropping inside it on the 1st position
                 target_parent = target.state.item;
                 target_index = 0;
-//                console.log('target parent');
-//                console.log(target_parent);
-
-//                console.log('target index');
-//                console.log(target_index);
+                console.log('target parent');
+                console.log(target_parent);
+                console.log('target index');
+                console.log(target_index);
 
                 target_parent.children.splice(target_index, 0, dragging);
-//                console.log('+++++++++++++++');
-//                console.log(target_parent);
+                console.log('+++++++++++++++');
+                console.log(target_parent);
                 this.props.context.executeAction(treeActions._onDrop, {target_parent : target_parent, target_index: target_index, source_parent: source_parent, source_index: source_index});
                 target.setState({item : target_parent});
             }
