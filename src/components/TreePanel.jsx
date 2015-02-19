@@ -63,7 +63,7 @@ var TreePanel = React.createClass({
     },
     moveItem: function(target){
         
-        //if (this.state.dragging && this.state.allowDrop){
+        if (this.state.dragging && this.state.allowDrop){
             console.log('==========');
             console.log(this.state);
             var dragging = this.state.dragging.state.item;
@@ -114,7 +114,7 @@ var TreePanel = React.createClass({
             this.state.dragging.props.parent.setState({item: source_parent});
             
               
-        //}
+        }
     },
     render: function() {
 

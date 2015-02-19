@@ -194,13 +194,13 @@ var TreeNodes = React.createClass({
         window.event.returnValue=false;
     },
     _onDrop : function(e) {
-        e.preventDefault();
-        e.stopPropagation()
-        var dropPlace= {id : this.props.item.id, type: this.props.item.type, position : this.props.position, parentID: this.props.parentID, ref : this.props.ref, f_index : this.props.item.f_index};
-        this.setState({'isOpened' : true, 'isOvered' : false});
-        if (this.props.allowDrop){
-            this.props.moveItem(this);
-            //this.props.context.executeAction(treeActions._onDrop, this);
+        if (this.props.allowDrop && this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id){
+            e.preventDefault();
+            e.stopPropagation();
+            this.setState({'isOpened' : true, 'isOvered' : false});
+            if (this.props.allowDrop){
+                this.props.moveItem(this);
+            }
         }
     }, 
     
