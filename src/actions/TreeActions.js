@@ -9,8 +9,7 @@ exports.deleteFrom = function(context, payload, done){
 
 exports.addEmptySlide = function(context, payload, done){
     context.dispatch('ADD_EMPTY_SLIDE', payload);
-    
-    setTimeout(done(), 300);
+    done();
 };
 
 exports._onDragStart = function(context, payload, done){
@@ -20,7 +19,7 @@ exports._onDragStart = function(context, payload, done){
 
 exports.checkDropPossible = function(context, payload, done){
     context.dispatch('CHECK_DROP_POSSIBLE', payload);
-    //context.dispatch('MOVE_ITEM', payload);
+    context.dispatch('MOVE_ITEM', payload);
     done();
 };
 

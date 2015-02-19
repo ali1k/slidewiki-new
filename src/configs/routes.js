@@ -31,7 +31,7 @@ module.exports = {
         }
     },
     deck: {
-        path: '/deck/:id/:mode?',
+        path: '/deck/:id/:stype?/:sid?/:mode?',
         method: 'get',
         page: 'deck',
         group: 'deck-app',
@@ -40,7 +40,7 @@ module.exports = {
             
             var selector = {};
 //            //mode: view, edit, questions, history, usage, comments, etc.
-//            var mode = '';
+            var mode = '';
             if (payload.params.mode) {
                 //ToDo: restrict modes to a set of predefined modes and give errors on unknown modes
                 mode = payload.params.mode;

@@ -21,7 +21,7 @@ module.exports = createStore({
         'UPDATE_TREE_NODE_SELECTOR': '_updateSelector',
         'ON_DRAG_START': '_onDragStart',
         'CHECK_DROP_POSSIBLE' : '_checkDropPossible',
-        'MOVE_ITEM' : 'moveItem',
+        'MOVE_ITEM' : 'move_item',
         UPDATE_INDEXES : 'update_indexes',
         'ON_DROP' : '_onDrop',
         'DELETE_FROM' : 'delete_from',
@@ -149,7 +149,6 @@ module.exports = createStore({
                             self.nodes = new_nodes;
                             self.selected = new_slide;
                             self.selector  = {type: 'slide', id: new_slide.id.toString()};
-                            self._updateSelector({selector : self.selector});
                             self.emitChange();
                         }
                     });
@@ -199,18 +198,14 @@ module.exports = createStore({
     },
     
     _onDrop : function(payload){
-        console.log(payload);
+        console.log('_onDrop');
         this.allowDrop = false;
         var self = this; 
         var query = {};
-        if (payload.type === 'deck'){
-            query.target = payload.id;
-            query.target_position = 1;
-        }else{
-            query.target = payload.parentID;
-            query.target_position = payload.position - 0 + 1;
-        }
-        
+       
+        query.target = payload.parentID;
+        query.target_position = payload.position;
+        console.log('query: ' + query);
         agent
                 .get(api.path + '/moveItem/' + self.dragging.parentID + "/" + self.dragging.position + "/" + query.target + "/" + query.target_position) 
                 .end(function(err, res){
@@ -221,7 +216,9 @@ module.exports = createStore({
                         if (res.body.error){
                             console.log(res.body.error[0]);
                         }else{
-                            self.moveItem(payload);
+                            console.log('_onDrop done');
+                            self.dragging = {};
+                            self.emitChange();
                         }
                     }
                 });
@@ -260,7 +257,6 @@ module.exports = createStore({
     //::     {f_index : f_index} * this.dragging * fn => fn(bool)
     _checkDropPossible : function(payload, done){ 
         var self = this;
-        
         if (this.dragging){
 
             if (this.dragging.type === 'slide'){
@@ -296,7 +292,9 @@ module.exports = createStore({
                                 self.processing = false;
                                 self.emitChange();
                             });
-
+                            //self.allowDrop = false;
+                            console.log('checkdrposs done');
+                            self.emitChange();
                         } 
                     }
                     
@@ -365,8 +363,8 @@ module.exports = createStore({
         }
     },
     //:: {f_index : f_index} * this.dragging * this.nodes => fn()
-    moveItem : function(payload){
-        //if (this.allowDrop){ 
+    move_item : function(payload){
+        if (this.allowDrop){ 
             var self = this;
             var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
             var indexes_array = myImmutable; //mutable copy
@@ -392,13 +390,12 @@ module.exports = createStore({
                 var node = result[0];
                 var dragging_node = result[1];
                 if (node.type === 'slide'){ //add item after the slide
-                    var after_index = myImmutable.last() - 0 + 1;
+                    var after_index = myImmutable.last();
                     var futureF_index_ar = myImmutable.set(-1, after_index);
                     var futureF_index = futureF_index_ar.join(':');                    
                     self.removeFrom({f_index : self.dragging.f_index}, function(){
                         self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
                         self.nodes = self._setIndexes(self.nodes);
-                        self.dragging = false;
                         self.emitChange();
                     });                        
                     
@@ -407,7 +404,6 @@ module.exports = createStore({
                     self.removeFrom({f_index : self.dragging.f_index}, function(){
                         node.children.unshift(dragging_node);
                         self.nodes = self._setIndexes(self.nodes);
-                        self.dragging = false;
                         self.emitChange();
                     });
                     
@@ -416,7 +412,7 @@ module.exports = createStore({
                 console.log('error');
             });
             
-       // };
+        };
     },
     _openCloseTree: function () {
         this.isOpened = !this.isOpened;
@@ -485,7 +481,7 @@ module.exports = createStore({
             });
             if (node.length){
                 node[0].parentID = nodes.id;
-                return callback(node[0]);
+                callback(node[0]);
             }else{
                 nodes.children.map(function(node){
                     if (node.children){
@@ -497,19 +493,18 @@ module.exports = createStore({
                     }
                 });
             }
-        }
+            }
+        
+        
     },
    
     _updateSelector: function (res) {
         this.selector = res.selector;
         var self = this;
-        console.log(res.selector);
         this.findSelected(self.nodes, function(selected){
-           
-            console.log(selected);
             self.selected = selected;
             var f_index = self.selected.f_index;
-           
+            
             var f_index_arr = new Immutable.List(self._transformIndexToArray(f_index));
             self._createBreadcrumb(self.nodes, f_index_arr, [], function (path) {
                 self.breadcrumb = path;
@@ -527,7 +522,7 @@ module.exports = createStore({
                 if (f_index_array.size){
                 var first = f_index_array.first();
                 var new_array = f_index_array.splice(0,1);
-                self._createBreadcrumb(nodes.children[first - 1], new_array, path_acc, callback); //shift array, go to next level
+                setTimeout(self._createBreadcrumb(nodes.children[first - 1], new_array, path_acc, callback), 0); //shift array, go to next level
             }else{
                 return callback(path_acc);
             }
