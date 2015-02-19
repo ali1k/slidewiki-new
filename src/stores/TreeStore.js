@@ -477,7 +477,7 @@ module.exports = createStore({
             return callback(nodes);
         }else{
             var node = nodes.children.filter(function(item){
-                return item.type === self.selector.type && item.id.toString() === self.selector.id.toString();
+                return item.type === self.selector.type && item.id.toString() === self.selector.id;
             });
             if (node.length){
                 node[0].parentID = nodes.id;
