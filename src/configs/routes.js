@@ -47,17 +47,17 @@ module.exports = {
             } else {
                 mode = 'view';
             }
-            if (payload.params.stype && payload.params.sid) {
-                selector = {
-                    type: payload.params.stype,
-                    id: payload.params.sid
-                };
-            } else {
+//            if (payload.params.stype && payload.params.sid) {
+//                selector = {
+//                    type: payload.params.stype,
+//                    id: payload.params.sid
+//                };
+//            } else {
                 selector = {
                     type: 'deck',
                     id: payload.params.id
                 };
-            }
+//            }
             
             context.dispatch('UPDATE_PAGE_TITLE', {
                 pageTitle: 'SlideWiki -- Deck ' + payload.params.id + ' > ' +
