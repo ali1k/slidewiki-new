@@ -27,7 +27,10 @@ exports._onDrop = function(context, payload, done){
     context.dispatch('ON_DROP', payload);
     done();
 };
-        
+exports._updateSelector = function(context, payload, done){
+    context.dispatch('UPDATE_TREE_NODE_SELECTOR', payload);
+    done();
+}        
 
 
 

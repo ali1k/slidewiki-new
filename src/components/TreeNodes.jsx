@@ -141,7 +141,7 @@ var TreeNodes = React.createClass({
     },
 
     _onClick: function(e) {
-
+        this.props.context.executeAction(treeActions._updateSelector, {selector: {type: this.props.item.type, id: this.props.item.id}});
         e.preventDefault();
     },
     _onDragStart : function(e) {
