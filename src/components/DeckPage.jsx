@@ -27,9 +27,11 @@ var DeckPage = React.createClass({
         deckNewsFeed=<DeckNewsFeed context={this.props.context} />
       }
         return (
-          <div className="ui vertically padded grid centered ">
+                
+          <div className="ui vertically padded grid page ">
+          
             <div className="row">
-              <div className="column twelve wide">
+              <div className="column">
                 <h2 className="ui header"><DeckHeader context={this.props.context} /></h2>
               </div>
             </div>
@@ -37,10 +39,13 @@ var DeckPage = React.createClass({
             <div className="ui hidden divider"></div>
 
             <div className="row">
-              <div className="three wide column">
+
+              <div className="four wide column">
                 <TreePanel context={this.props.context} rootDeckID={this.props.deckParams.id}/>
               </div>
-              <div className="seven wide column">
+
+              
+              <div className="nine wide column">
                 <div className="row">
                   <ContentPanel context={this.props.context} rootDeckID={this.props.deckParams.id} />
                 </div>
@@ -51,7 +56,7 @@ var DeckPage = React.createClass({
                   {deckNewsFeed}
                 </div>
               </div>
-              <div className="two wide column">
+              <div className="three wide column">
                 <ContributorsPanel context={this.props.context} rootDeckID={this.props.deckParams.id}/>
               </div>
             </div>

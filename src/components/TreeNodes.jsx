@@ -15,14 +15,18 @@ var TreeNodes = React.createClass({
         return {
             isOpened : this.props.isOpened || false,
             isOvered : false,
-            item: this.props.item
+            item: this.props.item,
+            titleInput : false
+
         }
     },
     switchOpened : function(){
         var newState = this.state.isOpened;
         this.setState({isOpened : !newState});
     },
-    
+    handleChange: function(event) {
+        this.setState({value: event.target.value});
+    },
     render : function() {      
         var self = this;
         //it has a fixed value
@@ -40,6 +44,7 @@ var TreeNodes = React.createClass({
         };
         var isDraggable= (!(this.props.item.type=="deck" && this.props.item.id==this.props.rootID));
         var isOvered = this.state.isOvered;
+        var title = this.state.titleInput;
         //cx is used to handle adding classes by condition
         var nodeClasses = cx({
             'sw-tree-view-node': true,
@@ -82,71 +87,50 @@ var TreeNodes = React.createClass({
                 if (this.props.item.type==="deck"){
                     nodeIcon = this.state.isOpened ? <i className="icon caret down" onClick={self.switchOpened}></i> : <i className="icon caret right" onClick={self.switchOpened}></i>;
                 }
-        
+
         return (
                 
                 <div className="sw-tree-view">
-                    <div style = {{outline : isDragging ? "dotted 1px" : "none"}}>
-                        <div ref="forTransparency" style ={{
-                            position : "relative",
-                            zIndex : 1,                            
-                            opacity : isDragging ? 0 : 1
-                        }} 
-                        >   
-                          
-                            <a ref="treeNodeVisible" 
-                                href={path} 
-                                context={this.props.context} 
-                                className={nodeClasses} 
-                                onClick={this._onClick} 
-                                onMouseOver={this._onMouseOver}
-                                onMouseOut={this._onMouseOut} 
-                                onDrop = {this.props._onDrop}
-                                
-                            >
+                    <div draggable = {isDraggable}
+                        onDragEnter={this._onDragEnter} 
+                        onDragStart = {this._onDragStart}
+                        onDragEnd = {this._onDragEnd}
+                        onDragOver = {this._onDragOver}
+                        onDrop = {this._onDrop}
+                        onDragLeave={this._onDragLeave}
+                        style={{display: this.state.titleInput ? "none" : "block"}}
+                        onMouseOver={this._onMouseOver}
+                        onMouseOut={this._onMouseOut} 
+                    >
+                        <a ref="treeNode" 
+                            href={path} 
+                            context={this.props.context} 
+                            className={nodeClasses} 
+                            onClick={this._onClick} 
+                            
+                        >
                             {nodeIcon}{shorten(this.props.item.title)}
-                            </a>
-                            <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
-                            <div draggable = {isDraggable}
-                                onDragEnter={this._onDragEnter} 
-                                onDragStart = {this._onDragStart}
-                                onDragEnd = {this._onDragEnd}
-                                onDragOver = {this._onDragOver}
-                                onDrop = {this._onDrop}
-                                onDragLeave={this._onDragLeave}
-                                style = {{
-                                        position : "absolute", 
-                                        top : "0", bottom : "0", 
-                                        zIndex : 1000,
-                                        opacity : isDragging ? 1 : 0,
-                                        width : "100%"
-                                }}>
-                            >
-
-                                <a ref="treeNodeTrue" 
-                                    href={path} 
-                                    context={this.props.context} 
-                                    className={nodeClasses} 
-                                    onClick={this._onClick} 
-                                    onMouseOver={this._onMouseOver}
-                                    onMouseOut={this._onMouseOut} 
-                                >
-                                    {shorten(this.props.item.title)}
-                                </a>
-                            </div>
-                        </div>
+                        </a>
                         <span ref="actionBar" className="sw-hidden">
-                          <i className="small ellipsis vertical icon"></i>
-                          {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
-                          <i className="small teal icon edit link"></i>
-                          <i className="small red icon remove link"></i>
+                            <i className="small ellipsis vertical icon"></i>
+                            {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
+                            <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
+                            <i className="small red icon remove link"></i>
                         </span>
+                         
+                        <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
                     </div>
+                    <div className="ui small labeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
+                        
+                        <input type="text" placeholder={this.props.item.title} />
+                    </div> 
                     <ul>{output}</ul>
                 </div>
         );
     },
-
+    showTitleInput: function(e){
+        this.setState({titleInput : true})
+    },
     _onClick: function(e) {
         this.props.context.executeAction(treeActions._updateSelector, {
             selector: {
@@ -213,13 +197,13 @@ var TreeNodes = React.createClass({
     },
     //ToDo: add states for onMouseOver and onMouseOut events if needed
     _onMouseOver: function(e) {
-        var current = this.refs.treeNodeVisible.getDOMNode();
+        var current = this.refs.treeNode.getDOMNode();
         current.className += " sw-tree-view-over"
         var actionBar = this.refs.actionBar.getDOMNode();
         actionBar.className ="";
     },
     _onMouseOut: function(e) {
-        var current = this.refs.treeNodeVisible.getDOMNode();
+        var current = this.refs.treeNode.getDOMNode();
         var re = / sw-tree-view-over/gi;
         var newClasses=current.className.replace(re, "");
         current.className=newClasses
@@ -230,3 +214,4 @@ var TreeNodes = React.createClass({
 
 
 module.exports = TreeNodes;
+
