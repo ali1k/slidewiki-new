@@ -31,7 +31,7 @@ var TreeNodes = React.createClass({
         var rootID=this.props.rootID;
         
         //handling css classes
-        var isSelected= (this.props.item.type==this.props.selector.type && this.props.item.id==this.props.selector.id);
+        var isSelected= (this.props.item.type==this.props.selector.type && this.props.item.id==this.props.selector.id && this.props.item.f_index == this.props.selected.f_index);
         var isDragging;
         if (this.props.dragging) {
             isDragging = (this.props.item.type==this.props.dragging.type && this.props.item.id==this.props.dragging.id);
@@ -68,6 +68,7 @@ var TreeNodes = React.createClass({
                         rootID={self.props.rootID}
                         ref={node.f_index}
                         selector={self.props.selector}
+                        selected={self.props.selected}
                         dragging={self.props.dragging}
                         allowDrop={self.props.allowDrop}
                         context={self.props.context} 

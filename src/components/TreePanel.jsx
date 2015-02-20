@@ -159,6 +159,7 @@ var TreePanel = React.createClass({
                             parentID={0}
                             rootID={this.state.item.id}
                             selector={this.state.selector} 
+                            selected={this.state.selected} 
                             dragging={this.state.dragging}
                             isOpened={true} 
                             context={this.props.context}
