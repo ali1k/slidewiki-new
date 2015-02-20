@@ -49,8 +49,8 @@ var TreeNodes = React.createClass({
         var nodeClasses = cx({
             'sw-tree-view-node': true,
             'sw-tree-view-selected': isSelected,
-            'sw-tree-view-deck': this.props.item.type=='deck',
-            'sw-tree-view-slide': this.props.item.type=='slide'
+            'ui header item mini green inverted': this.props.item.type=='deck',
+            'ui mini item ': this.props.item.type=='slide'
         });
         var path=this._getPath();
         
@@ -63,7 +63,7 @@ var TreeNodes = React.createClass({
             var output = 
                 this.state.item.children.map(function(node, index) {                  
                return (
-                   <li key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
+                   <div className="ui item mini" key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
                     <TreeNodes
                         item = {node}
                         position={index + 1}
@@ -79,7 +79,7 @@ var TreeNodes = React.createClass({
                         context={self.props.context} 
                         className={index==(childNumber-1)?'last-child':''}
                         moveItem = {self.props.moveItem}
-                    /></li>
+                    /></div>
                 );
             })
         };
@@ -90,41 +90,39 @@ var TreeNodes = React.createClass({
 
         return (
                 
-                <div className="sw-tree-view">
-                    <div draggable = {isDraggable}
-                        onDragEnter={this._onDragEnter} 
-                        onDragStart = {this._onDragStart}
-                        onDragEnd = {this._onDragEnd}
-                        onDragOver = {this._onDragOver}
-                        onDrop = {this._onDrop}
-                        onDragLeave={this._onDragLeave}
-                        style={{display: this.state.titleInput ? "none" : "block"}}
-                        onMouseOver={this._onMouseOver}
-                        onMouseOut={this._onMouseOut} 
-                    >
-                        <a ref="treeNode" 
+                <div className="ui menu mini icon fluid">
+                        <div className={nodeClasses}
+                            draggable={isDraggable}
+                            onDragEnter={this._onDragEnter} 
+                            onDragStart = {this._onDragStart}
+                            onDragEnd = {this._onDragEnd}
+                            onDragOver = {this._onDragOver}
+                            onDrop = {this._onDrop}
+                            onDragLeave={this._onDragLeave}
+                            style={{display: this.state.titleInput ? "none" : "block"}}
+                            onMouseOver={this._onMouseOver}
+                            onMouseOut={this._onMouseOut}
+                            ref="treeNode" 
                             href={path} 
                             context={this.props.context} 
-                            className={nodeClasses} 
-                            onClick={this._onClick} 
                             
+                            onClick={this._onClick} 
                         >
-                            {nodeIcon}{shorten(this.props.item.title)}
-                        </a>
-                        <span ref="actionBar" className="sw-hidden">
-                            <i className="small ellipsis vertical icon"></i>
-                            {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
-                            <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
-                            <i className="small red icon remove link"></i>
-                        </span>
-                         
-                        <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
-                    </div>
-                    <div className="ui small labeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
+                           <span> {nodeIcon}{shorten(this.props.item.title)}</span>
+                            <span ref="actionBar" className="sw-hidden">
+                                <i className="small ellipsis vertical icon"></i>
+                                {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
+                                <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
+                                <i className="small red icon remove link"></i>
+                            </span>
+                        </div>
                         
+                    
+                    <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
+                    <div className="ui minilabeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
                         <input type="text" placeholder={this.props.item.title} />
                     </div> 
-                    <ul>{output}</ul>
+                    <div >{output}</div>
                 </div>
         );
     },
