@@ -139,7 +139,7 @@ var TreePanel = React.createClass({
         if (!this.state.error) {
           tree = <div className="sw-tree-panel">
             <div className="panel">
-              <div className="3 fluid ui attached small icon buttons">
+              <div className="3 fluid ui attached bottom tertiary small icon buttons">
                 <div className="ui button" onClick = {this.addEmptySlide}>
                   {addButton}
                 </div>
@@ -151,7 +151,7 @@ var TreePanel = React.createClass({
                 </div>
               </div>
               
-              <div className="ui bottom attached segment sw-tree-container">
+              <div className="ui bottom attached segment  sw-tree-container">
                 <TreeNodes 
                             key={'rootDeck' + this.state.item.id}
                             item={this.state.item}

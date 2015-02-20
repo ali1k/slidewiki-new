@@ -25,7 +25,8 @@ module.exports = createStore({
         UPDATE_INDEXES : 'update_indexes',
         'ON_DROP' : '_onDrop',
         'DELETE_FROM' : 'delete_from',
-        'ADD_EMPTY_SLIDE' : 'addEmptySlide'
+        'ADD_EMPTY_SLIDE' : 'addEmptySlide',
+        'ON_DRAG_END' : '_onDragEnd'
         
     },
     initialize: function () {
@@ -43,32 +44,15 @@ module.exports = createStore({
 
         this.targetDeck = null;
     },
-    //::    [{}] * [] * fn => fn({})
-//    _getElementByIndex : function(nodes, indexes_array, done){
-//        if (indexes_array.size){
-//            if (indexes_array.size === 1){ 
-//                var first = indexes_array.first();
-//                if (nodes.children[first - 1]){
-//                    return done(nodes.children[first-1]);
-//                }else{
-//                    return done(null);
-//                }
-//            }else{
-//                var first = indexes_array.first();
-//                if (nodes.children){
-//                    this._getElementByIndex(nodes.children[first - 1], indexes_array.shift(), done); //shift array, go to next level
-//                }else{
-//                    
-//                }
-//            }
-//        }else{
-//            return done(null);
-//        }
-//    },
+
     _onDragStart: function (payload) {
         this.dragging = payload;
         this.emitChange();
-    },    
+    }, 
+    _onDragEnd : function(){
+        this.dragging = {};
+        this.emitChange();
+    },
     delete_from : function(payload){
         var self = this;
         agent

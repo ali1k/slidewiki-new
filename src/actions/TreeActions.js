@@ -30,7 +30,10 @@ exports._onDrop = function(context, payload, done){
 exports._updateSelector = function(context, payload, done){
     context.dispatch('UPDATE_TREE_NODE_SELECTOR', payload);
     done();
-}        
+};
+exports._onDragEnd = function(context){
+    context.dispatch('ON_DRAG_END');
+};
 
 
 

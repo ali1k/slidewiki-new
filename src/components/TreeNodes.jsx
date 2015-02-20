@@ -17,7 +17,6 @@ var TreeNodes = React.createClass({
             isOvered : false,
             item: this.props.item,
             titleInput : false
-
         }
     },
     switchOpened : function(){
@@ -111,13 +110,18 @@ var TreeNodes = React.createClass({
                         onDragOver = {this._onDragOver}
                         onDrop = {this._onDrop}
                         onDragLeave={this._onDragLeave}
-                        style={{display: this.state.titleInput ? "none" : "block"}}
+                        
 
                     >   
                         <div className="ui labeled fluid">
                             <span >{nodeIcon}</span>
                             <span href={path} context={this.props.context}  onClick={this._onClick} >
-                                {shorten(this.props.item.title)}
+                                <span style={{display: this.state.titleInput ? "none" : "inline"}}>
+                                    {shorten(this.props.item.title)}
+                                </span>
+                                <span className="ui small transparent input active" style={{display: this.state.titleInput ? "inline" : "none"}}>
+                                    <input type="text" ref="titleInput" placeholder={this.props.item.title} />
+                                </span> 
                                 <div ref="actionBar" className="sw-hidden" style={{
                                         background: 'white !important', 
                                         padding: '.3em .3em !important',
@@ -132,9 +136,7 @@ var TreeNodes = React.createClass({
                             </span>
                         </div>
                        
-                        <div className="ui small labeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
-                            <input type="text" placeholder={this.props.item.title} />
-                        </div> 
+                        
                     </div>
                     
                     
@@ -164,7 +166,11 @@ var TreeNodes = React.createClass({
         );
     },
     showTitleInput: function(e){
-        this.setState({titleInput : true})
+        this.setState({titleInput : true});
+        var current = this.refs.titleInput.getDOMNode();
+        
+        current.focus();
+        current.select();
     },
     _onClick: function(e) {
         this.props.context.executeAction(treeActions._updateSelector, {
@@ -197,6 +203,7 @@ var TreeNodes = React.createClass({
     },
     _onDragEnd : function(e){
         this.setState({ 'isOvered' : false});
+        this.props.context.executeAction(treeActions._onDragEnd);
     },
     _onDragEnter: function(e){
         
@@ -230,6 +237,8 @@ var TreeNodes = React.createClass({
             this.setState({'isOpened' : true, 'isOvered' : false});
             if (this.props.allowDrop){
                 this.props.moveItem(this);
+            }else{
+                this.setState({isNotDragging : true});
             }
         }
     }, 
