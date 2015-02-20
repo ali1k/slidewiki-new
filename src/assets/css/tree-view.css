@@ -19,18 +19,18 @@
     color: red;
 }
 .sw-tree-view,
-.sw-tree-view ul {
+/*.sw-tree-view ul {
     margin:0 0;
     padding:0;
     list-style:none;
 }
 
 .sw-tree-view ul {
-    margin-left:0.5em; /* indentation */
+    margin-left:0.5em;  indentation 
     position:relative;
 }
 
-.sw-tree-view ul ul {margin-left:.3em} /* (indentation/2) */
+.sw-tree-view ul ul {margin-left:.3em}  (indentation/2) 
 
 .sw-tree-view ul:before {
     content:"";
@@ -49,8 +49,8 @@
 
 .sw-tree-view li {
     margin:0;
-    padding:0 1em; /* indentation + .5em */
-    line-height:1.2em; /* default list item's `line-height` */
+    padding:0 1em;  indentation + .5em 
+    line-height:1.2em;  default list item's `line-height` 
     color: rgba(39, 41, 43, 0.35);
     position:relative;
 }
@@ -62,21 +62,21 @@
 .sw-tree-view ul li:before {
     content:"";
     display:block;
-    width:.5em; /* same with indentation */
+    width:.5em;  same with indentation 
     height:0;
     border-top:1px solid rgba(39, 41, 43, 0.35);
-    margin-top:-5px; /* border top width */
+    margin-top:-5px;  border top width 
     position:absolute;
-    top:1em; /* (line-height/2) */
+    top:1em;  (line-height/2) 
     left:0;
 }
 
 .sw-tree-view ul li:last-child:before {
-  background:white; /* same with body background */
+  background:white;  same with body background 
   height:auto;
-  top:1em; /* (line-height/2) */
+  top:1em;  (line-height/2) 
   bottom:0;
-}
+}*/
 
 
 

@@ -49,21 +49,21 @@ var TreeNodes = React.createClass({
         var nodeClasses = cx({
             'sw-tree-view-node': true,
             'sw-tree-view-selected': isSelected,
-            'ui header item mini green inverted': this.props.item.type=='deck',
-            'ui mini item ': this.props.item.type=='slide'
+            'sw-tree-view-deck': this.props.item.type=='deck',
+            'sw-tree-view-slide': this.props.item.type=='slide',
+            'item' : true
         });
         var path=this._getPath();
-        
+        var output;
        
         //handling child nodes
         var childNodes, childNumber = 0;
         if(this.props.item.children) {
             childNumber=this.props.item.children.length; 
-             
-            var output = 
+            output = 
                 this.state.item.children.map(function(node, index) {                  
                return (
-                   <div className="ui item mini" key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
+                   <div key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
                     <TreeNodes
                         item = {node}
                         position={index + 1}
@@ -84,45 +84,47 @@ var TreeNodes = React.createClass({
             })
         };
         var nodeIcon;
-                if (this.props.item.type==="deck"){
-                    nodeIcon = this.state.isOpened ? <i className="icon caret down" onClick={self.switchOpened}></i> : <i className="icon caret right" onClick={self.switchOpened}></i>;
-                }
+        if (this.props.item.type==="deck"){
+            nodeIcon = this.state.isOpened ? <i className="icon caret down top aligned" onClick={self.switchOpened}></i> : <i className="icon caret right top aligned" onClick={self.switchOpened}></i>;
+        }
 
         return (
-                
-                <div className="ui menu mini icon fluid">
-                        <div className={nodeClasses}
-                            draggable={isDraggable}
-                            onDragEnter={this._onDragEnter} 
-                            onDragStart = {this._onDragStart}
-                            onDragEnd = {this._onDragEnd}
-                            onDragOver = {this._onDragOver}
-                            onDrop = {this._onDrop}
-                            onDragLeave={this._onDragLeave}
-                            style={{display: this.state.titleInput ? "none" : "block"}}
-                            onMouseOver={this._onMouseOver}
-                            onMouseOut={this._onMouseOut}
-                            ref="treeNode" 
+                <div >
+                    <div draggable = {isDraggable}
+                        onDragEnter={this._onDragEnter} 
+                        onDragStart = {this._onDragStart}
+                        onDragEnd = {this._onDragEnd}
+                        onDragOver = {this._onDragOver}
+                        onDrop = {this._onDrop}
+                        onDragLeave={this._onDragLeave}
+                        style={{display: this.state.titleInput ? "none" : "block"}}
+                        onMouseOver={this._onMouseOver}
+                        onMouseOut={this._onMouseOut}
+                    >
+                        <a ref="treeNode" 
                             href={path} 
                             context={this.props.context} 
-                            
                             onClick={this._onClick} 
+                            className={nodeClasses}
+                            
                         >
-                           <span> {nodeIcon}{shorten(this.props.item.title)}</span>
-                            <span ref="actionBar" className="sw-hidden">
-                                <i className="small ellipsis vertical icon"></i>
-                                {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
-                                <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
-                                <i className="small red icon remove link"></i>
-                            </span>
-                        </div>
+                            {nodeIcon}{shorten(this.props.item.title)}
+                        </a>
+                        <span ref="actionBar" className="sw-hidden">
+                            <i className="small ellipsis vertical icon"></i>
+                            {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
+                            <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
+                            <i className="small red icon remove link"></i>
+                        </span>
+                         
+                        <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
+                        <div className="ui small labeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
                         
+                            <input type="text" placeholder={this.props.item.title} />
+                        </div> 
                     
-                    <div style={{width:"100%", height:'3px', backgroundColor: 'blue', display : isOvered ? 'block' : 'none'}}></div>
-                    <div className="ui minilabeled input active" style={{display: this.state.titleInput ? "block" : "none"}}>
-                        <input type="text" placeholder={this.props.item.title} />
-                    </div> 
-                    <div >{output}</div>
+                    <div className="ui list divided">{output}</div>
+                    </div>
                 </div>
         );
     },
