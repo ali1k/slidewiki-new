@@ -23,7 +23,7 @@ var TreePanel = React.createClass({
     getStateFromStores: function () {
       return {
           error: this.getStore(TreeStore).getError(),
-          nodes: this.getStore(TreeStore).getNodes(),
+          item: this.getStore(TreeStore).getNodes(),
           selector: this.getStore(TreeStore).getSelector(),
           dragging: this.getStore(TreeStore).getDragging(),
           allowDrop: this.getStore(TreeStore).getAllowDrop(),
@@ -51,15 +51,31 @@ var TreePanel = React.createClass({
         
     },
     addEmptySlide : function(){
+        var selected = this.state.selected;
+        var selector = this.state.selector;
         var self = this;
-        var payload = {title: 'New Slide', 
-                       user_id: 3, 
-                       body : '', 
-                       language: 'en', 
-                       position : null };
-        this.props.context.executeAction(treeActions.addEmptySlide, payload, function(){
-            this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/'+this.state.nodes.id+'/slide/' + this.state.selector.id});
-        });
+        var position, parent;
+        
+        if (selector.type === 'slide'){
+            parent = selector.parent.state.item;
+            if (!parent) parent = this.state.item;
+            position = parent.children.indexOf(selected) + 2; //it is an index that's why + 1 and we need to add after => +2
+        }else{
+            parent = selected;
+            if (!parent) parent = this.state.item;
+            position = parent.children.length + 1;
+        }
+        var new_slide = {
+            title: 'New Slide', 
+            user_id: 3, 
+            body : '', 
+            language: 'en', 
+            position : position,
+            parent_deck_id : parent.id
+        };
+        
+        this.props.context.executeAction(treeActions.addEmptySlide, {parent : parent, new_slide : new_slide});
+
     },
     moveItem: function(target){
         
@@ -137,16 +153,16 @@ var TreePanel = React.createClass({
               
               <div className="ui bottom attached segment sw-tree-container">
                 <TreeNodes 
-                            key={'rootDeck' + this.state.nodes.id}
-                            item={this.state.nodes}
+                            key={'rootDeck' + this.state.item.id}
+                            item={this.state.item}
                             position={1}
                             parentID={0}
-                            rootID={this.state.nodes.id}
+                            rootID={this.state.item.id}
                             selector={this.state.selector} 
                             dragging={this.state.dragging}
                             isOpened={true} 
                             context={this.props.context}
-                            ref={'rootDeck' + this.state.nodes.id}
+                            ref={'rootDeck' + this.state.item.id}
                             parentRef={'0'}
                             allowDrop={this.state.allowDrop}
                             parent = {false}

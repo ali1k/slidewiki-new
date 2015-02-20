@@ -103,84 +103,45 @@ module.exports = createStore({
         //todo for now the user-id '3' is used - change it in treepanel
         //todo parent_deck_id should be different if slide is selected
         var self = this;
-        if (self.selected.type === 'deck'){
-            agent
-                .post(api.path + '/slide/new')
-                .type('form')
-                .send({ title: payload.title, 
-                        user_id: payload.user_id, 
-                        body : payload.body, 
-                        language: payload.language, 
-                        position : payload.position, 
-                        parent_deck_id: self.selected.id 
-                    })
-                    .end(function(err, res){
-                        if (err){
-                            self.error = internal;
-                            return self.emitChange();
-                        }
-                        else{
-                            var new_slide = payload;
-                            new_slide.id = res.body.id;
-                            var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index));
-                            var index_in_parent = self.selected.children.length + 1;
-                            var futureF_index_array = myImmutable.push(index_in_parent); //futureIndex
-                            var futureF_index = futureF_index_array.join(':');
-                            new_slide.parentID = self.selected.id;
-                            new_slide.position = index_in_parent;
-                            new_slide.type = 'slide';
-                            new_slide.f_index  = futureF_index;
-                            self.insertInto({f_index : futureF_index, node : new_slide}); 
-                            var new_nodes = self._setIndexes(self.nodes);
-                            self.nodes = new_nodes;
-                            self.selected = new_slide;
-                            self.selector  = {type: 'slide', id: new_slide.id.toString()};
-                            self.emitChange();
+        var parent = payload.parent;
+        var new_slide = payload.new_slide;
+       
+        agent
+            .post(api.path + '/slide/new')
+            .type('form')
+            .send(new_slide)
+            .end(function(err, res){
+                if (err){
+                    self.error = internal;
+                    self.emitChange();
+                }
+                else{
+                    new_slide.id = res.body.id;
+                    new_slide.parentID = parent.id;
+                    new_slide.type = 'slide';
+                    
+                    var max_f_index = _.max(parent.children, function(chr) { //adding unique f_index
+                        if (chr.f_index.toString().indexOf(':') !== -1){
+                            var index_arr = chr.f_index.toString().split(':');                            
+                            return parseInt(index_arr[index_arr.length - 1]);
+                        }else{
+                            return parseInt(chr.f_index);
                         }
                     });
+                    max_f_index = max_f_index.f_index + 1;
+                    if (parent.f_index){
+                        new_slide.f_index = parent.f_index + ':' + max_f_index;
+                    }else{
+                        new_slide.f_index = max_f_index + 1; 
+                    }
+                    
+                    parent.children.splice(new_slide.position-1, 0, new_slide);
 
-        }else{
-            
-            self._getParentOfItem({f_index : self.selected.f_index}, function(parent){
-                if (!parent) parent = self.nodes;
-                var myImmutable = Immutable.List(self._transformIndexToArray(self.selected.f_index)); //selected slide
-                var after_index = myImmutable.last() - 0 + 1; //new position
-
-                agent
-                .post(api.path + '/slide/new')
-                .type('form')
-                .send({ title: payload.title, 
-                        user_id: payload.user_id, 
-                        body : payload.body, 
-                        language: payload.language, 
-                        position : after_index, 
-                        parent_deck_id: parent.id 
-                    })
-                    .end(function(err, res){
-                        if (err){
-                            self.error = internal;
-                            return self.emitChange();
-                        }
-                        else{
-                            var new_slide = payload;
-                            new_slide.id = res.body.id;
-                            var parent_index = Immutable.List(self._transformIndexToArray(parent.f_index)); //parent f_index
-                            var new_index = parent_index.push(after_index); //new f_index_array;
-                            var futureF_index = new_index.join(':'); 
-                            new_slide.parentID = parent.id;
-                            new_slide.position = after_index;
-                            new_slide.type = 'slide';
-                            self.insertInto({f_index : futureF_index, node : new_slide}); 
-                            var new_nodes = self._setIndexes(self.nodes);
-                            self.nodes = new_nodes;
-                            self.selected = new_slide;
-                            self.selector  = {type: 'slide', id: new_slide.id.toString()};
-                            self.emitChange();
-                        };
-                    });
-            
+                    self.emitChange();
+                }
             });
-        }
+
+      
     },
     
     _onDrop : function(payload){
@@ -191,8 +152,6 @@ module.exports = createStore({
         var target_index = payload.target_index + 1;
         var source = payload.source_parent.id;
         var target = payload.target_parent.id;
-        console.log(source);
-        console.log(target);
         agent
                 .get(api.path + '/moveItem/' + source + "/" + source_index + "/" + target + "/" + target_index) 
                 .end(function(err, res){
@@ -434,6 +393,10 @@ module.exports = createStore({
         this.nodes.type = 'deck';
         this.nodes.id = res.selector.id;
         this.selector = res.selector;
+        this.selector.parent = false;
+        this.selector.title = res.nodes.title;
+        console.log(res);
+        this.selected = this.nodes;
         self._createBreadcrumb(self.selector, [], function (path) {
             console.log(path);
             self.breadcrumb = path;
@@ -448,7 +411,7 @@ module.exports = createStore({
         }else{
             this.selected = this.nodes;
         }
-        
+        console.log(res);
         var self = this;
         this._createBreadcrumb(self.selector, [], function(path){
             self.breadcrumb = path;

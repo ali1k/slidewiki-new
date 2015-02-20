@@ -170,8 +170,6 @@ var TreeNodes = React.createClass({
         }else{
             e.preventDefault();
         }
-        
-        
     },
     _onDragEnter: function(e){
         
