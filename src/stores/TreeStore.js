@@ -148,6 +148,8 @@ module.exports = createStore({
         this.allowDrop = false;
         var self = this; 
         var query = {};
+        self.dragging = {};
+        self.emitChange();
         var source_index = payload.source_index + 1;
         var target_index = payload.target_index + 1;
         var source = payload.source_parent.id;
