@@ -19,6 +19,7 @@ var TreePanel = React.createClass({
     },
     getInitialState: function () {
        return this.getStateFromStores();
+       
     },
     getStateFromStores: function () {
       return {
@@ -31,6 +32,7 @@ var TreePanel = React.createClass({
       };
     },
     _onChange: function() {
+      
       this.setState(this.getStateFromStores());
     },
 
@@ -82,10 +84,10 @@ var TreePanel = React.createClass({
         if (this.state.dragging && this.state.allowDrop){
             console.log('==========');
             console.log(this.state);
-            var dragging = this.state.dragging.state.item;
+            var dragging = this.state.dragging.props.item;
             console.log('dragging');
             console.log(dragging);
-            var source_parent = this.state.dragging.props.parent.state.item;
+            var source_parent = this.state.dragging.props.parent.props.item;
             console.log('source parent');
             console.log(source_parent);
             console.log(target);
@@ -97,9 +99,9 @@ var TreePanel = React.createClass({
             source_parent.children.splice(source_index, 1);
             console.log('-----------------');
             console.log(source_parent);
-            if (target.state.item.type === 'slide'){ //dropping after the target slide
-                target_parent = target.props.parent.state.item;
-                target_index = target_parent.children.indexOf(target.state.item) + 1;
+            if (target.props.item.type === 'slide'){ //dropping after the target slide
+                target_parent = target.props.parent.props.item;
+                target_index = target_parent.children.indexOf(target.props.item) + 1;
                 console.log('target parent');
                 console.log(target_parent);
 
@@ -112,7 +114,7 @@ var TreePanel = React.createClass({
                 this.props.context.executeAction(treeActions._onDrop, {target_parent : target_parent, target_index: target_index, source_parent: source_parent, source_index: source_index});
                 target.props.parent.setState({item: target_parent});
             }else{ //we are over a deck - dropping inside it on the 1st position
-                target_parent = target.state.item;
+                target_parent = target.props.item;
                 target_index = 0;
                 console.log('target parent');
                 console.log(target_parent);
@@ -133,7 +135,7 @@ var TreePanel = React.createClass({
         }
     },
     render: function() {
-
+        
         var tree
         var addButton=this.state.selector.type=='slide' ? <i className="blue add icon disabled"></i> : <i className="blue add icon"></i>;
         if (!this.state.error) {

@@ -88,8 +88,9 @@ module.exports = createStore({
         //todo parent_deck_id should be different if slide is selected
         var self = this;
         var parent = payload.parent;
+        console.log('parent');
+        console.log(parent);
         var new_slide = payload.new_slide;
-       
         agent
             .post(api.path + '/slide/new')
             .type('form')
@@ -116,11 +117,13 @@ module.exports = createStore({
                     if (parent.f_index){
                         new_slide.f_index = parent.f_index + ':' + max_f_index;
                     }else{
-                        new_slide.f_index = max_f_index + 1; 
+                        new_slide.f_index = max_f_index; 
                     }
-                    
                     parent.children.splice(new_slide.position-1, 0, new_slide);
-
+                    if (parent.id === self.nodes.id){
+                        self.nodes = parent;
+                    }
+                    console.log(self.nodes);
                     self.emitChange();
                 }
             });
@@ -131,9 +134,7 @@ module.exports = createStore({
     _onDrop : function(payload){
         this.allowDrop = false;
         var self = this; 
-        var query = {};
-        self.dragging = {};
-        self.emitChange();
+        
         var source_index = payload.source_index + 1;
         var target_index = payload.target_index + 1;
         var source = payload.source_parent.id;
@@ -227,113 +228,7 @@ module.exports = createStore({
         }
         
     },
-    //::    {f_index : f_index} * fn * this.nodes => fn(this.node)
-//    _getParentOfItem : function(payload, callback){         
-//        if (payload.f_index.length){
-//            var self = this;
-//            
-//            var myImmutable_new = Immutable.List(self._transformIndexToArray(payload.f_index)); //Immutable array of indexes
-//            
-//            var indexes_array = myImmutable_new; //mutable copy
-//            var parent_index = indexes_array.pop();
-//            if (parent_index) { //parent is NOT a root
-//                self._getElementByIndex(self.nodes, parent_index, function(parent){ //parent
-//                    callback(parent);
-//                });
-//            } else { //parent is a root deck
-//                callback(self.nodes);
-//            } 
-//        }else{
-//            callback(null);
-//        }
-//        
-//    },
-//    insertInto : function(payload){
-//        var self = this;
-//        this._getParentOfItem(payload, function(parent){
-//            if (!parent) parent = self.nodes;
-//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-//            var index_in_parent = myImmutable.last() - 1;
-//            var new_node = payload.node;
-//            parent.children.splice(index_in_parent, 0, new_node);
-//            self.emitChange();
-//        });
-//    },
-//    removeFrom : function(payload, callback){
-//        var self = this;
-//        this._getParentOfItem(payload, function(parent){            
-//            if (!parent) parent = self.nodes;
-//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-//            var new_indexes_array = myImmutable; //mutable copy            
-//            var index_in_parent = new_indexes_array.last() - 1;
-//            parent.children.splice(index_in_parent, 1);
-//            return callback();
-//        });
-//    },
-//    _transformIndexToArray : function(f_index){
-//        if (f_index){
-//            f_index += '';
-//            if (f_index.indexOf(':') !== -1){
-//                return (f_index.split(':'));
-//            }else{
-//                return ([f_index]);
-//            }
-//        }else{
-//            return null;
-//        }
-//    },
-//    //:: {f_index : f_index} * this.dragging * this.nodes => fn()
-//    move_item : function(payload){
-//        if (this.allowDrop){ 
-//            var self = this;
-//            var myImmutable = Immutable.List(self._transformIndexToArray(payload.f_index)); //array of indexes, must not be mutated
-//            var indexes_array = myImmutable; //mutable copy
-//            
-//            var promiseTarget = new Promise(function(resolve, reject) {
-//                self._getElementByIndex(self.nodes, indexes_array, function(node){ //the drop target node 
-//                    if (!node) {node = self.nodes;}
-//                    if (node) {
-//                        resolve(node);
-//                    }
-//                });
-//            });
-//            var new_myImmutable = Immutable.List(self._transformIndexToArray(self.dragging.f_index)); //array of indexes, must not be mutated
-//            var new_indexes_array = new_myImmutable; //mutable copy
-//            var promiseDragging = new Promise(function(resolve, reject){             
-//                self._getElementByIndex(self.nodes, new_indexes_array, function(dragging_node){ //dragging node
-//                    if (dragging_node){
-//                        resolve(dragging_node);
-//                    }
-//                });                
-//            });            
-//            Promise.all([promiseTarget, promiseDragging]).then(function(result) {
-//                var node = result[0];
-//                var dragging_node = result[1];
-//                if (node.type === 'slide'){ //add item after the slide
-//                    var after_index = myImmutable.last();
-//                    var futureF_index_ar = myImmutable.set(-1, after_index);
-//                    var futureF_index = futureF_index_ar.join(':');                    
-//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-//                        self.insertInto({f_index : futureF_index, node : dragging_node}) //the last element of node.f_index + 1
-//                        self.nodes = self._setIndexes(self.nodes);
-//                        self.emitChange();
-//                    });                        
-//                    
-//                }
-//                else{
-//                    self.removeFrom({f_index : self.dragging.f_index}, function(){
-//                        node.children.unshift(dragging_node);
-//                        self.nodes = self._setIndexes(self.nodes);
-//                        self.emitChange();
-//                    });
-//                    
-//                }
-//            }, function() {
-//                console.log('error');
-//            });
-//            
-//        };
-//    },
+
     _openCloseTree: function () {
         this.isOpened = !this.isOpened;
         this.emitChange();
@@ -373,23 +268,18 @@ module.exports = createStore({
         return nodes;
     },
     _showDeckTreeSuccess: function (res) {
-        debug('Success in loading deck tree!');
-        var self = this;
         this.nodes = this._setIndexes(res.nodes);
         this.nodes.type = 'deck';
         this.nodes.id = res.selector.id;
-        this.selector = res.selector;
-        this.selector.parent = false;
-        this.selector.title = res.nodes.title;
-        console.log(res);
-        this.selected = this.nodes;
-        self._createBreadcrumb(self.selector, [], function (path) {
-            console.log(path);
-            self.breadcrumb = path;
-            self.emitChange();
-        });
-    },
-   
+        var selector = {
+                            title:this.nodes.title,
+                            type: 'deck', 
+                            id: this.nodes.id, 
+                            parent: null
+                        };
+        var selected = this.nodes;        
+        this._updateSelector({selector : selector, selected: selected});
+    },   
     _updateSelector: function(res) {
         this.selector = res.selector;
         if (res.selected){
@@ -397,7 +287,6 @@ module.exports = createStore({
         }else{
             this.selected = this.nodes;
         }
-        console.log(res);
         var self = this;
         this._createBreadcrumb(self.selector, [], function(path){
             self.breadcrumb = path;
@@ -420,6 +309,7 @@ module.exports = createStore({
         return this.breadcrumb;
     },
     getNodes: function () {
+        
         return this.nodes;
     },
     getError: function () {

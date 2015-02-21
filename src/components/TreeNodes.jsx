@@ -12,6 +12,7 @@ function shorten(title){
 
 var TreeNodes = React.createClass({
     getInitialState: function(){
+        
         return {
             isOpened : this.props.isOpened || false,
             isOvered : false,
@@ -26,7 +27,8 @@ var TreeNodes = React.createClass({
     handleChange: function(event) {
         this.setState({value: event.target.value});
     },
-    render : function() {      
+    render : function() { 
+  
         var self = this;
         //it has a fixed value
         var selector=this.props.selector;
@@ -65,7 +67,8 @@ var TreeNodes = React.createClass({
         if(this.props.item.children) {
             childNumber=this.props.item.children.length; 
             output = 
-                this.state.item.children.map(function(node, index) {                  
+                this.props.item.children.map(function(node, index) {  
+           
                return (
                    <div className="item" key={node.f_index} style = {{display: self.state.isOpened ? 'block' : 'none'}}>
                     <TreeNodes
