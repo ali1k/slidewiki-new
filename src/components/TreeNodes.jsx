@@ -5,6 +5,7 @@ var cx = require('react/lib/cx');
 var navigateAction = require('flux-router-component/actions/navigate');
 var treeActions = require('../actions/TreeActions');
 var deckActions = require('../actions/DeckActions');
+var async = require('async');
 
 function shorten(title){
     return title.length > 20 ? title.substring(0, 17) + '...' : title;
@@ -95,13 +96,13 @@ var TreeNodes = React.createClass({
         if (this.props.item.type==="deck"){
             nodeIcon = this.state.isOpened ? <i className="icon caret down top aligned" onClick={self.switchOpened}></i> : <i className="icon caret right top aligned" onClick={self.switchOpened}></i>;
         }
-        
-        
+        var titleString = this.state.titleInput ? <div className="ui small transparent input active icon">
+                                                        {nodeIcon}<input type="text" ref="titleInput" placeholder={this.props.item.title} />
+                                                  </div> 
+                                                : <div>{nodeIcon}{shorten(this.props.item.title)}</div>    
    
         return (<div>
-                <div className="sw-tree-view" ref='tree' style={{
-                                                                    display: isDragging ? 'none' : 'block',
-                                                                }}>
+                <div className="sw-tree-view" ref='tree' style={{display: isDragging ? 'none' : 'block'}}>
                     <div ref="treeNode"
                         className={nodeClasses}
                         onMouseOver={this._onMouseOver} 
@@ -113,32 +114,27 @@ var TreeNodes = React.createClass({
                         onDragOver = {this._onDragOver}
                         onDrop = {this._onDrop}
                         onDragLeave={this._onDragLeave}
-                        style={{
-                                cursor: isDragging ? 'move' : 'pointer'
-                        }}
-
                     >   
                         <div className="ui labeled fluid">
-                            <span >{nodeIcon}</span>
-                            <span href={path} context={this.props.context}  onClick={this._onClick} >
-                                <span style={{display: this.state.titleInput ? "none" : "inline"}}>
-                                    {shorten(this.props.item.title)}
-                                </span>
-                                <span className="ui small transparent input active" style={{display: this.state.titleInput ? "inline" : "none"}}>
-                                    <input type="text" ref="titleInput" placeholder={this.props.item.title} />
-                                </span> 
+                           
+                            <div href={path} context={this.props.context}  onClick={this._onClick} >
+                                
                                 <div ref="actionBar" className="sw-hidden" style={{
-                                        background: 'white !important', 
-                                        padding: '.3em .3em !important',
-                                        position: 'absolute',
-                                        right:'0'
-                                    }}>
+                                    background: 'white !important', 
+                                    padding: '.3em .3em !important',
+                                    position: 'absolute',
+                                    right:'0',
+                                    zIndex : '5'
+                                }}>
                                     <i className="small ellipsis vertical icon"></i>
                                     {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
                                     <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
                                     <i className="small red icon remove link"></i>
                                 </div>
-                            </span>
+                                    
+                                {titleString}
+                                
+                            </div>
                         </div>
                        
                         
@@ -173,9 +169,9 @@ var TreeNodes = React.createClass({
     showTitleInput: function(e){
         this.setState({titleInput : true});
         var current = this.refs.titleInput.getDOMNode();
-        
         current.focus();
-        current.select();
+        current.setSelectionRange(0, 0);
+        
     },
     _onClick: function(e) {
         this.props.context.executeAction(treeActions._updateSelector, {
@@ -215,15 +211,12 @@ var TreeNodes = React.createClass({
         if (this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id)  {
             e.preventDefault(); // Necessary. Allows us to drop.
             e.stopPropagation();
-
-            if (this.props.item.type == 'deck'){
-                this.setState({isOpened : true, isOvered : true});
-            }else{
-                this.setState({isOvered : true});
-            }
             var dropCandidate = {props: this.props, state: this.state};
             var self = this;
-            setTimeout(this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate),300);
+            async.parallel([
+                //setTimeout(this.props.context.executeAction(treeActions.checkDropPossible, dropCandidate),100),
+                setTimeout(self.setState({isOpened : true, isOvered : true}), 300)
+            ])
         }
     },
     _onDragLeave: function(e){
@@ -233,18 +226,17 @@ var TreeNodes = React.createClass({
         e.preventDefault(); // Necessary. Allows us to drop.
         e.stopPropagation();
  
-        //this.setState({isOvered : true});
+  
     },
     _onDrop : function(e) {
-        if (this.props.allowDrop && this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id){
+        //allowDrop here!
+        if (this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id){
             e.preventDefault();
             e.stopPropagation();
             this.setState({'isOpened' : true, 'isOvered' : false});
-            if (this.props.allowDrop){
+            //if (this.props.allowDrop){
                 this.props.moveItem(this);
-            }else{
-                this.setState({isNotDragging : true});
-            }
+            
         }
     }, 
     

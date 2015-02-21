@@ -9,11 +9,11 @@
 .sw-tree-view a:hover {text-decoration: none}
 
 .sw-tree-view-selected {
-    color: rgb(0, 159, 218) !important;
+    color: rgb(218, 0, 114) !important;
 }
 .sw-tree-view-over {
     //background-color: rgb(255, 244, 176) !important;
-    border-left: rgb(0, 159, 218) 1px solid;
+    border-left: rgb(218, 0, 114) 1px solid;
     cursor: pointer;
 }
 
