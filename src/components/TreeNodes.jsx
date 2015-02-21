@@ -113,7 +113,9 @@ var TreeNodes = React.createClass({
                         onDragOver = {this._onDragOver}
                         onDrop = {this._onDrop}
                         onDragLeave={this._onDragLeave}
-                        
+                        style={{
+                                cursor: isDragging ? 'move' : 'pointer'
+                        }}
 
                     >   
                         <div className="ui labeled fluid">
