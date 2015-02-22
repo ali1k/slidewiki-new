@@ -22,3 +22,13 @@ body {
 .sw-hidden{
   display:none;
 }
+
+.sw-menu-link {    
+    cursor: pointer;    
+}
+
+.sw-menu-link:hover{
+    border-left: rgb(218, 0, 114) 1px solid;
+    cursor: pointer;
+    background: rgba(0,0,0,0.1) !important;
+}

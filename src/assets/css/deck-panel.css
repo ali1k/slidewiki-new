@@ -2,9 +2,10 @@
 
 }
 
-.sw-deck-panel .sw-language:hover {
+/*.sw-deck-panel .sw-language:hover {
     background: rgba(0,0,0,0.1) !important;
-}
+    border-left: rgb(218, 0, 114) 1px solid;
+}*/
 .sw-deck-panel .sw-language{
     cursor: pointer;
 }
@@ -12,4 +13,13 @@
 .sw-deck-panel .sw-header{
     font-weight: bold;
     color: rgb(217, 92, 92);
+}
+
+.sw-deck-panel .sw-link{
+    cursor: pointer
+}
+
+.sw-deck-panel .sw-close-icon{
+    margin-left: .3em !important;
+    margin-right: .3em !important;
 }

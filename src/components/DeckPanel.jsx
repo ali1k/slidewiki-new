@@ -28,13 +28,20 @@ var DeckPanel = React.createClass({
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
-    openLanguages: function(e){
+    openCloseLanguages: function(e){
         var state = this.state.languageOpen;
+        var current = this.refs.world_icon.getDOMNode();
+        if (state){
+            current.className += ' yellow inverted';
+        }else{
+            var re = / yellow inverted/gi;
+            var newClasses=current.className.replace(re, "");
+            current.className=newClasses
+        }
         this.setState({languageOpen: !state});
-        e.preventDefault();
     },
     openGoogleLanguagesTab : function(){        
-        this.setState({googleFormOpened: true, languageOpen : false});
+        this.setState({googleFormOpened: true});
     },
     closeGoogleLanguages : function(){
         this.setState({googleFormOpened: false});
@@ -43,7 +50,7 @@ var DeckPanel = React.createClass({
         var isGoogleFormOpened = this.state.googleFormOpened;
         var languageList = this.state.googleLanguages.map(function(node, index){
             return (
-                    <div key={node.language} className="ui fitted labeled three wide column sw-language">
+                    <div key={node.language} className="ui fitted labeled three wide column sw-menu-link">
                         {node.name}
                     </div> 
                 )
@@ -56,13 +63,23 @@ var DeckPanel = React.createClass({
                                 <div>{this.state.content.title}</div>
                             </div>
                             <div className="five wide column right floated right aligned">
-                                <div className="ui floating dropdown labeled compact icon button tiny yellow fluid">
-                                    <i className="world icon" onClick={this.openLanguages}></i>
+                                <div className="ui floating dropdown button right labeled compact icon tiny yellow fluid">
                                     <span className="text">{this.state.content.language}</span>
-                                    <div className="menu ui mini " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
-                                        <a className="item teal mini">Arabic</a>
-                                        <a className="item">Chinese</a>
-                                        <a className="item">Danish</a>
+                                    <i className="world icon yellow inverted" ref="world_icon" onClick={this.openCloseLanguages}></i>
+                                    
+                                    <div className="menu ui small " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
+                                        <div className="ui small basic button right labeled compact icon fluid">
+                                            <i className="world icon"></i>
+                                            <span className="text">Arabic</span>                                            
+                                        </div>
+                                        <div className="ui small basic button right labeled compact icon fluid">
+                                            <i className="world icon"></i>
+                                            <span className="text">Chinese</span>                                            
+                                        </div>
+                                        <div className="ui small basic button right labeled compact icon fluid">
+                                            <i className="world icon"></i>
+                                            <span className="text">Danish</span>                                            
+                                        </div>
                                         <div className="divider"></div>
                                         <div className="item centered header ui grid yellow mini" onClick={this.openGoogleLanguagesTab}><span>Translate</span></div>
                                     </div>
@@ -70,12 +87,12 @@ var DeckPanel = React.createClass({
                             </div>
                         </div>
                     </div>
-                    <div className="ui small modal" style={{display : isGoogleFormOpened ? 'block' : 'none', marginTop : '-200'}}>
+                    <div className="ui small modal" style={{display : isGoogleFormOpened ? 'block' : 'none', marginTop : '-200', left: '52.5% !important'}}>
 
                         <div className="ui red grid segment tertiary small attached">
                             <div className="ui row"><div className="ui column">
-                                <div className="ui floating yellow label" onClick={this.closeGoogleLanguages}>
-                                    <i className="close icon"></i>
+                                <div className="ui floating label sw-link red inverted" onClick={this.closeGoogleLanguages}>
+                                    <i className="close icon sw-close-icon"></i>
                                 </div>
                                 <span className="sw-header">Select a language:</span>
                             </div></div>

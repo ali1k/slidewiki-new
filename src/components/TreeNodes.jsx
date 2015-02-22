@@ -145,7 +145,7 @@ var TreeNodes = React.createClass({
                         >   
                             <div className="ui labeled fluid">
                                 <div href={path} context={this.props.context}  onClick={this._onClick} >
-                                    <div ref="actionBar" className="sw-hidden sw-action-bar">
+                                    <div ref="actionBar" className="sw-hidden" >
                                         <i className="small ellipsis vertical icon"></i>
                                         {this.props.item.type=='deck'? <i className="small blue icon add link"></i> :''}
                                         <i className="small teal icon edit link" onClick={this.showTitleInput}></i>
@@ -158,7 +158,7 @@ var TreeNodes = React.createClass({
 
 
                         {childNumber?   <div className="ui list">
-                                            <div className=" sw-empty-item" style={{display : isOvered && isDeck ? 'block' : 'none'}}></div>
+                                            <div className="item sw-empty-item" style={{display : isOvered && isDeck ? 'block' : 'none'}}></div>
                                             {output}
                                         </div>:''}
                     </div>
