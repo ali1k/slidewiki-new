@@ -9,11 +9,11 @@
 .sw-tree-view a:hover {text-decoration: none}
 
 .sw-tree-view-selected {
-    color: rgb(218, 0, 114) !important;
+    color: rgb(217, 92, 92) !important;
 }
 .sw-tree-view-over {
     //background-color: rgb(255, 244, 176) !important;
-    border-left: rgb(218, 0, 114) 1px solid;
+    border-left: rgb(217, 92, 92) 1px solid;
     cursor: pointer;
 }
 
@@ -34,6 +34,21 @@
 
 .sw-tree-view .ui.label {
     
+}
+
+.sw-tree-view .sw-action-bar {
+    background: white !important; 
+    padding: .3em .3em !important;
+    position: absolute;
+    right: 0;
+    z-index : 5;
+}
+.sw-tree-view .sw-empty-item {
+    margin-top: 5px;
+    height: 20px;
+    width: 100%;
+    background: white !important;
+    border-left: 1px solid rgb(23, 168, 143); //teal-green
 }
 
 //.sw-tree-view,

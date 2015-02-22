@@ -55,7 +55,7 @@ var Application = React.createClass({
                   <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
                         <LoginFormContainer context={this.props.context}/>
                       {output}
-                  <Footer />
+             <Footer />
             </div>
             
         );

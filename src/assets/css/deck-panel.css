@@ -1,3 +1,15 @@
 .sw-deck-panel{
 
 }
+
+.sw-deck-panel .sw-language:hover {
+    background: rgba(0,0,0,0.1) !important;
+}
+.sw-deck-panel .sw-language{
+    cursor: pointer;
+}
+
+.sw-deck-panel .sw-header{
+    font-weight: bold;
+    color: rgb(217, 92, 92);
+}

@@ -36,56 +36,60 @@ var DeckPanel = React.createClass({
     openGoogleLanguagesTab : function(){        
         this.setState({googleFormOpened: true, languageOpen : false});
     },
+    closeGoogleLanguages : function(){
+        this.setState({googleFormOpened: false});
+    },
     render: function() {
         var isGoogleFormOpened = this.state.googleFormOpened;
         var languageList = this.state.googleLanguages.map(function(node, index){
             return (
-                                                       
-                    <div key={node.language} className="ui fitted labeled three wide column"><i className="icon world"></i>{node.name}</div> 
-                    
+                    <div key={node.language} className="ui fitted labeled three wide column sw-language">
+                        {node.name}
+                    </div> 
                 )
         })
-        return (<div>
-                    <div className="ui modal">
-                    </div>
-                    <div className="sw-deck-panel">
-                        <div className="panel" >
-                            <div className="ui secondary top yellow attached segment grid">
-                                <div className="nine wide column left floated left aligned">
-                                    <div>{this.state.content.title}</div>
-                                </div>
-                                <div className="five wide column right floated right aligned">
-                                    <div className="ui floating dropdown labeled compact icon button tiny yellow fluid">
-                                        <i className="world icon" onClick={this.openLanguages}></i>
-                                        <span className="text">{this.state.content.language}</span>
-                                        <div className="menu ui mini " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
-                                            <a className="item teal mini">Arabic</a>
-                                            <a className="item">Chinese</a>
-                                            <a className="item">Danish</a>
-                                            <div className="divider"></div>
-                                            <div className="item centered header ui grid yellow mini" onClick={this.openGoogleLanguagesTab}><span>Translate</span></div>
-                                        </div>
+        return (
+                <div className="sw-deck-panel">
+                    <div className="panel" >
+                        <div className="ui secondary top yellow attached segment grid">
+                            <div className="nine wide column left floated left aligned">
+                                <div>{this.state.content.title}</div>
+                            </div>
+                            <div className="five wide column right floated right aligned">
+                                <div className="ui floating dropdown labeled compact icon button tiny yellow fluid">
+                                    <i className="world icon" onClick={this.openLanguages}></i>
+                                    <span className="text">{this.state.content.language}</span>
+                                    <div className="menu ui mini " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
+                                        <a className="item teal mini">Arabic</a>
+                                        <a className="item">Chinese</a>
+                                        <a className="item">Danish</a>
+                                        <div className="divider"></div>
+                                        <div className="item centered header ui grid yellow mini" onClick={this.openGoogleLanguagesTab}><span>Translate</span></div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                        <div className="ui small modal" style={{display : isGoogleFormOpened ? 'block' : 'none', marginTop : '-200'}}>
-                            <div className="ui secondary yellow grid segment attached">
-                                <div className="ui row"><div className="ui column">Select a language:</div></div>
-                                <div className="ui row menu" > 
-                                {languageList}
+                    </div>
+                    <div className="ui small modal" style={{display : isGoogleFormOpened ? 'block' : 'none', marginTop : '-200'}}>
+
+                        <div className="ui red grid segment tertiary small attached">
+                            <div className="ui row"><div className="ui column">
+                                <div className="ui floating yellow label" onClick={this.closeGoogleLanguages}>
+                                    <i className="close icon"></i>
                                 </div>
+                                <span className="sw-header">Select a language:</span>
+                            </div></div>
+                            <div className="ui row menu"> 
+                            {languageList}
                             </div>
                         </div>
-                        
-                        <div className="ui top attached segment" >
-                            
-                            <DeckView id={this.props.id} content={this.state.content} context={this.props.context} />
-                        </div>
-                        
                     </div>
+                    <div className="ui top attached segment" >
+                        <DeckView id={this.props.id} content={this.state.content} context={this.props.context} />
+                    </div>
+
                 </div>
+       
         );
     }
 });
