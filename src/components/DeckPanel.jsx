@@ -66,22 +66,16 @@ var DeckPanel = React.createClass({
                                 <div className="ui floating dropdown button right labeled compact icon tiny yellow fluid">
                                     <span className="text">{this.state.content.language}</span>
                                     <i className="world icon yellow inverted" ref="world_icon" onClick={this.openCloseLanguages}></i>
-                                    
-                                    <div className="menu ui small " ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
-                                        <div className="ui small basic button right labeled compact icon fluid">
-                                            <i className="world icon"></i>
-                                            <span className="text">Arabic</span>                                            
-                                        </div>
-                                        <div className="ui small basic button right labeled compact icon fluid">
-                                            <i className="world icon"></i>
-                                            <span className="text">Chinese</span>                                            
-                                        </div>
-                                        <div className="ui small basic button right labeled compact icon fluid">
-                                            <i className="world icon"></i>
-                                            <span className="text">Danish</span>                                            
-                                        </div>
+                                    <div className="menu vertical ui small fluid" ref="menu" style={{display: this.state.languageOpen ? 'block' : 'none'}}>
+                                        <a className="item fitted vertically">Arabic</a> 
+                                        <a className="item fitted vertically">Chinese</a> 
+                                        <a className="item fitted vertically">Danish</a> 
                                         <div className="divider"></div>
-                                        <div className="item centered header ui grid yellow mini" onClick={this.openGoogleLanguagesTab}><span>Translate</span></div>
+                                        <div className="ui item" onClick={this.openGoogleLanguagesTab}>
+                                            <i className="icon plane"></i>
+                                            <span className="text">TRANSLATE</span> 
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
