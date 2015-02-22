@@ -5,7 +5,7 @@ var Footer = require('./Footer.jsx');
 var HomePage = require('./HomePage.jsx');
 var AboutPage = require('./AboutPage.jsx');
 var DeckPage = require('./DeckPage.jsx');
-var LoginPage = require('./LoginPage.jsx');
+var LoginFormContainer = require('./LoginFormContainer.jsx');
 var ApplicationStore = require('../stores/ApplicationStore');
 var AuthStore = require('../stores/AuthStore');
 var RouterMixin = require('flux-router-component').RouterMixin;
@@ -53,7 +53,7 @@ var Application = React.createClass({
         return (
             <div>
                   <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
-                        <LoginPage context={this.props.context}/>
+                        <LoginFormContainer context={this.props.context}/>
                       {output}
                   <Footer />
             </div>

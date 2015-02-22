@@ -34,6 +34,10 @@ exports._updateSelector = function(context, payload, done){
 exports._onDragEnd = function(context){
     context.dispatch('ON_DRAG_END');
 };
+exports.setNewTitle = function(context, payload, done){
+    context.dispatch('SET_NEW_TITLE', payload);
+    done();
+};
 
 
 

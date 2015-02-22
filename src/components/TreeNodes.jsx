@@ -21,6 +21,27 @@ var TreeNodes = React.createClass({
             titleInput : false
         }
     },
+    //executed only first time
+    componentDidMount: function(){
+      key('enter', this._onEnterClick);
+    },
+    componentWillUnmount: function(){
+      key.unbind('enter');
+    },
+    _onEnterClick: function(e){
+        if (this.state.titleInput && e.keyCode === 13){
+            var new_title = e.target.value;
+            if (new_title !== this.props.item.title && new_title){
+                var payload={type: this.props.item.type, id: this.props.item.id, new_title: new_title};
+                this.props.context.executeAction(treeActions.setNewTitle, payload);
+                var item = this.state.item;
+                item.title = new_title;
+                this.setState({item : item, titleInput: false});
+            }else{
+                this.setState({titleInput : false})
+            }
+        }
+    },
     switchOpened : function(){
         var newState = this.state.isOpened;
         this.setState({isOpened : !newState});
@@ -92,12 +113,13 @@ var TreeNodes = React.createClass({
                 );
             })
         };
+      
         var nodeIcon;
         if (this.props.item.type==="deck"){
             nodeIcon = this.state.isOpened ? <i className="icon caret down top aligned" onClick={self.switchOpened}></i> : <i className="icon caret right top aligned" onClick={self.switchOpened}></i>;
         }
         var titleString = this.state.titleInput ? <div className="ui small transparent input active icon">
-                                                        {nodeIcon}<input type="text" ref="titleInput" placeholder={this.props.item.title} />
+                                                        {nodeIcon}<input type="text" ref="titleInput" placeholder={this.props.item.title} onKeyDown = {this._onEnterClick}/>
                                                   </div> 
                                                 : <div>{nodeIcon}{shorten(this.props.item.title)}</div>    
    
@@ -167,10 +189,11 @@ var TreeNodes = React.createClass({
         );
     },
     showTitleInput: function(e){
-        this.setState({titleInput : true});
-        var current = this.refs.titleInput.getDOMNode();
-        current.focus();
-        current.setSelectionRange(0, 0);
+        this.setState({titleInput : true}, function(){
+            var current = this.refs.titleInput.getDOMNode();
+            current.focus();
+            current.setSelectionRange(0, 0);
+        });
         
     },
     _onClick: function(e) {

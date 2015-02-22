@@ -8,7 +8,7 @@ var loginActions = require('../actions/LoginActions');
 
 
 
-var LoginPage = React.createClass({
+var LoginFormContainer = React.createClass({
     
     mixins: [StoreMixin],
     statics: {
@@ -37,7 +37,7 @@ var LoginPage = React.createClass({
         if (this.state.isLoggingIn){
             loaderClass = "ui blue submit button loading";
         }
-        if (this.state.isFormOpened){
+            if (this.state.isFormOpened){
             output = <div className="html ui six wide segment">
                         <div className="ui two column middle aligned relaxed fitted centered stackable grid ">
                             <div className="column four wide"><LoginForm context={this.props.context} /></div>
@@ -47,7 +47,7 @@ var LoginPage = React.createClass({
                             <div className="center aligned column four wide"><SignForm context={this.props.context}/></div>
                         </div>
                     </div>
-        }
+            }
         return (
              <div>{output}</div>   
         )
@@ -231,4 +231,4 @@ var SignForm = React.createClass({
         )}
 });
 
-module.exports = LoginPage; 
+module.exports = LoginFormContainer; 

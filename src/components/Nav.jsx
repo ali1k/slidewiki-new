@@ -47,22 +47,17 @@ var Nav = React.createClass({
     }
 });
 
-
-
-
-
 var UserMenu = React.createClass({
     displayName: 'UserMenu',
-    mixins: [StoreMixin, LocalStorageMixin],
+   // mixins: [StoreMixin, LocalStorageMixin],
+    mixins: [StoreMixin],
     statics: {
       storeListeners: {
         _onChange: [AuthStore]
       }
     },
-    getInitialState: function () {
-        
-        var state = this.getStateFromStores();
-        return state;
+    getInitialState: function () {        
+        return (this.getStateFromStores());
     },
     getStateFromStores: function () { 
         
@@ -71,11 +66,9 @@ var UserMenu = React.createClass({
          
     },
 
-    _onChange: function() {
-        var state = this.getStateFromStores();        
-        this.setState(state);
-    }, 
-    
+    _onChange: function() { 
+        this.setState(this.getStateFromStores());
+    },     
     
     render : function(){
         var self = this;
@@ -111,7 +104,6 @@ var Dropdown = React.createClass({
 var LoginButton = React.createClass({
     _handleOpenCloseForm: function(e){
         e.preventDefault();
-        
         this.props.context.executeAction(loginActions.openCloseForm, {});
     },
     render : function(){
@@ -128,5 +120,9 @@ var LoginButton = React.createClass({
     }
 
 });
+
+
+
+
 
 module.exports = Nav;

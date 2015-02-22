@@ -26,7 +26,8 @@ module.exports = createStore({
         'ON_DROP' : '_onDrop',
         'DELETE_FROM' : 'delete_from',
         'ADD_EMPTY_SLIDE' : 'addEmptySlide',
-        'ON_DRAG_END' : '_onDragEnd'
+        'ON_DRAG_END' : '_onDragEnd',
+        'SET_NEW_TITLE' : 'setNewTitle'
         
     },
     initialize: function () {
@@ -52,6 +53,19 @@ module.exports = createStore({
     _onDragEnd : function(){
         this.dragging = {};
         this.emitChange();
+    },
+    setNewTitle : function(payload){
+        var self = this;
+        agent
+                .get(api.path + '/rename/' + payload.type + '/' + payload.id + '/' + payload.new_title)
+                .end(function(err, res){
+                    if (err){
+                        self.error = internal;
+                        return self.emitChange();
+                    }else{
+                       self.emitChange();
+                    }
+                });
     },
     delete_from : function(payload){
         var self = this;
