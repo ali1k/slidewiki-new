@@ -57,6 +57,7 @@ var Application = React.createClass({
                       {output}
                   <Footer />
             </div>
+            
         );
     },
     componentDidUpdate: function(prevProps, prevState) {

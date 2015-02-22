@@ -15,6 +15,21 @@ module.exports = {
   read: function(req, resource, params, config, callback) {
       
         switch(resource){
+            case 'deck.google_languages' :
+                httpOptions.path = "/api/languages";
+                http.get(httpOptions, function(response) {
+                  // Continuously update stream with data
+                    var body = '';
+                    response.on('data', function(d) {
+                        body += d;
+                    });
+                    response.on('end', function() {
+                      // Data reception is done, do whatever with it!
+                        var parsed = JSON.parse(body);
+                        callback(parsed.error, {languages: parsed});
+                    });
+                });
+                break;
             case 'deck.tree' : 
                 var deck_id = params.deck;
                 httpOptions.path = "/api/deck/tree/" + deck_id;

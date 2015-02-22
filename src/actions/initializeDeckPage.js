@@ -13,6 +13,8 @@ var showSliderControl = require('../actions/showSliderControl');
 var TreeStore = require('../stores/TreeStore');
 //use DeckSliderStore to check if we need to initialize it or not
 var DeckSliderStore = require('../stores/DeckSliderStore');
+var ApplicationStore = require('../stores/ApplicationStore');
+var deckActions = require('../actions/DeckActions');
 
 //payload ={deck:? , selector: {type:? , id: ?}}
 module.exports = function(context, payload, done) {
@@ -104,15 +106,12 @@ module.exports = function(context, payload, done) {
     // optional callback
     function(err, results) {
       if (!err) {
-        //done() is the call back for initializeDeckPage action
-        //when all the parallel actions are run done() will be invoked
-        //update page title
-//        context.dispatch('UPDATE_PAGE_TITLE', {
-//          pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
-//            payload.selector.type + ' : ' + payload.selector.id + ' | ' +
-//            payload.mode
-//        });
-        done();
+        context.executeAction(deckActions.loadLanguages, function(){
+           
+            //console.log(context.getStore(ApplicationStore).getGoogleLanguages());
+             done();
+        });
+       
       }
     });
 };

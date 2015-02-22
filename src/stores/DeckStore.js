@@ -7,7 +7,8 @@ module.exports = createStore({
   handlers: {
     'SHOW_DECK_START': '_showDeckStart',
     'SHOW_DECK_FAILURE': '_showDeckFailure',
-    'SHOW_DECK_SUCCESS': '_showDeckSuccess'
+    'SHOW_DECK_SUCCESS': '_showDeckSuccess',
+  
   },
   initialize: function () {
     this.id = 0;
