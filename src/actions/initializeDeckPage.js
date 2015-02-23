@@ -21,7 +21,7 @@ module.exports = function(context, payload, done) {
   async.parallel([
       //load deck tree or only highlight a node when tree is already rendered
       function(callback) {
-        if (context.getStore(TreeStore).isAlreadyComplete()) {
+        if (context.getStore(TreeStore).isAlreadyComplete(payload.deck)) {
           //only highlight node
           context.executeAction(updateTreeNodeSelector, {
             deck: payload.deck,

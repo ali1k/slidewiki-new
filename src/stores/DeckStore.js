@@ -1,5 +1,9 @@
 'use strict';
 var createStore = require('fluxible/utils/createStore');
+var agent = require('superagent');
+var api = require('../configs/config').api;
+//error messages: 
+var internal =  {message : 'An internal error occured, please try one more time'};
 
 
 module.exports = createStore({
@@ -8,7 +12,7 @@ module.exports = createStore({
     'SHOW_DECK_START': '_showDeckStart',
     'SHOW_DECK_FAILURE': '_showDeckFailure',
     'SHOW_DECK_SUCCESS': '_showDeckSuccess',
-  
+    'TRANSLATE_TO' : 'translate_to'
   },
   initialize: function () {
     this.id = 0;
@@ -26,6 +30,24 @@ module.exports = createStore({
     this.id = res.id;
     this.content = res.content;
     this.emitChange();
+  },
+  translate_to : function(payload){
+      var self = this;
+      agent
+                .get(api.path + '/translate/' + payload.language + '/deck/' + payload.id)
+                .end(function(err, res){
+                    if (err){
+                        self.error = internal;
+                        return self.emitChange();
+                    }else{
+                        console.log(res.body);
+                        self.id = res.body.id;
+                        self.content = res.body;
+                        self.emitChange();
+                    }
+                });
+     
+    //todo(api/translate...) 
   },
   getContent: function (res) {
     return this.content;

@@ -6,6 +6,9 @@ var DeckStore = require('../stores/DeckStore');
 var ApplicationStore = require('../stores/ApplicationStore'); //for loading languages list
 //SlideWiki components
 var DeckView=require('./DeckView.jsx');
+var deckActions= require('../actions/DeckActions');
+var treeActions= require('../actions/TreeActions');
+var initializeDeckPage = require('../actions/initializeDeckPage');
 
 var DeckPanel = React.createClass({
     mixins: [StoreMixin],
@@ -46,12 +49,30 @@ var DeckPanel = React.createClass({
     closeGoogleLanguages : function(){
         this.setState({googleFormOpened: false});
     },
+    translateTo : function(language_code){
+        var payload = {id : this.state.content.id, language: language_code};
+        this.props.context.executeAction(deckActions.translateTo, payload);
+    },
+    shouldComponentUpdate : function(nextProps, nextState){ //after the translation we need to redirect to the new deck
+        console.log(nextState.content);
+        if (nextState.content.id !==this.state.content.id){
+            this.props.context.executeAction(initializeDeckPage,{
+                    deck: nextState.content.id,
+                    selector:  {type: 'deck', id: nextState.content.id},
+                    mode: 'view'
+                });
+                return false;
+        }else{
+            return true;
+        }
+    },
     render: function() {
+        var self = this;
         var isGoogleFormOpened = this.state.googleFormOpened;
         var languageList = this.state.googleLanguages.map(function(node, index){
             return (
                     <div key={node.language} className="ui fitted labeled three wide column sw-menu-link">
-                        {node.name}
+                        <a onClick={self.translateTo.bind(self, node.language)}>{node.name}</a>
                     </div> 
                 )
         })

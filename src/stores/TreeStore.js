@@ -335,8 +335,9 @@ module.exports = createStore({
     //this method checks if we already received the complete tree
     //it is used for preventing rendering/API calls on each request
     //todo: we can change this on update actions to reload tree
-    isAlreadyComplete: function () {
-        if (JSON.stringify(this.nodes) === '{}') {
+    isAlreadyComplete: function (deck_id) {
+        console.log(deck_id);
+        if (JSON.stringify(this.nodes) === '{}' || this.nodes.id !== deck_id) {
             //empty
             return false;
         } else {

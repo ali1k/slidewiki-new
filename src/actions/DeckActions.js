@@ -3,6 +3,7 @@ var async = require('async');
 var TreeStore = require('../stores/TreeStore');
 var DeckSliderStore = require('../stores/DeckSliderStore');
 var ContributorsStore = require('../stores/ContributorsStore');
+var DeckStore = require('../stores/DeckStore');
 
 var DeckActions = {
     
@@ -280,6 +281,17 @@ var DeckActions = {
           done(null);
         });       
     },
+    
+    translateTo : function(context, payload, done){
+        context.dispatch('TRANSLATE_TO', payload);
+        
+        //var payload = {deck : }
+//        context.executeAction(initializeDeckPage, {
+//                    deck: payload.params.id,
+//                    selector: selector,
+//                    mode: mode
+//                }, done);
+    }
             
 };
 
