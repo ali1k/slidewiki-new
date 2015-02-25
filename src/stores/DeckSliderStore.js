@@ -8,7 +8,9 @@ module.exports = createStore({
     'SHOW_SLIDER_CONTROL_START': '_showSliderControlStart',
     'SHOW_SLIDER_CONTROL_START_FAILURE': '_showSliderControlFailure', //todo
     'UPDATE_SLIDER_CONTROL':'_updateSliderControl',
-    'HIDE_SLIDER_CONTROL':'_hideSliderControl'
+    'HIDE_SLIDER_CONTROL':'_hideSliderControl',
+    'PLAY_DECK_SUCCESS': 'setSlides',
+    PLAY_DECK_FAILURE: 'playDeckFailure'
   },
   initialize: function () {
     this.deckID=0;
@@ -34,7 +36,14 @@ module.exports = createStore({
     this.currentSlide={index:index+1, id:currentSlideID};
     this.emitChange();
   },
-  
+  setSlides: function(res){
+        this.deckID= parseInt(res.deckID);
+        this.slides= res.slides;          
+        this.emitChange();
+  },
+  playDeckFailure: function(){
+      console.log('Play deck did not load slides');
+  },
   _updateSliderControl: function (res) {
     this.visibility=1;
     var currentSlideID= parseInt(res.currentSlideID);
@@ -93,6 +102,7 @@ module.exports = createStore({
     }
   },
   getSlides: function () {
+      //console.log(this.slides);
     return this.slides;
   },
   getSlidesNumber: function () {

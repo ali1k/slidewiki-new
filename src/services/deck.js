@@ -67,6 +67,32 @@ module.exports = {
                     });
                 }); 
                 break;
+            case 'deck.slidesForPlay' :
+                var deck_id = params.deck;
+                
+                httpOptions.path = "/api/deck/slides/" + deck_id + "/offset/1/limit/0/false";
+                http.get(httpOptions, function(response) {
+                  // Continuously update stream with data
+                    var body = '';
+                    response.on('data', function(d) {
+                         body += d;
+                    });
+                    response.on('end', function() {
+                        // Data reception is done, do whatever with it!
+                        var parsed = JSON.parse(body);
+                        if (parsed.error){
+                            callback(parsed.error, null);
+                        }else{
+                            var res = {
+                                deckID: deck_id,
+                                slides: parsed.slides
+                            };
+                          callback(null, res);
+                        }
+                      
+                    });
+                });
+                break;
             case 'deck.slidelist' :
                 var deck_id = params.deck;
                 //handle Ajax requests return object
@@ -92,7 +118,7 @@ module.exports = {
                                 deckID: deck_id,
                                 currentSlideID: selector.id,
                                 slides: parsed.slides
-                            }
+                            };
                           callback(null, res);
                         }
 

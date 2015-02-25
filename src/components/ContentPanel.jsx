@@ -37,6 +37,9 @@ var ContentPanel = React.createClass({
   _getTabPath: function(mode) {
     return '/deck/'+this.props.rootDeckID+'/'+this.state.content_type + '/' + this.state.content_id + '/'+ mode;
   },
+  startShow : function(){
+      this.props.context.executeAction(navigateAction, {type: 'click', url : '/play/'+this.props.rootDeckID});
+  },
     render: function() {
       var viewTabPath=this._getTabPath('view');
       var viewTabClasses = cx({
@@ -83,9 +86,11 @@ var ContentPanel = React.createClass({
               <a className="item">
               Questions<span className="ui tiny label">12</span>
               </a>
-              <a className="item" title="Comments">
-                <i className="comments red medium icon"></i>5
-              </a>
+              <div className="item">
+                <a title="Comments">
+                    <i className="comments red large icon"></i><span>5</span>
+                </a>
+              </div>
               <div className="item">
                 <a title="download">
                   <i className="download icon"></i>
@@ -99,6 +104,10 @@ var ContentPanel = React.createClass({
                 <a title="share">
                   <i className="share alternate icon"></i>
                 </a>
+              </div>
+              <div className="ui right labeled compact icon button green" onClick={this.startShow}>
+                <i className="right play icon"></i>
+                Play
               </div>
             </div>
             <div className={viewContentClasses}>

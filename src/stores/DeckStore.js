@@ -12,11 +12,15 @@ module.exports = createStore({
     'SHOW_DECK_START': '_showDeckStart',
     'SHOW_DECK_FAILURE': '_showDeckFailure',
     'SHOW_DECK_SUCCESS': '_showDeckSuccess',
-    'TRANSLATE_TO' : 'translate_to'
+    'TRANSLATE_TO' : 'translate_to',
+    REDIRECT_COMPLETED : 'redirectCompleted',
+    'GET_SLIDE_LIST_SUCCESS' : '_slideListSuccess'
   },
   initialize: function () {
     this.id = 0;
     this.content={};
+    this.redirect = false;
+    this.slides = [];
   },
   _showDeckStart: function (res) {
     //console.log('Start loading the deck content...');
@@ -31,6 +35,13 @@ module.exports = createStore({
     this.content = res.content;
     this.emitChange();
   },
+  _slideListSuccess: function(res){
+      console.log(res);
+  },
+  redirectCompleted : function(){
+      this.redirect = false;
+      this.emitChange();
+  },
   translate_to : function(payload){
       var self = this;
       agent
@@ -43,6 +54,7 @@ module.exports = createStore({
                         console.log(res.body);
                         self.id = res.body.id;
                         self.content = res.body;
+                        self.redirect = true;
                         self.emitChange();
                     }
                 });
@@ -55,14 +67,19 @@ module.exports = createStore({
   getError: function() {
     return this.error;
   },
+  getRedirect: function(){
+      return this.redirect;
+  },
   dehydrate: function () {
     return {
       id: this.id,
-      content: this.content
+      content: this.content,
+      redirect: this.redirect
     };
   },
   rehydrate: function (state) {
     this.id = state.id;
     this.content = state.content;
+    this.redirect = state.redirect;
   }
 });

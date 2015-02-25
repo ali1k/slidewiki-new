@@ -9,6 +9,7 @@ var DeckView=require('./DeckView.jsx');
 var deckActions= require('../actions/DeckActions');
 var treeActions= require('../actions/TreeActions');
 var initializeDeckPage = require('../actions/initializeDeckPage');
+var navigateAction = require('flux-router-component/actions/navigate');
 
 var DeckPanel = React.createClass({
     mixins: [StoreMixin],
@@ -26,6 +27,7 @@ var DeckPanel = React.createClass({
         googleLanguages: this.getStore(ApplicationStore).getGoogleLanguages(),
         languageOpen: false,
         googleFormOpened : false,
+        redirect: this.getStore(DeckStore).getRedirect(),
       };
     },
     _onChange: function() {
@@ -54,14 +56,10 @@ var DeckPanel = React.createClass({
         this.props.context.executeAction(deckActions.translateTo, payload);
     },
     shouldComponentUpdate : function(nextProps, nextState){ //after the translation we need to redirect to the new deck
-        console.log(nextState.content);
-        if (nextState.content.id !==this.state.content.id){
-            this.props.context.executeAction(initializeDeckPage,{
-                    deck: nextState.content.id,
-                    selector:  {type: 'deck', id: nextState.content.id},
-                    mode: 'view'
-                });
-                return false;
+        if (nextState.content.id !==this.state.content.id && nextState.redirect){
+           this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/'+nextState.content.id});
+           this.props.context.executeAction(deckActions.setRedirectFalse);
+                return true;
         }else{
             return true;
         }

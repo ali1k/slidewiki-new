@@ -10,6 +10,7 @@ var ApplicationStore = require('../stores/ApplicationStore');
 var AuthStore = require('../stores/AuthStore');
 var RouterMixin = require('flux-router-component').RouterMixin;
 var StoreMixin = require('fluxible').Mixin;
+var PlayPage = require('./PlayPage.jsx');
 
 var Application = React.createClass({
     mixins: [RouterMixin, StoreMixin],
@@ -38,25 +39,42 @@ var Application = React.createClass({
       //choose the right page based on the route
       switch(this.state.route.name){
         case 'home':
-          output=<HomePage/>
+          output=   <div>
+                        <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
+                        <LoginFormContainer context={this.props.context}/>
+                        <HomePage/>
+                        <Footer />
+                    </div>
           break;
-        case 'about':
-          output=<AboutPage/>
+        case 'about': 
+          output=   <div>
+                        <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
+                        <LoginFormContainer context={this.props.context}/>
+                        <AboutPage/>
+                        <Footer />
+                    </div>
+          
           break;
         case 'deck':
-          output=<DeckPage context={this.props.context} deckParams={this.state.route.params} />
+          output=   <div>
+                        <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
+                        <LoginFormContainer context={this.props.context}/>
+                        <DeckPage context={this.props.context} deckParams={this.state.route.params} />
+                        <Footer />
+                    </div>
+                  
+                        
           break;
-          
+        case 'play' :
+          output=   <PlayPage context={this.props.context} deckParams={this.state.route.params}/>
+          break;
       };
-             
+            
+        
       //render content
         return (
-            <div>
-                  <div><Nav selected={this.state.route} links={this.state.routes} context={this.props.context} /></div>
-                        <LoginFormContainer context={this.props.context}/>
-                      {output}
-             <Footer />
-            </div>
+                
+                <div>{output}</div>
             
         );
     },

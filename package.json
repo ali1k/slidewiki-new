@@ -41,6 +41,7 @@
     "react-localstorage": "^0.1.0",
     "react-semantic-ui": "^0.2.0",
     "react-semantify": "^0.2.3",
+    "reveal.js": "^3.0.0",
     "serialize-javascript": "^1.0.0",
     "serve-favicon": "^2.1.6",
     "superagent": "^0.21.0",

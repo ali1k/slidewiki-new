@@ -106,6 +106,18 @@ module.exports = {
 //                mode: mode
 //            }, done);   
         }
+    },
+    play: {
+        path: '/play/:id',
+        method: 'get',
+        page: 'play',
+        group: 'deck-app',
+        action: function(context, payload, done) {
+            context.dispatch('UPDATE_PAGE_TITLE', {
+                pageTitle: 'SlideWiki -- Play Deck ' + payload.params.id
+            });
+            context.executeAction(deckActions.playDeck, {deck: payload.params.id}, done);
+            
+        }
     }
-  
 };

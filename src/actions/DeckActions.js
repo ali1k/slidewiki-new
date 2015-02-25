@@ -241,6 +241,7 @@ var DeckActions = {
     
     showSliderControl: function(context, payload, done) {
         context.dispatch('SHOW_SLIDER_CONTROL_START', payload);
+        console.log(payload);
         context.service.read('deck.slideslist', payload, {}, function(err, res) {
             if (err) {
                 context.dispatch('SHOW_SLIDER_CONTROL_FAILURE', err);
@@ -250,6 +251,21 @@ var DeckActions = {
             context.dispatch('SHOW_SLIDER_CONTROL_SUCCESS', res);
             done(null);
         });
+
+    },
+    playDeck: function(context, payload, done) {
+        
+        console.log(payload);
+        context.service.read('deck.slidesForPlay', payload, {}, function(err, res) {
+            if (err) {
+                context.dispatch('PLAY_DECK_FAILURE', err);
+                done();
+                return;
+            }
+            context.dispatch('PLAY_DECK_SUCCESS', res);
+            done(null);
+        });
+        
 
     },
     
@@ -291,7 +307,13 @@ var DeckActions = {
 //                    selector: selector,
 //                    mode: mode
 //                }, done);
-    }
+    },
+    
+    setRedirectFalse: function(context){
+        context.dispatch('REDIRECT_COMPLETED');
+    },
+    
+
             
 };
 
