@@ -19,15 +19,16 @@ var PlayPage = React.createClass({
     getStateFromStores: function () {
         
       return {
-        slides: this.getStore(DeckSliderStore).getSlides()
+        slides: this.getStore(DeckSliderStore).getSlides(),
+        theme: this.getStore(DeckSliderStore).getTheme()
       };
     },
     _onChange: function() {
       this.setState(this.getStateFromStores());
     },
-  
     render: function() {
         var background='';
+        
         var output = this.state.slides.map(function(node,index){
             return (
                     <section key={node.id} data-background={background}>
@@ -42,11 +43,19 @@ var PlayPage = React.createClass({
                 <div className="slides" >
                 
                  {output}
+                 
                 </div>
             </div>
         );
     },
+    componentWillUnmount : function(){
+        document.getElementById('theme').setAttribute('href', ''); 
+    },
     componentDidMount : function(){
+        if (this.state.theme){
+            var url = '/public/bower_components/themes/' + this.state.theme + '.css';
+            document.getElementById('theme').setAttribute('href', url); 
+        }
      Reveal.initialize({
           // The "normal" size of the presentation, aspect ratio will be preserved
     // when the presentation is scaled to fit different resolutions. Can be

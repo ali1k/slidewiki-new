@@ -29,6 +29,7 @@ module.exports = function(context, payload, done) {
           }, callback);
         } else {
           //load the whole tree
+         
           context.executeAction(showDeckTree, {
             deck: payload.deck,
             selector: payload.selector
@@ -40,10 +41,12 @@ module.exports = function(context, payload, done) {
 //      load content for deck/slide
       function(callback) {
         //first need to prepare the right container for deck/slide/etc.
+        
         context.executeAction(prepareContentType, {
           selector: payload.selector,
           mode: payload.mode
         }, function(res) {
+            
           //then run the corresponding action
           switch (payload.selector.type) {
             case 'deck':
@@ -52,6 +55,7 @@ module.exports = function(context, payload, done) {
               }, callback);
               break;
             case 'slide':
+                console.log('slide container');
               context.executeAction(showSlide, {
                 selector: payload.selector
               }, callback);
@@ -63,7 +67,7 @@ module.exports = function(context, payload, done) {
 //      Update contributors
       function(callback) {
         
-          //only highlight node
+          
         
             context.executeAction(showContributors, {
               selector: payload.selector
@@ -75,10 +79,12 @@ module.exports = function(context, payload, done) {
       //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
       //load slides for slider
       function(callback) {
-        if (payload.selector.type == 'slide') {
+        if (payload.selector.type === 'slide') {
           //show slider control
+         
           if (context.getStore(DeckSliderStore).isAlreadyComplete()) {
             //there is no need to load slides list
+            console.log('1');
             context.executeAction(updateSliderControl, {
               selector: {
                 type: 'slide',
@@ -87,6 +93,7 @@ module.exports = function(context, payload, done) {
             }, callback);
           } else {
             //reload slides list
+           console.log('2');
             context.executeAction(showSliderControl, {
               deck: payload.deck,
               selector: {
@@ -105,9 +112,12 @@ module.exports = function(context, payload, done) {
     ],
     // optional callback
     function(err, results) {
-      if (!err) {
+        if (err){
+            console.log(err);
+        }
+      else{
         context.executeAction(deckActions.loadLanguages, function(){
-           
+           console.log('loading languages');
             //console.log(context.getStore(ApplicationStore).getGoogleLanguages());
              done();
         });

@@ -13,6 +13,7 @@ module.exports = createStore({
     this.mode='view';
   },
   _prepareContentType: function (res) {
+    
     this.content_type = res.selector.type;
     this.content_id = res.selector.id;
     this.mode = res.mode;

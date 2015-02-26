@@ -2,9 +2,10 @@
 var React = require('react');
 var ApplicationStore = require('../stores/ApplicationStore');
 var FluxibleMixin = require('fluxible').Mixin;
+var RouterMixin = require('flux-router-component').RouterMixin;
 
 var DefaultLayout = React.createClass({
-    mixins: [FluxibleMixin],
+    mixins: [FluxibleMixin, RouterMixin],
     render: function() {
         
         return (
@@ -15,6 +16,7 @@ var DefaultLayout = React.createClass({
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
                 <link href="/public/bower_components/semantic-ui/dist/semantic.min.css" rel="stylesheet" type="text/css" />
                 <link href="/public/css/bundle.css" rel="stylesheet" type="text/css" />
+                <link rel="stylesheet" href="" id="theme" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
@@ -31,10 +33,7 @@ var DefaultLayout = React.createClass({
             <script src="/public/bower_components/reveal.js/js/reveal.js" defer></script>
             <script src="/public/js/bundle.js" defer></script>
             <script src="/public/bower_components/reveal.js/lib/js/head.min.js" defer></script>
-            
-            <script src="/public/bower_components/reveal.js/lib/js/html5shiv.js"></script>
-            
-    
+
             </html>
         );
     }

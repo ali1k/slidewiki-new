@@ -8,6 +8,7 @@ var ContentStore = require('../stores/ContentStore');
 //SlideWiki components
 var DeckPanel=require('./DeckPanel.jsx');
 var SlidePanel=require('./SlidePanel.jsx');
+var SlideEditor = require('./SlideEditor.jsx');
 var deckActions = require('../actions/DeckActions');
 
 var ContentPanel = React.createClass({
@@ -25,6 +26,7 @@ var ContentPanel = React.createClass({
       content_type: this.getStore(ContentStore).getContentType(),
       content_id: this.getStore(ContentStore).getContentID(),
       mode: this.getStore(ContentStore).getMode(),
+      theme_name: 'night'
     };
   },
   _onChange: function() {
@@ -38,7 +40,7 @@ var ContentPanel = React.createClass({
     return '/deck/'+this.props.rootDeckID+'/'+this.state.content_type + '/' + this.state.content_id + '/'+ mode;
   },
   startShow : function(){
-      this.props.context.executeAction(navigateAction, {type: 'click', url : '/play/'+this.props.rootDeckID});
+      this.props.context.executeAction(navigateAction, {type: 'click', url : '/play/'+this.props.rootDeckID+'/' + this.state.theme_name});
   },
     render: function() {
       var viewTabPath=this._getTabPath('view');
@@ -52,13 +54,15 @@ var ContentPanel = React.createClass({
         'panel': true,
         'sw-hidden': this.state.mode!='view'
       });
-      var viewContent='';
+      var viewContent, editContent;
       switch(this.state.content_type){
       case 'deck':
         viewContent=<DeckPanel id={this.state.content_id} context={this.props.context} />;
+        editContent=<SlideEditor id={this.state.content_id} context={this.props.context} />;
         break;
       case 'slide':
         viewContent=<SlidePanel id={this.state.content_id} context={this.props.context} />;
+        editContent=<SlideEditor id={this.state.content_id} context={this.props.context} />;
         break;
       }
 
@@ -73,7 +77,8 @@ var ContentPanel = React.createClass({
         'panel': true,
         'sw-hidden': this.state.mode!='edit'
       });
-
+      
+      
         return (
           <div className="sw-content-panel">
             <div className="ui top attached tabular menu">
@@ -118,7 +123,7 @@ var ContentPanel = React.createClass({
             <div className={editContentClasses}>
               <div className="ui segment">
                 <div className="ui segment color green">
-                    <br/>Edit component for slide/deck comes here<br/>
+                    <SlideEditor id={this.state.content_id} context={this.props.context}/>
                 </div>
               </div>
             </div>

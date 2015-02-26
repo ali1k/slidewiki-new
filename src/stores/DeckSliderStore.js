@@ -10,7 +10,8 @@ module.exports = createStore({
     'UPDATE_SLIDER_CONTROL':'_updateSliderControl',
     'HIDE_SLIDER_CONTROL':'_hideSliderControl',
     'PLAY_DECK_SUCCESS': 'setSlides',
-    PLAY_DECK_FAILURE: 'playDeckFailure'
+    PLAY_DECK_FAILURE: 'playDeckFailure',
+    SET_THEME: 'setTheme'
   },
   initialize: function () {
     this.deckID=0;
@@ -18,6 +19,7 @@ module.exports = createStore({
     this.slides=[];
     this.currentSlide=0;
     this.visibility=1;
+    this.theme='';
   },
   _hideSliderControl: function () {
     this.visibility=0;
@@ -26,6 +28,10 @@ module.exports = createStore({
   _getSlideIndex: function(id){
     var index = this.slides.map(function(x) {return parseInt(x.id); }).indexOf(id);
     return index;
+  },
+  setTheme : function(theme){
+      this.theme = theme;
+      this.emitChange();
   },
   _showSliderControlSuccess: function (res) {
     this.visibility=1;
@@ -52,7 +58,7 @@ module.exports = createStore({
     this.emitChange();
   },
   _showSliderControlStart: function (res) {
-
+      //console.log('Start loading the SliderController!');
   },
   _showSliderControlFailure: function (res) {
       console.log('Error loading the SliderController!');
@@ -108,6 +114,9 @@ module.exports = createStore({
   getSlidesNumber: function () {
     return this.slides.length;
   },
+  getTheme: function(){
+      return this.theme;
+  },
   getDeckID: function () {
     return this.deckID;
   },
@@ -133,12 +142,14 @@ module.exports = createStore({
     return {
       deckID: this.deckID,
       slides: this.slides,
-      currentSlide: this.currentSlide
+      currentSlide: this.currentSlide,
+      theme: this.theme
     };
   },
   rehydrate: function (state) {
     this.deckID = state.deckID;
     this.slides = state.slides;
     this.currentSlide = state.currentSlide;
+    this.theme = state.theme;
   }
 });

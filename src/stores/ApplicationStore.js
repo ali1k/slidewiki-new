@@ -43,7 +43,7 @@ var ApplicationStore = createStore({
         this.emitChange();
     },
   _handleNavigate: function(route) {
-    console.log(route);
+    
     if (this._isTheCurrentRoute(route)) {
       return;
     }
@@ -51,6 +51,7 @@ var ApplicationStore = createStore({
     this.emit('change');
   },
   updatePageTitle: function(title) {
+    
     this.pageTitle = title.pageTitle;
     this.emitChange();
   },

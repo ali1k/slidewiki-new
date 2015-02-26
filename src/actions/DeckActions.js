@@ -4,92 +4,127 @@ var TreeStore = require('../stores/TreeStore');
 var DeckSliderStore = require('../stores/DeckSliderStore');
 var ContributorsStore = require('../stores/ContributorsStore');
 var DeckStore = require('../stores/DeckStore');
+var treeActions = require('../actions/TreeActions');
+var showContributors = require('../actions/showContributors');
+var showSliderControl = require('../actions/showSliderControl');
 
 var DeckActions = {
-    
-    updateDeckPage: function(context, payload, done) {
-  async.parallel([
-      //load deck tree or only highlight a node when tree is already rendered
-//      function(callback) {
-//       
-//          //only highlight node
-//          context.executeAction(module.exports.updateTreeNodeSelector, {
-//            deck: payload.deck,
-//            selector: payload.selector
-//          }, callback);
-//       },
-      ////////////////////////////////////
-      //load content for deck/slide
-      function(callback) {
-        //first need to prepare the right container for deck/slide/etc.
-        context.executeAction(module.exports.prepareContentType, {
-          selector: payload.selector,
-          mode: payload.mode
-        }, function(res) {
-          //then run the corresponding action
-          switch (payload.selector.type) {
-            case 'deck':
-              context.executeAction(module.exports.showDeck, {
-                selector: payload.selector
-              }, callback);
-              break;
-            case 'slide':
-              context.executeAction(module.exports.showSlide, {
-                selector: payload.selector
-              }, callback);
-              break;
-          }
+    initializeDeckPage: function(context, payload, done){
+        console.log(payload);
+        async.parallel([
+            //load deck tree or only highlight a node when tree is already rendered
+            function(callback) {
+                module.exports.loadUpdateTree(context, payload, callback);
+            },
+            //////////////////////////////////
+      //      load content for deck/slide
+            function(callback){
+                module.exports.loadContainer(context, payload, callback);
+            },
+//
+            function(callback) {
+                context.executeAction(module.exports.showContributors, {selector: payload.selector}, callback);
+        
+            },
+//            ////////////////////////////////////
+//            //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
+//            //load slides for slider
+//            function(callback) {
+//               context.executeAction(module.exports.showSliderControl, {
+//                                                                            deck: payload.deck,
+//                                                                            selector: {
+//                                                                                type: 'slide',
+//                                                                                id: payload.selector.id
+//                                                                            }
+//                                                                        }, callback);
+//            },
+////            ////////////////////////////////////
+////            //Load languages list
+            function(callback) {
+                module.exports.loadLanguages(context, callback);
+            }
+        ],
+        function(err, results) {
+            
+            if (!err) {
+                
+                context.dispatch('UPDATE_PAGE_TITLE', {
+                    pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
+                        payload.selector.type + ' : ' + payload.selector.id + ' | ' +
+                        payload.mode
+                });
+                done();
+            }
         });
-      },
-      ////////////////////////////////////
-      //Update contributors
-      function(callback) {
-        
-          //only highlight node
-        
-            context.executeAction(module.exports.showContributors, {
-              selector: payload.selector
-            }, callback);
-        
     },
-      
-      ////////////////////////////////////
-      //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
-      //load slides for slider
-      function(callback) {
-        if (payload.selector.type == 'slide') {
-          //show slider control
-          
-            //there is no need to load slides list
-            context.executeAction(module.exports.updateSliderControl, {
-              selector: {
-                type: 'slide',
-                id: payload.selector.id
-              }
-            }, callback);
-          
-        } else {
-          //hide slider control
-          context.executeAction(module.exports.hideSliderControl, {}, callback);
-        }
+    updateDeckPage: function(context, payload, done) {
+        async.parallel([
+            //only highlight a node when tree is already rendered
+            function(callback) {
+               
+               treeActions._updateSelector(context, payload, callback);
+                
+            },
+            ////////////////////////////////////
+            //load content for deck/slide
+            function(callback) {                
+              //first need to prepare the right container for deck/slide/etc.
+                module.exports.prepareContentType(context, payload, function(res) {
+                  //then run the corresponding action
+                    console.log(payload);
+                    switch (payload.selector.type) {
+                        case 'deck':
+                            context.executeAction(module.exports.showDeck, payload, callback);
+                            break;
+                        case 'slide':
+                            
+                            context.executeAction(module.exports.showSlide, payload, callback);
+                            break;
+                    }
+                });
+            },
+            ////////////////////////////////////
+            //Update contributors
+            function(callback) {
+                var object = {selector: {type: payload.selector.type, id:payload.selector.id}};
+                module.exports.showContributors(context, object, callback);
+            },
 
-      }
-      ////////////////////////////////////
-    ],
-    // optional callback
-    function(err, results) {
-      if (!err) {
-        //done() is the call back for initializeDeckPage action
-        //when all the parallel actions are run done() will be invoked
-        //update page title
-//        context.dispatch('UPDATE_PAGE_TITLE', {
-//          pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
-//            payload.selector.type + ' : ' + payload.selector.id + ' | ' +
-//            payload.mode
-//        });
-        done();
-      }
-    })},
+            ////////////////////////////////////
+            //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
+            //load slides for slider
+            function(callback) {
+           
+                if (payload.selector.type === 'slide') {
+                    //there is no need to load slides list
+                    module.exports.updateSliderControl(context, {
+                        selector: {
+                            type: 'slide',
+                            id: payload.selector.id
+                        }
+                    }, callback);
+
+                } else {
+                    //hide slider control
+                    module.exports.hideSliderControl(context, {}, callback);
+                }
+            }
+          ////////////////////////////////////
+        ],
+        // optional callback
+        function(err, results) {
+            done();
+            if (!err) {
+                console.log('4');
+                context.dispatch('UPDATE_PAGE_TITLE', {
+                    pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
+                        payload.selector.type + ' : ' + payload.selector.id + ' | ' +
+                        payload.mode
+                });
+                done();
+            }
+        });
+    },
 
     loadUpdateTree: function(context, payload, done){
         if (context.getStore(TreeStore).isAlreadyComplete()) {
@@ -107,11 +142,12 @@ var DeckActions = {
         }
     },
     
-    updateTreeNodeSelector: function(context, payload, done){        
+    updateTreeNodeSelector: function(context, payload, done){  
         context.dispatch('UPDATE_TREE_NODE_SELECTOR', {
             selector: payload.selector
         });
-        done(null);
+        
+        done();
     },
     
     showDeckTree: function(context, payload, done){
@@ -132,8 +168,6 @@ var DeckActions = {
         });
     },
     
-    
-   
     loadContainer: function(context, payload, done){
         //first need to prepare the right container for deck/slide/etc.
         context.executeAction(module.exports.prepareContentType, {
@@ -163,7 +197,8 @@ var DeckActions = {
     
     showDeck: function (context, payload, done) {
         context.dispatch('SHOW_DECK_START', payload);
-        context.service.read('deck.content', payload, {}, function (err, res) {
+        var object = {selector: {type: payload.selector.type, id:payload.selector.id}};
+        context.service.read('deck.content', object, {}, function (err, res) {
             if (err) {
                 context.dispatch('SHOW_DECK_FAILURE', err);
                 done();
@@ -176,7 +211,8 @@ var DeckActions = {
     
     showSlide: function (context, payload, done) {
         context.dispatch('SHOW_SLIDE_START', payload);
-        context.service.read('deck.content', payload, {}, function (err, res) {
+        var object = {selector: {type: payload.selector.type, id:payload.selector.id}};
+        context.service.read('deck.content', object, {}, function (err, res) {
             if (err) {
                 context.dispatch('SHOW_SLIDE_FAILURE', err);
                 done();
@@ -187,28 +223,25 @@ var DeckActions = {
         });
     },
     
-    loadContributors: function(context, payload, done){
-        context.executeAction(module.exports.showContributors, {
-            selector: payload.selector
-        });
-    },
-    
     showContributors: function (context, payload, done) {
         context.dispatch('SHOW_CONTRIBUTORS_START', payload);
         context.service.read('deck.contributors', payload, {}, function (err, res) {
             if (err) {
                 context.dispatch('SHOW_CONTRIBUTORS_FAILURE', err);
+                done();
                 return;
             }
             context.dispatch('SHOW_CONTRIBUTORS_SUCCESS', res);
+            done(null);
         });
-
     },
     
-    loadSlides : function(context, payload, done){             
+    loadSlides : function(context, payload, done){  
+        
         if (payload.selector.type === 'slide') {
             //show slider control
             if (context.getStore(DeckSliderStore).isAlreadyComplete()) {
+              
               //there is no need to load slides list
                 context.executeAction(module.exports.updateSliderControl, {
                     selector: {
@@ -217,8 +250,9 @@ var DeckActions = {
                     }
                 }, done);
             } else {
+              
               //reload slides list
-              context.executeAction(this.showSliderControl, {
+              context.executeAction(module.exports.showSliderControl, {
                     deck: payload.deck,
                     selector: {
                         type: 'slide',
@@ -228,7 +262,7 @@ var DeckActions = {
             }
         } else {
                 //hide slider control
-                context.executeAction(this.hideSliderControl, {}, done);
+                context.executeAction(module.exports.hideSliderControl, {}, done);
         }
     },
     
@@ -241,21 +275,21 @@ var DeckActions = {
     
     showSliderControl: function(context, payload, done) {
         context.dispatch('SHOW_SLIDER_CONTROL_START', payload);
-        console.log(payload);
         context.service.read('deck.slideslist', payload, {}, function(err, res) {
+
             if (err) {
                 context.dispatch('SHOW_SLIDER_CONTROL_FAILURE', err);
                 done();
                 return;
             }
             context.dispatch('SHOW_SLIDER_CONTROL_SUCCESS', res);
-            done(null);
+            done();
         });
 
     },
     playDeck: function(context, payload, done) {
         
-        console.log(payload);
+        
         context.service.read('deck.slidesForPlay', payload, {}, function(err, res) {
             if (err) {
                 context.dispatch('PLAY_DECK_FAILURE', err);
@@ -263,7 +297,8 @@ var DeckActions = {
                 return;
             }
             context.dispatch('PLAY_DECK_SUCCESS', res);
-            done(null);
+            context.dispatch('SET_THEME', payload.theme);
+            done();
         });
         
 
@@ -294,6 +329,7 @@ var DeckActions = {
             languages: res.languages
           });
           //null indicates no error
+          
           done(null);
         });       
     },

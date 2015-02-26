@@ -174,7 +174,7 @@ var TreeNodes = React.createClass({
         });
     },
     _onClick: function(e) {
-        this.props.context.executeAction(treeActions._updateSelector, {
+        this.props.context.executeAction(deckActions.updateDeckPage, {
             selector: {
                 title:this.state.item.title,
                 type: this.state.item.type, 
@@ -184,8 +184,7 @@ var TreeNodes = React.createClass({
             mode: 'view',
             selected : this.state.item
         });
-        this.props.context.executeAction(deckActions.loadContainer, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
-        this.props.context.executeAction(deckActions.loadContributors, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
+        
         e.preventDefault();
     },
     _onDragStart : function(e) {

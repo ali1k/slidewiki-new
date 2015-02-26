@@ -59,56 +59,17 @@ module.exports = {
                 };
             }
             
-            context.dispatch('UPDATE_PAGE_TITLE', {
-                pageTitle: 'SlideWiki -- Deck ' + payload.params.id + ' > ' +
-                    selector.type + ' : ' + selector.id + ' | ' +
-                    mode
-                });
-            
-            
-//            if (context.getStore(TreeStore).isAlreadyComplete()){
-//                context.executeAction(deckActions.updateDeckPage, {
-//                    deck: payload.params.id,
-//                    selector: selector,
-//                    mode: mode
-//                }, done);
-//            }else{
-                context.executeAction(initializeDeckPage, {
-                    deck: payload.params.id,
-                    selector: selector,
-                    mode: mode
-                }, done);
-//            } 
-            
-            
-//            //console.log(selector);
-//            context.executeAction(DeckActions.loadUpdateTree, {
-//                deck: payload.params.id,
-//                selector: selector,
-//                mode: mode
-//            }, done);
-//
-//            context.executeAction(DeckActions.loadContainer, {
-//                deck: payload.params.id,
-//                selector: selector,
-//                mode: mode
-//            }, done);
-//
-//            context.executeAction(DeckActions.loadContributors, {
-//                deck: payload.params.id,  
-//                selector: selector,
-//                mode: mode
-//            }, done);
-//
-//            context.executeAction(DeckActions.loadSlides, {
-//                deck: payload.params.id,  
-//                selector: selector,
-//                mode: mode
-//            }, done);   
+            context.executeAction(deckActions.initializeDeckPage, {
+
+                deck: payload.params.id,
+                selector: selector,
+                mode: mode
+            }, done);
+
         }
     },
     play: {
-        path: '/play/:id',
+        path: '/play/:id/:theme_name?',
         method: 'get',
         page: 'play',
         group: 'deck-app',
@@ -116,7 +77,11 @@ module.exports = {
             context.dispatch('UPDATE_PAGE_TITLE', {
                 pageTitle: 'SlideWiki -- Play Deck ' + payload.params.id
             });
-            context.executeAction(deckActions.playDeck, {deck: payload.params.id}, done);
+            var theme = payload.params.theme_name;
+            if (!theme){
+                theme='night';
+            };
+            context.executeAction(deckActions.playDeck, {deck: payload.params.id, theme: theme}, done);
             
         }
     }

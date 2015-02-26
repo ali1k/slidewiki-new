@@ -3,13 +3,14 @@
 module.exports = function(context, payload, done) {
   context.dispatch('SHOW_SLIDER_CONTROL_START', payload);
   context.service.read('deck.slideslist', payload, {}, function(err, res) {
+      
     if (err) {
       context.dispatch('SHOW_SLIDER_CONTROL_FAILURE', err);
       done();
       return;
     }
     context.dispatch('SHOW_SLIDER_CONTROL_SUCCESS', res);
-    done(null);
+    done();
   });
 
 };

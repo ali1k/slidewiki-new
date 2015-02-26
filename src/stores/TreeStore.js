@@ -295,20 +295,26 @@ module.exports = createStore({
         this._updateSelector({selector : selector, selected: selected});
     },   
     _updateSelector: function(res) {
+        
         this.selector = res.selector;
         if (res.selected){
             this.selected = res.selected;
         }else{
             this.selected = this.nodes;
         }
+        
         var self = this;
         this._createBreadcrumb(self.selector, [], function(path){
+            
             self.breadcrumb = path;
             self.emitChange();
+            
         });
+        
     },
     
     _createBreadcrumb : function(selector, path_acc, callback){
+        
         var self = this;
         if (selector.parent){ //not a root deck 
             path_acc.unshift({id : selector.id, title: selector.title});

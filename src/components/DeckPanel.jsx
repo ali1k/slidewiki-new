@@ -67,13 +67,17 @@ var DeckPanel = React.createClass({
     render: function() {
         var self = this;
         var isGoogleFormOpened = this.state.googleFormOpened;
-        var languageList = this.state.googleLanguages.map(function(node, index){
+        var languageList;
+        if (this.state.googleLanguages.length){
+            languageList = this.state.googleLanguages.map(function(node, index){
             return (
                     <div key={node.language} className="ui fitted labeled three wide column sw-menu-link">
                         <a onClick={self.translateTo.bind(self, node.language)}>{node.name}</a>
                     </div> 
                 )
-        })
+            })
+        }
+        
         return (
                 <div className="sw-deck-panel">
                     <div className="panel" >
