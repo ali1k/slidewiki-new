@@ -137,7 +137,7 @@ module.exports = createStore({
                     if (parent.id === self.nodes.id){
                         self.nodes = parent;
                     }
-                    console.log(self.nodes);
+                    
                     self.emitChange();
                 }
             });
@@ -256,7 +256,7 @@ module.exports = createStore({
         this.error = true;
         self.emitChange();
     },
-    _setIndexes : function(nodes){ //to be able to produce keys for nodes
+    _setIndexes : function(nodes, callback){ //to be able to produce keys for nodes
         var self = this;
         
         var mutated_notes = nodes.children.map(function(node, index){
@@ -272,45 +272,119 @@ module.exports = createStore({
                     self.dragging.f_index = node.f_index;
                 }
             }
+            if (self.selector){
+                if (node.id.toString() === self.selector.id.toString() && node.type.toString() === self.selector.type.toString()){
+                    self.selector.f_index = node.f_index;
+                }
+            }
             if (node.children){
-                return self._setIndexes(node);
+                return self._setIndexes(node, function(node){
+                    return node;
+                });
             }else{
                 return node;
             };
         });
         nodes.children = mutated_notes;
-        return nodes;
+        return callback(nodes);
     },
     _showDeckTreeSuccess: function (res) {
-        this.nodes = this._setIndexes(res.nodes);
-        this.nodes.type = 'deck';
-        this.nodes.id = res.selector.id;
-        var selector = {
-                            title:this.nodes.title,
-                            type: 'deck', 
-                            id: this.nodes.id, 
-                            parent: null
-                        };
-        var selected = this.nodes;        
-        this._updateSelector({selector : selector, selected: selected});
-    },   
+        this.selector = res.selector;
+        var self = this;
+        this._setIndexes(res.nodes, function(mutated){
+            self.nodes = mutated;
+            self.emitChange();
+            self.findSelected(self.nodes, function(selected){
+                self.selected = selected;
+                self._createBreadcrumbInit(function (path) {
+                    self.breadcrumb = path;
+                    self.emitChange();
+                });
+            });            
+        });
+    }, 
+    findSelected: function(nodes, callback){
+        var self = this;
+        var node = [];
+        if (self.selector.type === 'deck' && self.selector.id === nodes.id){ //root deck is selected
+            return callback(nodes);
+        }else{
+            var node = nodes.children.filter(function(item){
+                return item.type === self.selector.type && item.id.toString() === self.selector.id.toString();
+            });
+            if (node.length){
+                node[0].parentID = nodes.id;
+                callback(node[0]);
+            }else{
+                nodes.children.map(function(node){
+                    if (node.children){
+                        self.findSelected(node, function(node_child){
+                            if (node_child){
+                                return callback(node_child);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    },
     _updateSelector: function(res) {
         
-        this.selector = res.selector;
-        if (res.selected){
-            this.selected = res.selected;
-        }else{
-            this.selected = this.nodes;
-        }
-        
+//        this.selector = res.selector;
+//        if (res.selected){
+//            this.selected = res.selected;
+//        }else{
+//            this.selected = this.nodes;
+//        }
+//        
         var self = this;
-        this._createBreadcrumb(self.selector, [], function(path){
+        this.selected = res.selected;
+        this._createBreadcrumbInit(function(path){
             
             self.breadcrumb = path;
             self.emitChange();
             
         });
-        
+    },
+    _createBreadcrumbInit: function (fn) {
+        var found = 0;
+        var self = this;
+        //collect first level nodes for DFS
+        var firstlevel = [];
+        _.forEach(self.nodes.children, function (node) {
+            if (node.type === 'deck') {
+                firstlevel.push(node.id);
+            }
+        });
+        var path = [];
+        t.dfs(self.nodes, [], function (node, par, ctrl) {
+            if (node.type === 'deck') {
+                if (_.indexOf(firstlevel, node.id) > 0) {
+                    path = [{
+                            id: self.nodes.id,
+                            title: self.nodes.title
+                        }];
+                }
+                if (!found) {
+                    path.push({
+                        id: node.id,
+                        title: node.title
+                    });
+                }
+            }
+            if (node.id === self.selector.id && node.type === self.selector.type) {
+                //prevent duplicate decks in path
+                if (node.type !== 'deck') {
+                    path.push({
+                        id: node.id,
+                        title: node.title
+                    });
+                }
+                //id found
+                found = 1;
+                return fn(path);
+            }
+        })
     },
     
     _createBreadcrumb : function(selector, path_acc, callback){
@@ -342,7 +416,7 @@ module.exports = createStore({
     //it is used for preventing rendering/API calls on each request
     //todo: we can change this on update actions to reload tree
     isAlreadyComplete: function (deck_id) {
-        console.log(deck_id);
+        
         if (JSON.stringify(this.nodes) === '{}' || this.nodes.id !== deck_id) {
             //empty
             return false;

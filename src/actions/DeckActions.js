@@ -10,7 +10,7 @@ var showSliderControl = require('../actions/showSliderControl');
 
 var DeckActions = {
     initializeDeckPage: function(context, payload, done){
-        console.log(payload);
+        
         async.parallel([
             //load deck tree or only highlight a node when tree is already rendered
             function(callback) {
@@ -29,15 +29,10 @@ var DeckActions = {
 //            ////////////////////////////////////
 //            //TODO: this parallel action might be dependent on the showSlide action. we should check this later.
 //            //load slides for slider
-//            function(callback) {
-//               context.executeAction(module.exports.showSliderControl, {
-//                                                                            deck: payload.deck,
-//                                                                            selector: {
-//                                                                                type: 'slide',
-//                                                                                id: payload.selector.id
-//                                                                            }
-//                                                                        }, callback);
-//            },
+            function(callback) {
+               
+               context.executeAction(module.exports.loadSlides, {deck:payload.deck, selector: payload.selector}, callback);
+            },
 ////            ////////////////////////////////////
 ////            //Load languages list
             function(callback) {
@@ -63,7 +58,6 @@ var DeckActions = {
             function(callback) {
                
                treeActions._updateSelector(context, payload, callback);
-                
             },
             ////////////////////////////////////
             //load content for deck/slide
@@ -71,7 +65,7 @@ var DeckActions = {
               //first need to prepare the right container for deck/slide/etc.
                 module.exports.prepareContentType(context, payload, function(res) {
                   //then run the corresponding action
-                    console.log(payload);
+                    
                     switch (payload.selector.type) {
                         case 'deck':
                             context.executeAction(module.exports.showDeck, payload, callback);
@@ -113,9 +107,9 @@ var DeckActions = {
         ],
         // optional callback
         function(err, results) {
-            done();
+            
             if (!err) {
-                console.log('4');
+                
                 context.dispatch('UPDATE_PAGE_TITLE', {
                     pageTitle: 'SlideWiki -- Deck ' + payload.deck + ' > ' +
                         payload.selector.type + ' : ' + payload.selector.id + ' | ' +
@@ -127,7 +121,7 @@ var DeckActions = {
     },
 
     loadUpdateTree: function(context, payload, done){
-        if (context.getStore(TreeStore).isAlreadyComplete()) {
+        if (context.getStore(TreeStore).isAlreadyComplete(payload.deck)) {
             //only highlight node
             context.executeAction(module.exports.updateTreeNodeSelector, {
                 deck: payload.deck,
@@ -274,14 +268,16 @@ var DeckActions = {
     },
     
     showSliderControl: function(context, payload, done) {
-        context.dispatch('SHOW_SLIDER_CONTROL_START', payload);
-        context.service.read('deck.slideslist', payload, {}, function(err, res) {
+        
+        context.service.read('deck.slidelist', payload, {}, function(err, res) {
 
             if (err) {
+                
                 context.dispatch('SHOW_SLIDER_CONTROL_FAILURE', err);
                 done();
                 return;
             }
+           
             context.dispatch('SHOW_SLIDER_CONTROL_SUCCESS', res);
             done();
         });

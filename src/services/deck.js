@@ -13,7 +13,6 @@ var randomResponseTime = function(min, max) {
 module.exports = {
   name: 'deck',
   read: function(req, resource, params, config, callback) {
-        
         switch(resource){
             case 'deck.google_languages' :
                 httpOptions.path = "/api/languages";
@@ -102,7 +101,7 @@ module.exports = {
                 } else {
                      var selector = JSON.parse(params.selector);
                 }
-                console.log(params);
+                
                 httpOptions.path = "/api/deck/slides/" + deck_id + "/offset/1/limit/0/true";
                 http.get(httpOptions, function(response) {
                   // Continuously update stream with data

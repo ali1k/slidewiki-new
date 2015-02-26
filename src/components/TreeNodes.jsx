@@ -174,17 +174,17 @@ var TreeNodes = React.createClass({
         });
     },
     _onClick: function(e) {
-        this.props.context.executeAction(deckActions.updateDeckPage, {
-            selector: {
-                title:this.state.item.title,
-                type: this.state.item.type, 
-                id: this.state.item.id, 
-                parent: this.props.parent
-            }, 
-            mode: 'view',
-            selected : this.state.item
-        });
-        
+//        this.props.context.executeAction(deckActions.updateDeckPage, {
+//            selector: {
+//                title:this.state.item.title,
+//                type: this.state.item.type, 
+//                id: this.state.item.id, 
+//                parent: this.props.parent
+//            }, 
+//            mode: 'view',
+//            selected : this.state.item
+//        });
+        this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/' + this.props.rootID + '/' + this.state.item.type + '/' + this.state.item.id}); 
         e.preventDefault();
     },
     _onDragStart : function(e) {

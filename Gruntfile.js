@@ -75,6 +75,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['clean:dist', 'copy:js',  'concat', 'cssmin','concurrent:dev']);
+    grunt.registerTask('default', ['clean:dist', 'copy:js',  'concat', 'concurrent:dev']);
     
 };

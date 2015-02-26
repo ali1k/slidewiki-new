@@ -36,7 +36,7 @@ module.exports = createStore({
     this.emitChange();
   },
   _slideListSuccess: function(res){
-      console.log(res);
+      
   },
   redirectCompleted : function(){
       this.redirect = false;
@@ -51,7 +51,7 @@ module.exports = createStore({
                         self.error = internal;
                         return self.emitChange();
                     }else{
-                        console.log(res.body);
+                        
                         self.id = res.body.id;
                         self.content = res.body;
                         self.redirect = true;

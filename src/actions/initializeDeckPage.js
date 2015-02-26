@@ -84,7 +84,7 @@ module.exports = function(context, payload, done) {
          
           if (context.getStore(DeckSliderStore).isAlreadyComplete()) {
             //there is no need to load slides list
-            console.log('1');
+           
             context.executeAction(updateSliderControl, {
               selector: {
                 type: 'slide',
@@ -93,7 +93,7 @@ module.exports = function(context, payload, done) {
             }, callback);
           } else {
             //reload slides list
-           console.log('2');
+      
             context.executeAction(showSliderControl, {
               deck: payload.deck,
               selector: {

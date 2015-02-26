@@ -58,7 +58,7 @@ module.exports = createStore({
     this.emitChange();
   },
   _showSliderControlStart: function (res) {
-      //console.log('Start loading the SliderController!');
+      console.log('Start loading the SliderController!');
   },
   _showSliderControlFailure: function (res) {
       console.log('Error loading the SliderController!');
