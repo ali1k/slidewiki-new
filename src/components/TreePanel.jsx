@@ -79,6 +79,17 @@ var TreePanel = React.createClass({
         this.props.context.executeAction(treeActions.addEmptySlide, {parent : parent, new_slide : new_slide});
 
     },
+    rememberOvered : function(overed){
+        this.setState({overed: overed});
+    },
+    forgetOvered : function(){
+        this.setState({overed: null});
+    },
+    unOver : function(){
+        if (this.state.overed){
+             this.state.overed.setState({isOvered: false});
+        }       
+    },
     moveItem: function(target){
         
         //if (this.state.dragging && this.state.allowDrop){
@@ -170,6 +181,9 @@ var TreePanel = React.createClass({
                             allowDrop={this.state.allowDrop}
                             parent = {false}
                             moveItem = {this.moveItem}
+                            rememberOvered = {this.rememberOvered}
+                            forgetOvered = {this.forgetOvered}
+                            unOver = {this.unOver}
                 />
               </div>
             </div>

@@ -120,6 +120,9 @@ var TreeNodes = React.createClass({
                             context={self.props.context} 
                             className={index==(childNumber-1)?'last-child':''}
                             moveItem = {self.props.moveItem}
+                            rememberOvered = {self.props.rememberOvered}
+                            forgetOvered = {self.props.forgetOvered}
+                            unOver = {self.props.unOver}
                         /> 
                     </div>
                 );
@@ -136,11 +139,11 @@ var TreeNodes = React.createClass({
                             onMouseOver={this._onMouseOver} 
                             onMouseOut={this._onMouseOut}
                             draggable = {isDraggable}
-                            onDragEnter={this._onDragEnter}
+                            
                             onDragStart = {this._onDragStart}
                             onDragEnd = {this._onDragEnd}
-                            onDragOver = {this._onDragOver}
-                            onDrop = {this._onDrop}
+                            onDrop = {this._onDrop} onDragEnter={this._onDragEnter} onDragOver = {this._onDragOver}
+                            
                             onDragLeave={this._onDragLeave}
                         >   
                             <div className="ui labeled fluid">
@@ -158,11 +161,11 @@ var TreeNodes = React.createClass({
 
 
                         {childNumber?   <div className="ui list">
-                                            <div className="item sw-empty-item" style={{display : isOvered && isDeck ? 'block' : 'none'}}></div>
+                                            <div onDrop = {this._onDrop} onDragEnter={this._onDragEnter} onDragOver = {this._onDragOver} className="item sw-empty-item" style={{display : isOvered && isDeck ? 'block' : 'none'}}></div>
                                             {output}
                                         </div>:''}
                     </div>
-                    <div className='sw-empty-item' style={{display : isOvered && isSlide ? 'block' : 'none'}}></div>
+                    <div onDrop = {this._onDrop} onDragEnter={this._onDragEnter} onDragOver = {this._onDragOver} className='sw-empty-item' style={{display : isOvered && isSlide ? 'block' : 'none'}}></div>
                 </div>
             );
     },
@@ -174,7 +177,7 @@ var TreeNodes = React.createClass({
         });
     },
     _onClick: function(e) {
-//        this.props.context.executeAction(deckActions.updateDeckPage, {
+//        this.props.context.executeAction(treeActions._updateSelector, {
 //            selector: {
 //                title:this.state.item.title,
 //                type: this.state.item.type, 
@@ -184,6 +187,8 @@ var TreeNodes = React.createClass({
 //            mode: 'view',
 //            selected : this.state.item
 //        });
+//        this.props.context.executeAction(deckActions.loadContainer, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
+//        this.props.context.executeAction(deckActions.loadContributors, {selector: {type: this.props.item.type, id: this.props.item.id}, mode: 'view'} );
         this.props.context.executeAction(navigateAction, {type: 'click', url: '/deck/' + this.props.rootID + '/' + this.state.item.type + '/' + this.state.item.id}); 
         e.preventDefault();
     },
@@ -193,7 +198,8 @@ var TreeNodes = React.createClass({
             this.setState({isOpened : false});
             this.props.context.executeAction(treeActions._onDragStart, draggingItem);
             e.dataTransfer.setData('Text', 'text');            
-            e.stopPropagation();   
+            e.stopPropagation(); 
+            
         }else{
             e.preventDefault();
         }
@@ -201,18 +207,22 @@ var TreeNodes = React.createClass({
     _onDragEnd : function(e){
         this.setState({ 'isOvered' : false});
         this.props.context.executeAction(treeActions._onDragEnd);
+        this.props.unOver();
+        this.props.forgetOvered();
     },
     _onDragEnter: function(e){ // Necessary. Allows us to drop.       
         if (this.props.dragging.state.item.type !== this.props.item.type || this.props.dragging.state.item.id !== this.props.item.id)  {
             e.preventDefault(); 
             e.stopPropagation();
-            var dropCandidate = {props: this.props, state: this.state};
+            this.props.unOver();
+            
             var self = this;
             self.setState({isOpened : true, isOvered : true});
+            this.props.rememberOvered(this);
         }
     },
     _onDragLeave: function(e){
-        this.setState({ 'isOvered' : false});
+        //this.setState({ 'isOvered' : false});
     },        
     _onDragOver: function(e){ // Necessary. Allows us to drop.
         e.preventDefault(); 
