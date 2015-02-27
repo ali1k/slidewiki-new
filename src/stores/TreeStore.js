@@ -288,13 +288,14 @@ module.exports = createStore({
         nodes.children = mutated_notes;
         return callback(nodes);
     },
-    _showDeckTreeSuccess: function (res) {
+    _showDeckTreeSuccess: function (res) { //first time rendering
         this.selector = res.selector;
         var self = this;
         this._setIndexes(res.nodes, function(mutated){
             self.nodes = mutated;
             self.emitChange();
             self.findSelected(self.nodes, function(selected){
+              
                 self.selected = selected;
                 self._createBreadcrumbInit(function (path) {
                     self.breadcrumb = path;
@@ -306,12 +307,15 @@ module.exports = createStore({
     findSelected: function(nodes, callback){
         var self = this;
         var node = [];
+      
         if (self.selector.type === 'deck' && self.selector.id === nodes.id){ //root deck is selected
+            
             return callback(nodes);
         }else{
             var node = nodes.children.filter(function(item){
                 return item.type === self.selector.type && item.id.toString() === self.selector.id.toString();
             });
+            
             if (node.length){
                 node[0].parentID = nodes.id;
                 callback(node[0]);
@@ -329,22 +333,28 @@ module.exports = createStore({
         }
     },
     _updateSelector: function(res) {
-        
-//        this.selector = res.selector;
-//        if (res.selected){
-//            this.selected = res.selected;
-//        }else{
-//            this.selected = this.nodes;
-//        }
-//        
         var self = this;
-        this.selected = res.selected;
-        this._createBreadcrumbInit(function(path){
-            
-            self.breadcrumb = path;
-            self.emitChange();
-            
-        });
+        this.selector = res.selector;
+        if (res.selected){
+            this.selected = res.selected;
+            self._createBreadcrumbInit(function(path){
+                self.breadcrumb = path;
+                self.emitChange();
+            });
+        }else{
+            self.findSelected(self.nodes, function(selected){
+              
+                self.selected = selected;
+                self._createBreadcrumbInit(function (path) {
+                    self.breadcrumb = path;
+                    self.emitChange();
+                });
+            });   
+        }
+        
+        
+        //this.selected = res.selected;
+       
     },
     _createBreadcrumbInit: function (fn) {
         var found = 0;
@@ -356,6 +366,7 @@ module.exports = createStore({
                 firstlevel.push(node.id);
             }
         });
+        
         var path = [];
         t.dfs(self.nodes, [], function (node, par, ctrl) {
             if (node.type === 'deck') {
@@ -370,9 +381,10 @@ module.exports = createStore({
                         id: node.id,
                         title: node.title
                     });
+                    
                 }
             }
-            if (node.id === self.selector.id && node.type === self.selector.type) {
+            if (node.id.toString() === self.selector.id.toString() && node.type.toString() === self.selector.type.toString()) {
                 //prevent duplicate decks in path
                 if (node.type !== 'deck') {
                     path.push({
@@ -382,9 +394,10 @@ module.exports = createStore({
                 }
                 //id found
                 found = 1;
+                
                 return fn(path);
             }
-        })
+        });
     },
     
     _createBreadcrumb : function(selector, path_acc, callback){

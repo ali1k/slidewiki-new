@@ -16,6 +16,7 @@
     "semantic-ui": "^1.1.0",
     "keymaster": "~1.6.2",
     "screenfull": "~1.2.1",
-    "reveal.js": "~3.0.0"
+    "reveal.js": "~3.0.0",
+    "wysiwyg.js": "https://github.com/wysiwygjs/wysiwyg.js.git"
   }
 }

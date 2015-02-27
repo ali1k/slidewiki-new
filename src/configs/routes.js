@@ -4,6 +4,7 @@ var deckActions = require('../actions/DeckActions');
 var TreeStore = require('../stores/TreeStore');
 
 module.exports = {
+    
     home: {
         path: '/',
         method: 'get',
@@ -12,7 +13,7 @@ module.exports = {
         label: 'Home',
         action: function(context, payload, done) {
             context.dispatch('UPDATE_PAGE_TITLE', {
-              pageTitle: 'SlideWiki | Home'
+                pageTitle: 'SlideWiki | Home'
             });
             done();
         }

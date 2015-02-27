@@ -84,6 +84,9 @@ var LoginForm = React.createClass({
         var password = this.refs.password.getDOMNode().value.trim(); 
         this.props.context.executeAction(loginActions.sendLogin, {username : username, password: password});
     },
+    _handleSubmitFacebook: function(e) {
+        this.props.context.executeAction(loginActions.sendFacebook, {});
+    },
     render : function(){
         var userInputClass = "ui left icon input";
         var passInputClass = "ui left icon input";
@@ -122,6 +125,7 @@ var LoginForm = React.createClass({
                                 {passHint}
                             </div>
                             <div className={loaderClass} onClick={this._handleSubmit}>Login</div>
+                            <div className={loaderClass}><a href="http://localhost:8080/api/auth/facebook">Facebook</a></div>
                         </div>
         }else{
             outputLogin = <div className="huge blue ui labeled icon button" onClick={self._openLoginForm}>

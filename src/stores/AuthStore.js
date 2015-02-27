@@ -151,17 +151,19 @@ var AuthStore = createStore({
         }
         
     },
-//    onSendFacebook: function(payload) {
-//        this.isLoggingIn = true;
-//        this.emitChange();
-//        var self = this;
-//        agent
-//            .get(api.path + '/auth/facebook')
-//            .end(function(err, res){
-//                console.log(err);
-//                if (err){
-//                    console.log(err);
-//                }
+    onSendFacebook: function(payload) {
+        this.isLoggingIn = true;
+        this.emitChange();
+        var self = this;
+        agent
+            .get(api.path + '/auth/facebook')
+    
+            .end(function(err, res){
+                console.log(err);
+                if (err){
+                    console.log(err);
+                }
+                
 //                if (res.body.id){
 //                    console.log('res.id');
 //                    console.log(res.body);
@@ -171,8 +173,8 @@ var AuthStore = createStore({
 //                    console.log('no res id');
 //                    console.log(res.body);
 //                }
-//            });
-//    },
+            });
+    },
     getState: function() {
         
         return {

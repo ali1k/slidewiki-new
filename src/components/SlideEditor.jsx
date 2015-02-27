@@ -11,6 +11,7 @@ var SlidePanel=require('./SlidePanel.jsx');
 var SlideEditor = require('./SlideEditor.jsx');
 var deckActions = require('../actions/DeckActions');
 
+
 var SlideEditor = React.createClass({
   mixins: [StoreMixin],
   statics: {
@@ -32,8 +33,12 @@ var SlideEditor = React.createClass({
   _onChange: function() {
     this.setState(this.getStateFromStores());
   },
+  componentDidMount : function(){
+     //var $editor = $(this.getDOMNode()).wysiwyg({});
+    },
+    
   render: function(){
-      return (<div>This is SlideEditor</div>)
+      return (<div><textarea id="sw-wysiwyg">This is SlideEditor</textarea></div>)
   }
 });
 

@@ -31,6 +31,12 @@ var Application = React.createClass({
         
         this.setState(this.getStateFromStores());
     },
+    componentDidMount : function(){
+        var user = document.cookie.username;
+        console.log(user);
+        console.log(document.cookie);
+
+    },
     render: function () {
       var output='';
       var loginDiv;

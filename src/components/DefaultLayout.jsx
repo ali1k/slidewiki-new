@@ -15,6 +15,7 @@ var DefaultLayout = React.createClass({
                 <title>{this.getStore(ApplicationStore).getPageTitle()}</title>
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
                 <link href="/public/bower_components/semantic-ui/dist/semantic.min.css" rel="stylesheet" type="text/css" />
+                <link href="/public/bower_components/wysiwyg.js/src/wysiwyg-editor.css" rel="stylesheet" type="text/css" />
                 <link href="/public/css/bundle.css" rel="stylesheet" type="text/css" />
                 <link rel="stylesheet" href="" id="theme" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +34,8 @@ var DefaultLayout = React.createClass({
             <script src="/public/bower_components/reveal.js/js/reveal.js" defer></script>
             <script src="/public/js/bundle.js" defer></script>
             <script src="/public/bower_components/reveal.js/lib/js/head.min.js" defer></script>
-
+            <script src="/public/bower_components/wysiwyg.js/src/wysiwyg-editor.js" defer></script>
+            <script src="/public/bower_components/wysiwyg.js/src/wysiwyg.js" defer></script>
             </html>
         );
     }
